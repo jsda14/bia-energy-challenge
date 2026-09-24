@@ -214,6 +214,11 @@ def seed(
             for e in event_rows
         ]
         event_repo.save_many(events)
+        
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
     finally:
         session.close()
 

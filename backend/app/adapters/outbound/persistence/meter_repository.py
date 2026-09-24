@@ -85,4 +85,4 @@ class SqlAlchemyMeterRepository(MeterRepositoryPort):
             created_at=datetime.utcnow(),
         )
         self._session.add(new_meter)
-        self._session.commit()
+        self._session.flush()

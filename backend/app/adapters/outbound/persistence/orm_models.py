@@ -1,7 +1,7 @@
 """Modelos ORM de SQLAlchemy para la persistencia en base de datos relacional."""
 
 from datetime import datetime
-from sqlalchemy import DateTime, Float, String, UniqueConstraint
+from sqlalchemy import DateTime, Float, String, UniqueConstraint, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -60,3 +60,35 @@ class EventORM(Base):
     event_timestamp: Mapped[datetime] = mapped_column(DateTime, index=True)
     event_type: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)
+
+
+class AnomalyORM(Base):
+    __tablename__ = "anomalies"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    meter_id: Mapped[str] = mapped_column(String, index=True)
+    detected_at: Mapped[datetime] = mapped_column(DateTime, index=True)
+    type: Mapped[str] = mapped_column(String)
+    severity: Mapped[str] = mapped_column(String)
+    confidence: Mapped[float] = mapped_column(Float)
+    reason: Mapped[str] = mapped_column(String)
+    recommended_action: Mapped[str] = mapped_column(String)
+    baseline_kwh: Mapped[float] = mapped_column(Float)
+    observed_kwh: Mapped[float] = mapped_column(Float)
+    variation_pct: Mapped[float] = mapped_column(Float)
+    affected_variables: Mapped[str] = mapped_column(String)
+    correlated_event: Mapped[str | None] = mapped_column(String, nullable=True)
+    window_start: Mapped[datetime] = mapped_column(DateTime)
+    window_end: Mapped[datetime] = mapped_column(DateTime)
+
+class AnalysisRunORM(Base):
+    __tablename__ = "analysis_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requested_meter_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    status: Mapped[str] = mapped_column(String)
+    started_at: Mapped[datetime] = mapped_column(DateTime)
+    finished_at: Mapped[datetime] = mapped_column(DateTime)
+    anomalies_detected_count: Mapped[int] = mapped_column(Integer)
+    error_message: Mapped[str | None] = mapped_column(String, nullable=True)
+

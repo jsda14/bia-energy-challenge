@@ -130,4 +130,4 @@ class SqlAlchemyReadingRepository(ReadingRepositoryPort):
 
         if to_insert:
             self._session.add_all(to_insert)
-            self._session.commit()
+            self._session.flush()
