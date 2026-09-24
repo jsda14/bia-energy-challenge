@@ -9,7 +9,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 |---|---|---|---|---|
 | [SPEC-001](SPEC-001-domain-anomaly-detection.md) | Dominio: Modelos y Motor de Detección de Anomalías | ✅ Aprobado | 5 | 2026-09-24 |
 | [SPEC-002](SPEC-002-persistence-and-seed.md) | Persistencia (SQLite/SQLAlchemy) y Seed de Datos | ✅ Aprobado | 1 | 2026-09-24 |
-| SPEC-003 | Casos de uso + API FastAPI | ⬜ No iniciado | — | — |
+| [SPEC-003](SPEC-003-use-cases-and-api.md) | Casos de Uso, Persistencia de Anomalías y API FastAPI | ✅ Aprobado | 2 | 2026-09-24 |
 | SPEC-004 | IA — Adapter Claude (agentic loop + MCP EventQueryTool) | ⬜ No iniciado | — | — |
 | SPEC-005+ | Frontend — Dashboard, Meters, Detail, Anomalies, Investigation | ⬜ No iniciado | — | — |
 
@@ -83,3 +83,56 @@ genera y persiste anomalías.
 (usa el entero autoincremental de la tabla) — inconsistencia latente sin
 consumidor real todavía. A vigilar si SPEC-003 llega a depender de
 `Meter.id`.
+
+---
+
+## SPEC-003 — Casos de Uso, Persistencia de Anomalías y API FastAPI
+
+**Estado:** ✅ Aprobado (2026-09-24, 2 rondas de retrabajo).
+
+**Resumen:** Conecta el motor de detección (SPEC-001) con la persistencia
+(SPEC-002) vía 6 casos de uso de aplicación, expuestos por una API FastAPI
+de 8 endpoints. `POST /ai/analyze` corre el `AnomalyDetector` real y
+persiste resultados; `GET /anomalies` los devuelve con explicación en
+lenguaje natural vía `TemplateExplainerAdapter` (fallback determinista —
+Claude real es SPEC-004). Primer pipeline end-to-end funcional del
+proyecto: HTTP → caso de uso → detección → explicación → persistencia
+atómica → respuesta. 64 tests, los 4 casos del PDF verificados contra el
+servidor real (no solo tests): M-109 `REAL_ANOMALY/HIGH`, M-104
+`EXPLAINABLE_ANOMALY/MEDIUM`, M-106 `FALSE_POSITIVE/LOW`, M-112
+`DATA_QUALITY/HIGH`.
+
+**Alcance:** incluye `AnomalyRepositoryPort` + `AnalysisRun` (a diferencia
+de SPEC-002, que los dejó fuera a propósito hasta que existiera el caso de
+uso que los necesita). `ClaudeExplainerAdapter` real, ejecución asíncrona,
+y autenticación quedan fuera — SPEC-004 y siguientes.
+
+**Retrabajos (motivo de cada ronda):**
+1. **Sesión compartida por request.** La primera entrega tenía cada
+   `get_X_repo()` en `main.py` abriendo su propia `Session` independiente
+   — sin atomicidad entre persistir anomalías y persistir el `AnalysisRun`
+   que las resume. Se introdujo el patrón "una sesión por request" de
+   FastAPI (`Depends(get_db_session)`). En el camino, Gemini atrapó
+   correctamente (vía Boundary Protocol) que `AnomalyRepositoryPort` no
+   podía retornar `AnomalyRecord` en sus métodos de lectura — ese modelo no
+   tiene `id`/`reason`/`recommended_action` — lo que llevó a introducir
+   `PersistedAnomaly` como modelo nuevo.
+2. **Atomicidad real, no solo sesión compartida.** El retrabajo #1 resolvió
+   el ciclo de imports pero cada repo seguía haciendo su propio
+   `session.commit()` dentro de la sesión compartida — la sesión compartida
+   por sí sola no daba atomicidad. Se movió `commit()`/`rollback()` de los
+   5 repos de escritura (3 de SPEC-002, ya cerrado — reapertura autorizada
+   explícitamente por escrito en el propio SPEC-003) al único punto que
+   controla el ciclo de vida completo de la operación
+   (`get_db_session`/`seed_data.py`). Verificado con un test que prueba el
+   escenario real (flush → rollback → sesión nueva → 0 filas), exigido sin
+   condicionales después de que el plan inicial de Gemini lo dejara como
+   "si hace falta". Antes de confiar en el test, se verificó
+   independientemente que el engine `sqlite:///:memory:` realmente
+   comparte conexión entre sesiones (descartando un falso positivo por
+   bases aisladas).
+
+**Nota de proceso:** primer caso del proyecto en que un retrabajo de un
+SPEC posterior (SPEC-003) requiere tocar y reabrir código de un SPEC ya
+cerrado y auditado (SPEC-002) — documentado y autorizado explícitamente por
+escrito en el SPEC antes de ejecutar, no de forma implícita.
