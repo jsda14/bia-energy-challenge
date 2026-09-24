@@ -37,7 +37,18 @@ def startup_event():
     engine = get_or_create_engine()
     create_all_tables(engine)
 
-def get_explainer() -> TemplateExplainerAdapter:
+from app.adapters.outbound.ai.claude_explainer_adapter import ClaudeExplainerAdapter
+from app.domain.ports.ai_explainer_port import AIExplainerPort
+
+def get_explainer(session: Session) -> AIExplainerPort:
+    settings = get_settings()
+    if settings.anthropic_api_key:
+        event_repo = SqlAlchemyEventRepository(session)
+        return ClaudeExplainerAdapter(
+            event_repo=event_repo,
+            api_key=settings.anthropic_api_key,
+            model=settings.claude_model
+        )
     return TemplateExplainerAdapter()
 
 def get_detector() -> AnomalyDetector:
@@ -50,7 +61,7 @@ def build_analyze_use_case(session: Session = Depends(get_db_session)) -> Analyz
         event_repo=SqlAlchemyEventRepository(session),
         anomaly_repo=SqlAlchemyAnomalyRepository(session),
         run_repo=SqlAlchemyAnomalyRunRepository(session),
-        explainer=get_explainer(),
+        explainer=get_explainer(session),
         detector=get_detector(),
     )
     

@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     """Configuraciones del sistema leídas desde variables de entorno con prefijo BIA_."""
 
     database_url: str = "sqlite:///./bia_energy.db"
+    anthropic_api_key: str | None = None
+    claude_model: str = "claude-sonnet-4-6"
 
     model_config = {"env_prefix": "BIA_"}
 
