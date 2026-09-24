@@ -173,6 +173,7 @@ def test_cb05_create_all_tables_preserves_existing_data(tmp_path):
             status="active",
         )
     )
+    session.commit()
     session.close()
 
     # Volver a invocar create_all_tables
