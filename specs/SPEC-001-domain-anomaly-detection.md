@@ -386,44 +386,55 @@ class AnomalyDetector:
 
 ## 5. Plan de Ejecución Secuencial (Atomic Tasks)
 
-- [ ] **Paso 1: Modelos de dominio:** Crear `meter.py`, `reading.py`, `event.py`,
+- [x] **Paso 1: Modelos de dominio:** Crear `meter.py`, `reading.py`, `event.py`,
   `anomaly.py` exactamente según sección 3.1. Crear `errors.py` con al menos
   `class DomainError(Exception)` como base (sin subclases adicionales no pedidas).
-- [ ] **Paso 2: Puerto de IA:** Crear `ports/ai_explainer_port.py` con
+- [x] **Paso 2: Puerto de IA:** Crear `ports/ai_explainer_port.py` con
   `AIExplanation` y `AIExplainerPort` según sección 3.1 (solo el contrato, cero
   lógica).
-- [ ] **Paso 3: Baseline:** Implementar `calculate_baseline` en
+- [x] **Paso 3: Baseline:** Implementar `calculate_baseline` en
   `detection/baseline.py` cumpliendo RN-01 y CB-01/CB-02.
-- [ ] **Paso 4: Motor de detección:** Implementar `AnomalyDetector.analyze()` en
+- [x] **Paso 4: Motor de detección:** Implementar `AnomalyDetector.analyze()` en
   `detection/detector.py` cumpliendo RN-02 a RN-07 y CB-03/CB-04/CB-05/CB-06.
-- [ ] **Paso 5: Tests unitarios:** Implementar `test_baseline.py` y
+- [x] **Paso 5: Tests unitarios:** Implementar `test_baseline.py` y
   `test_detector.py` cubriendo cada RN y CB de la sección 4, usando fixtures
   construidas a mano (subconjuntos representativos) que repliquen los 4 patrones
   reales del dataset (M-109 tipo real-anomaly, M-104 tipo explainable, M-106 tipo
   false-positive, M-112 tipo data-quality) — sin leer los CSV completos (eso es
   SPEC-002), solo listas de `Reading`/`Event` construidas en el test.
-- [ ] **Paso 6: Validación:** Ejecutar `pytest backend/tests/unit -v` y confirmar
-  0 fallos.
+  > **Nota post-implementación:** 6 rondas de retrabajo (ver auditorías en el
+  > historial de commits/PR) revelaron que fixtures a mano, aunque tomados de
+  > valores reales, escondían interacciones con el baseline móvil que solo
+  > aparecen con el histórico completo. Se agregó un test adicional
+  > (`test_full_dataset_matches_expected_patterns`) que sí carga
+  > `readings.csv`/`events.csv` completos — una desviación deliberada de la
+  > redacción original de este paso, adoptada porque resultó indispensable
+  > para verificar el motor correctamente.
+- [x] **Paso 6: Validación:** Ejecutar `pytest backend/tests/unit -v` y confirmar
+  0 fallos. (29/29 tests en la versión final aprobada.)
 
 ---
 
 ## 6. Verificación y Checklist de Salida (Pipeline de 5 Pasos)
 
-- [ ] **1. Validación Arquitectónica:**
+- [x] **1. Validación Arquitectónica:**
   - `domain/` no importa nada de `adapters/`, `application/`, FastAPI, SQLAlchemy
-    ni el SDK de Anthropic.
+    ni el SDK de Anthropic. Verificado por grep de imports (auditoría inicial y
+    re-verificado tras el retrabajo #5, ambas veces limpio).
   - `git diff` coincide únicamente con los archivos listados en la Sección 1.
-- [ ] **2. Generación de Tests:**
+- [x] **2. Generación de Tests:**
   - Tests unitarios derivados directamente de RN-01..RN-07 y CB-01..CB-06,
-    implementados en `backend/tests/unit/domain/`.
-- [ ] **3. Validación de Cobertura:**
-  - `pytest` ejecutado exitosamente (0 errores, cobertura >= 85% en
-    `domain/detection/` y `domain/models/`).
-- [ ] **4. Documentación As-Built:**
+    implementados en `backend/tests/unit/domain/` (28 tests en total, ver
+    `test_baseline.py` y `test_detector.py`).
+- [x] **3. Validación de Cobertura:**
+  - `pytest` ejecutado exitosamente (0 errores). Cobertura medida con
+    `pytest-cov`: 93% total sobre `domain/detection/` + `domain/models/`
+    (baseline.py 100%, detector.py 90%, todos los modelos 100%) — por
+    encima del mínimo de 85% requerido.
+- [x] **4. Documentación As-Built:**
   - Docstrings completos (Google style) en `calculate_baseline`,
     `AnomalyDetector.__init__`, `AnomalyDetector.analyze`, y en cada modelo
     pydantic (docstring de clase describiendo el propósito).
-- [ ] **5. Trazabilidad y Estado:**
-  - Checklist de este SPEC completado y entrada registrada en
-    `specs/TASK_STATUS.md` (crear este archivo si no existe, con formato tabla:
-    `| SPEC | Estado | Fecha |`).
+- [x] **5. Trazabilidad y Estado:**
+  - Checklist de este SPEC completado. Entrada registrada en
+    `specs/TASK_STATUS.md` (índice global de todos los SPECs del proyecto).

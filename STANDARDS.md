@@ -14,7 +14,51 @@ sección 2 de ese SPEC.
   Si un paso está bloqueado, se detiene y se pide aclaración — no se improvisa.
 - Al terminar un SPEC se actualiza `specs/TASK_STATUS.md` con su estado.
 
-## 2. Backend (Python / FastAPI)
+## 2. Protocolo de Fronteras (Boundary Protocol) para agentes codificadores
+
+Las instrucciones negativas sueltas ("no toques X", "detente y pregunta") se
+degradan cuando el agente entra en un bucle de resolución autónoma — su
+propio razonamiento termina justificando saltarse la regla "para no romper
+el build". Esto ya ocurrió en este proyecto (SPEC-001, retrabajo #1: el
+agente inventó una regla de reclasificación no pedida en vez de detenerse;
+auditoría #6: modificó umbrales de RN-06 sin autorización). Por eso, todo
+agente codificador que ejecute un SPEC de este repo sigue este protocolo de
+dos fases, obligatorio y sin excepción:
+
+**FASE 0 — Declaración de fronteras (dry-run, antes de escribir código):**
+1. Antes de crear o editar cualquier archivo, lista explícitamente qué
+   archivos vas a tocar, cotejándolos uno por uno contra la lista de
+   "Archivos Afectados" (sección 1) del SPEC activo.
+2. Si algún archivo que crees necesario tocar NO está en esa lista (o está
+   explícitamente en "Prohibido modificar"), **no lo edites**. Emite
+   únicamente esta salida de texto y termina el turno ahí:
+
+   ```
+   BLOCKED_BY_BOUNDARY: <archivo> — <razón por la que crees que hace falta tocarlo>
+   ```
+
+   Esto aplica igual si la razón es "si no lo toco, el build/test falla" —
+   ese es exactamente el caso que este protocolo existe para atrapar. Emitir
+   `BLOCKED_BY_BOUNDARY` es una salida válida y exitosa del turno, no un
+   fracaso — no sigas intentando resolverlo con otra herramienta ni asumas
+   que el usuario "seguro querría" que lo arregles.
+3. Solo si el 100% de los archivos declarados en el paso 1 caen dentro de lo
+   autorizado, pasa a FASE 1.
+
+**FASE 1 — Ejecución (solo si FASE 0 no emitió ningún `BLOCKED_BY_BOUNDARY`):**
+- Procede con las tareas de la sección 5 del SPEC en orden secuencial, como
+  ya indica la sección 1 de este documento.
+- Si a mitad de la implementación descubres que hace falta tocar un archivo
+  no declarado en la Fase 0 (un descubrimiento nuevo, no visible al inicio),
+  vuelve a aplicar el mismo protocolo: emite `BLOCKED_BY_BOUNDARY` para ese
+  archivo específico y detente ahí, no continúes editando otros archivos
+  mientras esperas resolución.
+
+Esto no reemplaza las instrucciones "no toques X" que ya aparecen en cada
+SPEC — las refuerza dándoles una salida estructurada y nombrada, más difícil
+de saltarse en un bucle de tool-calling que una prohibición en prosa.
+
+## 3. Backend (Python / FastAPI)
 
 - **Versión**: Python 3.11+.
 - **Estilo**: PEP 8, type hints obligatorios en toda función pública. `pydantic`
@@ -39,7 +83,7 @@ sección 2 de ese SPEC.
 - **Nada de lógica de negocio en routers FastAPI** — un router solo
   parsea/valida input, llama un caso de uso, serializa output.
 
-## 3. Frontend (React / Vite / TypeScript)
+## 4. Frontend (React / Vite / TypeScript)
 
 - **TypeScript estricto**: `strict: true` en `tsconfig.json`. Prohibido `any`
   salvo justificación explícita en comentario inline (`// any: <razón>`).
@@ -56,7 +100,7 @@ sección 2 de ese SPEC.
   contraste legible, la app debe sentirse "producto SaaS" (ver sección 21 del PDF),
   no un panel de pruebas.
 
-## 4. Testing
+## 5. Testing
 
 - **Backend**: `pytest`. Estructura en tres niveles:
   - `tests/unit/` — dominio puro, sin IO, sin DB, sin red. Cubre RN-* y CB-* de cada
@@ -81,7 +125,7 @@ sección 2 de ese SPEC.
   mock — nunca se llama al MCP real ni a la API de Anthropic en tests
   automatizados.
 
-## 5. Git / control de versiones
+## 6. Git / control de versiones
 
 - Commits pequeños y descriptivos, en español o inglés consistente por PR (elegir
   uno y mantenerlo).
@@ -91,7 +135,7 @@ sección 2 de ese SPEC.
 - Secrets (Anthropic API key, etc.) solo vía `.env` (gitignored) + `config.py` con
   `pydantic-settings`. Nunca hardcodeados.
 
-## 6. Documentación
+## 7. Documentación
 
 - Docstrings en todo método/función pública de `domain/` y `application/` (Google o
   NumPy style, consistente en todo el repo — Google style por defecto).
@@ -100,7 +144,7 @@ sección 2 de ese SPEC.
 - Cada SPEC completado deja su checklist marcado y una entrada en
   `specs/TASK_STATUS.md`.
 
-## 7. Principios generales (aplican a todo el repo)
+## 8. Principios generales (aplican a todo el repo)
 
 - No instalar dependencias no autorizadas explícitamente en la sección 2 del SPEC
   activo.
