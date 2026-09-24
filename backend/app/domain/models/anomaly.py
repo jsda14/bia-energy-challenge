@@ -79,3 +79,28 @@ class AnomalyRecord(BaseModel):
     severity: Severity
     confidence: float = Field(..., ge=0.0, le=1.0)
     evidence: AnomalyEvidence
+
+
+class PersistedAnomaly(BaseModel):
+    """Una AnomalyRecord ya persistida, con su id de almacenamiento y su
+    explicación en lenguaje natural ya generada. Distinto de AnomalyRecord:
+    representa 'una anomalía guardada y explicada', no 'una anomalía recién
+    detectada por el dominio' — id/reason/recommended_action solo existen
+    una vez que se persiste (SPEC-003), el AnomalyDetector (SPEC-001) nunca
+    los produce.
+
+    Attributes:
+        id: Identificador único de persistencia (UUID como string),
+            asignado por el repositorio al guardar.
+        record: El AnomalyRecord original detectado por el dominio.
+        reason: Explicación en lenguaje natural (de AIExplanation.reason).
+        recommended_action: Acción recomendada (de
+            AIExplanation.recommended_action).
+    """
+
+    model_config = {"frozen": True}
+
+    id: str
+    record: AnomalyRecord
+    reason: str
+    recommended_action: str
