@@ -10,7 +10,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-001](SPEC-001-domain-anomaly-detection.md) | Dominio: Modelos y Motor de Detección de Anomalías | ✅ Aprobado | 5 | 2026-09-24 |
 | [SPEC-002](SPEC-002-persistence-and-seed.md) | Persistencia (SQLite/SQLAlchemy) y Seed de Datos | ✅ Aprobado | 1 | 2026-09-24 |
 | [SPEC-003](SPEC-003-use-cases-and-api.md) | Casos de Uso, Persistencia de Anomalías y API FastAPI | ✅ Aprobado | 2 | 2026-09-24 |
-| SPEC-004 | IA — Adapter Claude (agentic loop + MCP EventQueryTool) | ⬜ No iniciado | — | — |
+| [SPEC-004](SPEC-004-claude-explainer-adapter.md) | IA — Adapter Claude (agentic loop, tool-use nativo) | ✅ Aprobado | 0 | 2026-09-24 |
 | SPEC-005+ | Frontend — Dashboard, Meters, Detail, Anomalies, Investigation | ⬜ No iniciado | — | — |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
@@ -136,3 +136,48 @@ y autenticación quedan fuera — SPEC-004 y siguientes.
 SPEC posterior (SPEC-003) requiere tocar y reabrir código de un SPEC ya
 cerrado y auditado (SPEC-002) — documentado y autorizado explícitamente por
 escrito en el SPEC antes de ejecutar, no de forma implícita.
+
+---
+
+## SPEC-004 — IA: Adapter Claude (Agentic Loop)
+
+**Estado:** ✅ Aprobado (2026-09-24, 0 rondas de retrabajo — el diseño
+completo se validó en Plan Mode antes de ejecutar, ver nota abajo).
+
+**Resumen:** `ClaudeExplainerAdapter` implementa `AIExplainerPort` vía el
+SDK oficial de Anthropic con tool-use nativo (sin servidor MCP separado):
+un agentic loop de hasta 3 iteraciones donde Claude puede llamar
+`get_events` (consulta eventos reales vía `EventRepositoryPort`) antes de
+entregar su respuesta final estructurada vía la tool `submit_explanation`.
+Cualquier fallo (red, timeout, argumentos faltantes, iteraciones agotadas)
+cae silenciosamente al `TemplateExplainerAdapter` ya existente (SPEC-003,
+sin modificarlo) — verificado end-to-end sin API key configurada (CB-01):
+el sistema completo sigue funcionando idéntico a SPEC-003. 69 tests (64
+heredados sin cambios + 5 nuevos con cliente de Anthropic mockeado, nunca
+la API real).
+
+**Por qué 0 retrabajos, a diferencia de los SPECs anteriores:** se usó
+Plan Mode (Gemini 3.1 Pro) desde el principio — el plan de implementación
+se revisó y corrigió DOS VECES antes de autorizar la ejecución:
+1. Primera revisión: el plan proponía `explain(anomaly: PersistedAnomaly)`,
+   pero el contrato real y cerrado de `AIExplainerPort` (SPEC-001) recibe
+   `AnomalyRecord` — `PersistedAnomaly` ni siquiera existe en el punto
+   donde `explain()` se invoca (antes de persistir). Corregido en el plan
+   antes de tocar código.
+2. Segunda revisión: se pidió hacer explícito el manejo de múltiples
+   `tool_use` blocks en una misma respuesta de Claude (incluyendo tools
+   desconocidas) para no dejar `tool_use_id` huérfanos si la conversación
+   continuara — el plan lo incorporó con un test dedicado
+   (`test_explain_handles_multiple_tools_and_unknown`).
+
+**Hallazgo corregido tras la implementación (no requirió retrabajo de
+Gemini, arreglado directamente):** `claude_model` quedó con el default
+`"claude-3-5-sonnet-20240620"` en vez de `"claude-sonnet-4-6"` como fija
+la sección 3.1 del SPEC — corregido en una línea antes de commitear.
+
+**Lección de proceso:** revisar el plan ANTES de ejecutar (Plan Mode) —
+en vez de auditar el código después de escrito — evitó por primera vez en
+el proyecto una ronda completa de retrabajo. Los 2 problemas que en
+SPECs anteriores se hubieran descubierto en auditoría post-implementación
+(con el costo de un ciclo completo de retrabajo) se corrigieron en el
+plan mismo, antes de que existiera código que deshacer.
