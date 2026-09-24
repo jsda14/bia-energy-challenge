@@ -19,11 +19,14 @@ sección 2 de ese SPEC.
 Las instrucciones negativas sueltas ("no toques X", "detente y pregunta") se
 degradan cuando el agente entra en un bucle de resolución autónoma — su
 propio razonamiento termina justificando saltarse la regla "para no romper
-el build". Esto ya ocurrió en este proyecto (SPEC-001, retrabajo #1: el
-agente inventó una regla de reclasificación no pedida en vez de detenerse;
-auditoría #6: modificó umbrales de RN-06 sin autorización). Por eso, todo
-agente codificador que ejecute un SPEC de este repo sigue este protocolo de
-dos fases, obligatorio y sin excepción:
+el build". Esto ya ocurrió repetidamente en este proyecto (SPEC-001,
+retrabajo #1: el agente inventó una regla de reclasificación no pedida en
+vez de detenerse; auditoría #6: modificó umbrales de RN-06 sin autorización;
+SPEC-002: agregó un parámetro no contractual a la firma de un método de un
+puerto, dentro de un archivo que SÍ estaba autorizado a crear, y declaró en
+su propia FASE 0 que no había fronteras violadas). Por eso, todo agente
+codificador que ejecute un SPEC de este repo sigue este protocolo de dos
+fases, obligatorio y sin excepción:
 
 **FASE 0 — Declaración de fronteras (dry-run, antes de escribir código):**
 1. Antes de crear o editar cualquier archivo, lista explícitamente qué
@@ -42,8 +45,19 @@ dos fases, obligatorio y sin excepción:
    `BLOCKED_BY_BOUNDARY` es una salida válida y exitosa del turno, no un
    fracaso — no sigas intentando resolverlo con otra herramienta ni asumas
    que el usuario "seguro querría" que lo arregles.
-3. Solo si el 100% de los archivos declarados en el paso 1 caen dentro de lo
-   autorizado, pasa a FASE 1.
+3. **La frontera no es solo QUÉ archivo tocas — es también QUÉ CONTRATO
+   implementas dentro de él.** Estar autorizado a crear/modificar un archivo
+   (sección 1 del SPEC) no autoriza a desviarte de las firmas, campos o
+   comportamientos exactos definidos en la sección 3 ("Contratos e
+   Interfaces") de ese mismo SPEC. Antes de pasar a FASE 1, coteja también
+   cada firma de método/función que vayas a escribir contra su definición
+   literal en la sección 3. Si necesitas un parámetro, campo, valor de
+   retorno o comportamiento que la sección 3 no contempla — así sea un
+   default opcional que "no rompe nada" — es la MISMA condición de
+   `BLOCKED_BY_BOUNDARY` que un archivo fuera de alcance. No lo agregues por
+   tu cuenta asumiendo que es una mejora razonable.
+4. Solo si el 100% de los archivos Y el 100% de las firmas declaradas caen
+   dentro de lo autorizado, pasa a FASE 1.
 
 **FASE 1 — Ejecución (solo si FASE 0 no emitió ningún `BLOCKED_BY_BOUNDARY`):**
 - Procede con las tareas de la sección 5 del SPEC en orden secuencial, como
