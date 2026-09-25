@@ -38,20 +38,33 @@
   font-size: 0.875rem;
 }
 
-.select--multi {
-  min-height: 88px;
-  min-width: 200px;
-  padding: var(--space-2);
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
-.select--multi option {
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
+.chip {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.select--multi option:checked {
+.chip:hover {
+  border-color: var(--color-primary);
+}
+
+.chip--selected {
   background-color: var(--color-primary);
+  border-color: var(--color-primary);
   color: var(--color-bg-elevated, var(--color-bg));
+  font-weight: 600;
 }
 
 .empty {

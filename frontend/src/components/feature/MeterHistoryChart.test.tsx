@@ -26,26 +26,45 @@ describe("MeterHistoryChart", () => {
     expect(screen.getByText("Sin datos históricos para este medidor.")).toBeInTheDocument();
   });
 
-  it("renders chart and NO select by default", () => {
+  it("renders chart and NO variable chips by default", () => {
     render(<MeterHistoryChart readings={mockReadings} baselineKwh={10} />);
     expect(screen.getByTestId("mock-echarts")).toBeInTheDocument();
-    expect(screen.queryByTestId("select-multi-series")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("chip-voltage_v")).not.toBeInTheDocument();
   });
 
-  it("shows multi-select when compare mode is enabled and prevents unselecting last variable", async () => {
+  it("shows variable chips when compare mode is enabled, allows selecting multiple at once, and prevents deselecting the last one", async () => {
     const user = userEvent.setup();
     render(<MeterHistoryChart readings={mockReadings} baselineKwh={10} />);
-    
+
     const toggle = screen.getByTestId("toggle-compare");
     await user.click(toggle);
 
-    const multiSelect = screen.getByTestId("select-multi-series");
-    expect(multiSelect).toBeInTheDocument();
+    const voltageChip = screen.getByTestId("chip-voltage_v");
+    const currentChip = screen.getByTestId("chip-current_a");
+    const powerFactorChip = screen.getByTestId("chip-power_factor");
+    expect(voltageChip).toBeInTheDocument();
 
-    // Deselect voltage_v to test fallback
-    await user.deselectOptions(multiSelect, "voltage_v");
-    // RN-02: Should fallback to voltage_v if empty
-    expect((multiSelect as HTMLSelectElement).selectedOptions[0].value).toBe("voltage_v");
+    // voltage_v selected by default when entering compare mode.
+    expect(voltageChip).toHaveAttribute("aria-pressed", "true");
+    expect(currentChip).toHaveAttribute("aria-pressed", "false");
+
+    // Clicking additional chips ADDS them — no modifier key required,
+    // several variables can be active at once (this is the real bug
+    // being fixed: a native <select multiple> required Ctrl/Cmd+click,
+    // wasn't discoverable, and the user reported it behaving like a
+    // single-select in practice).
+    await user.click(currentChip);
+    await user.click(powerFactorChip);
+    expect(voltageChip).toHaveAttribute("aria-pressed", "true");
+    expect(currentChip).toHaveAttribute("aria-pressed", "true");
+    expect(powerFactorChip).toHaveAttribute("aria-pressed", "true");
+
+    // RN-02: deselecting down to the last one is blocked.
+    await user.click(voltageChip);
+    await user.click(currentChip);
+    expect(powerFactorChip).toHaveAttribute("aria-pressed", "true");
+    await user.click(powerFactorChip);
+    expect(powerFactorChip).toHaveAttribute("aria-pressed", "true"); // still selected, click ignored
   });
 
   it("renders with highlight correctly without crashing", () => {

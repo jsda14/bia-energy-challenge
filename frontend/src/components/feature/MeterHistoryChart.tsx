@@ -31,16 +31,15 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
   const [compareMode, setCompareMode] = useState(false);
   const [selectedOtherVariables, setSelectedOtherVariables] = useState<ChartVariable[]>(["voltage_v"]);
 
-  const handleMultiSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions).map(
-      (option) => option.value as ChartVariable
-    );
-    if (selectedOptions.length === 0) {
-      // RN-02: prevent empty selection, keep last known or fallback
-      setSelectedOtherVariables(prev => prev.length > 0 ? prev : ["voltage_v"]);
-    } else {
-      setSelectedOtherVariables(selectedOptions);
-    }
+  const toggleOtherVariable = (variable: ChartVariable) => {
+    setSelectedOtherVariables((prev) => {
+      if (prev.includes(variable)) {
+        // RN-02: nunca deja la selección vacía mientras compareMode esté activo.
+        if (prev.length === 1) return prev;
+        return prev.filter((v) => v !== variable);
+      }
+      return [...prev, variable];
+    });
   };
 
   const chartOptions = useMemo(() => {
@@ -125,19 +124,24 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
 
         {compareMode && (
           <div className={styles.controlGroup}>
-            <label htmlFor="multi-series" className={styles.label}>Variables (Ctrl/Cmd+click):</label>
-            <select
-              id="multi-series"
-              multiple
-              className={`${styles.select} ${styles["select--multi"]}`}
-              value={selectedOtherVariables}
-              onChange={handleMultiSelectChange}
-              data-testid="select-multi-series"
-            >
-              {otherVariables.map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
-              ))}
-            </select>
+            <span className={styles.label}>Variables:</span>
+            <div className={styles.chipGroup} role="group" aria-label="Variables a comparar">
+              {otherVariables.map(([key, label]) => {
+                const isSelected = selectedOtherVariables.includes(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`${styles.chip} ${isSelected ? styles["chip--selected"] : ""}`}
+                    aria-pressed={isSelected}
+                    onClick={() => toggleOtherVariable(key)}
+                    data-testid={`chip-${key}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
