@@ -11,7 +11,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-002](SPEC-002-persistence-and-seed.md) | Persistencia (SQLite/SQLAlchemy) y Seed de Datos | ✅ Aprobado | 1 | 2026-09-24 |
 | [SPEC-003](SPEC-003-use-cases-and-api.md) | Casos de Uso, Persistencia de Anomalías y API FastAPI | ✅ Aprobado | 2 | 2026-09-24 |
 | [SPEC-004](SPEC-004-claude-explainer-adapter.md) | IA — Adapter Claude (agentic loop, tool-use nativo) | ✅ Aprobado | 0 | 2026-09-24 |
-| SPEC-005+ | Frontend — Dashboard, Meters, Detail, Anomalies, Investigation | ⬜ No iniciado | — | — |
+| [SPEC-005](SPEC-005-frontend-foundation.md) | Frontend — Fundación (Setup, Cliente HTTP, Diseño Base, Layout) | ✅ Aprobado | 1 | 2026-09-24 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -181,3 +181,46 @@ el proyecto una ronda completa de retrabajo. Los 2 problemas que en
 SPECs anteriores se hubieran descubierto en auditoría post-implementación
 (con el costo de un ciclo completo de retrabajo) se corrigieron en el
 plan mismo, antes de que existiera código que deshacer.
+
+---
+
+## SPEC-005 — Frontend: Fundación (Setup, Cliente HTTP, Diseño Base, Layout)
+
+**Estado:** ✅ Aprobado (2026-09-24, 1 ronda de retrabajo).
+
+**Resumen:** Inicialización del proyecto frontend bajo la arquitectura por
+capas estipulada (`domain/`, `api/`, `stores/`, `components/`, `pages/`).
+Cliente HTTP con `fetch` nativo validado estrictamente mediante 7 schemas
+Zod (réplica exacta de los contratos reales del backend, confirmada campo
+por campo). Routing con React Router v6 (5 páginas placeholder) y layout
+con un indicador visual conectado a Zustand (`useAnalysisStore`, patrón
+`getState()` correcto dentro de los callbacks de TanStack Query). Tokens
+de diseño mobile-first con los 8 breakpoints exactos de `STANDARDS.md`
+§4.4. `pnpm build` y `pnpm lint` (eslint) compilan/pasan sin errores —
+confirmado de forma independiente en ambas rondas.
+
+**Retrabajo #1 (motivo):**
+1. El agente había editado `TASK_STATUS.md` sin autorización y corrompió
+   el encoding de la sección agregada (tildes rotas, un tab literal en
+   medio de "tokens.css") — reparado directamente por los arquitectos, sin
+   pedir retrabajo de Gemini para esto.
+2. El reporte de cierre original afirmó haber generado un `walkthrough.md`
+   que no existe en ninguna parte del repositorio — discrepancia entre lo
+   reportado y lo verificable, no corregida (no era código, solo un
+   recordatorio de no confiar en el reporte sin auditar el filesystem).
+3. Se había instalado `oxlint` en vez de `eslint` (único linter autorizado
+   en la sección 2 del SPEC) — corregido: `oxlint`/`.oxlintrc.json`
+   eliminados, `eslint.config.js` (flat config) + plugins estándar de
+   React/TS agregados. `pnpm lint` confirmado en verde de forma
+   independiente.
+4. Bug real en `useRunAnalysis.ts`: si `POST /ai/analyze` fallaba, se
+   llamaba `finishRun("")` con un comentario en el código admitiendo que
+   el caso no estaba resuelto. Corregido: `finishRun` ahora acepta
+   `string | null` (ajuste menor y autorizado al contrato de la sección
+   3.4 del SPEC), `useRunAnalysis` llama `finishRun(null)` en el camino de
+   fallo — sin más estado ambiguo.
+
+**Lección de proceso:** el reporte de "walkthrough.md generado" resultó
+falso (el archivo nunca existió) — reforzó, una vez más, que ningún
+reporte de cierre se acepta sin verificar el filesystem/build/tests de
+forma independiente, sin importar cuán detallado suene el reporte.
