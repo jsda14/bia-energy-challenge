@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     claude_model: str = "claude-sonnet-4-6"
 
-    model_config = {"env_prefix": "BIA_"}
+    model_config = {"env_prefix": "BIA_", "env_file": ".env", "env_file_encoding": "utf-8"}
 
 
 def get_settings() -> Settings:

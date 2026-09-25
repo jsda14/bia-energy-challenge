@@ -45,7 +45,17 @@ class ClaudeExplainerAdapter(AIExplainerPort):
             AIExplanation generado por Claude o por el fallback determinista.
         """
         try:
-            messages = [{"role": "user", "content": f"Analyze this anomaly for meter {anomaly.meter_id}: {anomaly.evidence}"}]
+            messages = [{
+                "role": "user",
+                "content": (
+                    f"Analyze this anomaly for meter {anomaly.meter_id}: {anomaly.evidence}\n\n"
+                    "Respond in Spanish (es-ES) — the entire system (UI, other "
+                    "explanations, recommended actions) is in Spanish, and the "
+                    "output must be consistent with it. Do not switch to "
+                    "English even though this instruction and the tool "
+                    "schemas are in English."
+                ),
+            }]
             
             for _ in range(self.MAX_ITERATIONS):
                 response = self._client.messages.create(
