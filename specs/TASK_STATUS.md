@@ -12,6 +12,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-003](SPEC-003-use-cases-and-api.md) | Casos de Uso, Persistencia de Anomalías y API FastAPI | ✅ Aprobado | 2 | 2026-09-24 |
 | [SPEC-004](SPEC-004-claude-explainer-adapter.md) | IA — Adapter Claude (agentic loop, tool-use nativo) | ✅ Aprobado | 0 | 2026-09-24 |
 | [SPEC-005](SPEC-005-frontend-foundation.md) | Frontend — Fundación (Setup, Cliente HTTP, Diseño Base, Layout) | ✅ Aprobado | 1 | 2026-09-24 |
+| [SPEC-006](SPEC-006-dashboard-meter-list.md) | Frontend — Dashboard y Listado de Medidores | ✅ Aprobado | 1 | 2026-09-25 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -224,3 +225,49 @@ confirmado de forma independiente en ambas rondas.
 falso (el archivo nunca existió) — reforzó, una vez más, que ningún
 reporte de cierre se acepta sin verificar el filesystem/build/tests de
 forma independiente, sin importar cuán detallado suene el reporte.
+
+---
+
+## SPEC-006 — Frontend: Dashboard y Listado de Medidores
+
+**Estado:** ✅ Aprobado (2026-09-25, 1 ronda de retrabajo).
+
+**Resumen:** Contenido real de `DashboardPage` (4 `StatCard` con los KPIs
+de `dashboardSummaryResponseSchema` + `RunAnalysisButton` conectado a
+`useRunAnalysis`/`useAnalysisStore`) y `MeterListPage` (`MetersTable` con
+orden por columna y `MetersFilterBar` con filtro por `status`/
+`anomaly_severity`, ambos 100% client-side sobre los datos ya cargados por
+`useMeters`). Componentes genéricos nuevos (`Badge`, `StatCard`) sin
+lógica de negocio propia; `RunAnalysisButton` documentado como la única
+excepción de esta SPEC autorizada a importar `api/`/`stores/` directamente
+(mismo criterio que la excepción de `Header.tsx` en SPEC-005). Se agregó
+accesibilidad de teclado a la tabla (headers ordenables como `<button>`,
+filas con `role="button"`/`tabIndex`/captura de Enter y Space) como
+condición añadida durante la revisión del plan, antes de escribir código.
+`pnpm build` y `pnpm lint` verificados de forma independiente en ambas
+rondas.
+
+**Plan Mode:** el plan de implementación se revisó antes de ejecutar
+código — se sumó como condición la accesibilidad de teclado de la tabla,
+no contemplada explícitamente en la SPEC. 0 rondas de retrabajo sobre la
+lógica funcional; el único retrabajo fue puramente de estilos (ver abajo).
+
+**Retrabajo #1 (motivo):**
+1. `DashboardPage.tsx` y `MeterListPage.tsx` se entregaron con estilos
+   inline (`style={{...}}`) para el layout de contenedores/grillas,
+   violando `STANDARDS.md` §4.3 (regla explícita del proyecto: sin
+   estilos inline, todo vía CSS Modules + BEM) — no declarado como
+   excepción en el plan aprobado. Corregido: `DashboardPage.module.css` y
+   `MeterListPage.module.css` creados con clases BEM
+   (`.dashboard`, `.dashboard__header`, `.dashboard__stats-grid`,
+   `.meter-list`, `.meter-list__title`), sin tocar lógica de fetching ni
+   de estado. `pnpm build`/`pnpm lint` reconfirmados en verde de forma
+   independiente tras el retrabajo.
+
+**Hallazgo repetido de proceso (no bloqueante, ajeno al código):** el
+agente volvió a editar `TASK_STATUS.md` sin autorización (no estaba en la
+sección 1 de archivos a modificar del plan aprobado) y corrompió su
+encoding de la misma forma que en SPEC-005 (mojibake, mezcla de
+terminadores de línea) — reparado directamente por los arquitectos a
+partir de la última versión limpia commiteada. Segunda vez que ocurre;
+a vigilar en las próximas entregas.
