@@ -8,6 +8,7 @@ export default function MeterListPage() {
   const { data: meters, isLoading, isError } = useMeters();
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const statusOptions = useMemo(() => {
     if (!meters) return [];
@@ -24,9 +25,18 @@ export default function MeterListPage() {
     return meters.filter((meter) => {
       if (selectedStatus && meter.status !== selectedStatus) return false;
       if (selectedSeverity && meter.anomaly_severity !== selectedSeverity) return false;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (
+          !meter.meter_id.toLowerCase().includes(query) &&
+          !meter.name.toLowerCase().includes(query)
+        ) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [meters, selectedStatus, selectedSeverity]);
+  }, [meters, selectedStatus, selectedSeverity, searchQuery]);
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -49,8 +59,10 @@ export default function MeterListPage() {
         severityOptions={severityOptions}
         selectedStatus={selectedStatus}
         selectedSeverity={selectedSeverity}
+        searchQuery={searchQuery}
         onStatusChange={setSelectedStatus}
         onSeverityChange={setSelectedSeverity}
+        onSearchChange={setSearchQuery}
       />
       
       <MetersTable meters={filteredMeters} />

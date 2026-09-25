@@ -3,6 +3,7 @@ import { useAnomalyDetail } from "../api/queries/useAnomalyDetail";
 import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
+import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatDateTime, severityToColorToken, formatVariationPct } from "../domain/formatting";
 import styles from "./AnomalyDetailPage.module.css";
@@ -22,6 +23,12 @@ export default function AnomalyDetailPage() {
 
   return (
     <div className={styles.container}>
+      <Breadcrumb
+        items={[
+          { label: "Anomalías", to: "/anomalies" },
+          { label: anomaly.type },
+        ]}
+      />
       <h1 className={styles.title}>Detalle de Anomalía</h1>
       
       <div className={styles.detailGrid}>

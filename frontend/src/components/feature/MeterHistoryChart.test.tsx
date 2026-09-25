@@ -26,21 +26,26 @@ describe("MeterHistoryChart", () => {
     expect(screen.getByText("Sin datos históricos para este medidor.")).toBeInTheDocument();
   });
 
-  it("renders chart and single series controls by default", () => {
+  it("renders chart and NO select by default", () => {
     render(<MeterHistoryChart readings={mockReadings} baselineKwh={10} />);
     expect(screen.getByTestId("mock-echarts")).toBeInTheDocument();
-    expect(screen.getByTestId("select-series-a")).toBeInTheDocument();
-    expect(screen.queryByTestId("select-series-b")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("select-multi-series")).not.toBeInTheDocument();
   });
 
-  it("shows second series select when compare toggle is activated", async () => {
+  it("shows multi-select when compare mode is enabled and prevents unselecting last variable", async () => {
     const user = userEvent.setup();
     render(<MeterHistoryChart readings={mockReadings} baselineKwh={10} />);
     
     const toggle = screen.getByTestId("toggle-compare");
     await user.click(toggle);
-    
-    expect(screen.getByTestId("select-series-b")).toBeInTheDocument();
+
+    const multiSelect = screen.getByTestId("select-multi-series");
+    expect(multiSelect).toBeInTheDocument();
+
+    // Deselect voltage_v to test fallback
+    await user.deselectOptions(multiSelect, "voltage_v");
+    // RN-02: Should fallback to voltage_v if empty
+    expect((multiSelect as HTMLSelectElement).selectedOptions[0].value).toBe("voltage_v");
   });
 
   it("renders with highlight correctly without crashing", () => {

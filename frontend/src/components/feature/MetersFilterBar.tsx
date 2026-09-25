@@ -5,8 +5,10 @@ interface MetersFilterBarProps {
   severityOptions: string[];
   selectedStatus: string | null;
   selectedSeverity: string | null;
+  searchQuery: string;
   onStatusChange: (status: string | null) => void;
   onSeverityChange: (severity: string | null) => void;
+  onSearchChange: (query: string) => void;
 }
 
 export function MetersFilterBar({
@@ -14,11 +16,26 @@ export function MetersFilterBar({
   severityOptions,
   selectedStatus,
   selectedSeverity,
+  searchQuery,
   onStatusChange,
   onSeverityChange,
+  onSearchChange,
 }: MetersFilterBarProps) {
   return (
     <div className={styles.filterBar}>
+      <div className={styles.filterGroup}>
+        <label htmlFor="search-filter" className={styles.label}>
+          Buscar:
+        </label>
+        <input
+          id="search-filter"
+          type="text"
+          className={styles.input}
+          placeholder="Buscar por ID o nombre..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </div>
       <div className={styles.filterGroup}>
         <label htmlFor="status-filter" className={styles.label}>
           Estado:

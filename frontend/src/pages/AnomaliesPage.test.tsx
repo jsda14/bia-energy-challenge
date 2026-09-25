@@ -47,6 +47,6 @@ describe("AnomaliesPage", () => {
       </MemoryRouter>
     );
     expect(screen.getByText("Anomalías")).toBeInTheDocument();
-    expect(screen.getByText("m-1")).toBeInTheDocument();
+    expect(screen.getAllByText("m-1")[0]).toBeInTheDocument();
   });
 });

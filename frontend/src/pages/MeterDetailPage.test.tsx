@@ -3,8 +3,13 @@ import { describe, it, expect, vi } from "vitest";
 import MeterDetailPage from "./MeterDetailPage";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { useMeterDetail } from "../api/queries/useMeterDetail";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("../api/queries/useMeterDetail");
+
+vi.mock("../api/queries/useRunAnalysis", () => ({
+  useRunAnalysis: () => ({ mutate: vi.fn(), isPending: false })
+}));
 
 // Mock echarts to avoid canvas rendering issues in jsdom
 vi.mock("echarts-for-react", () => ({
@@ -14,15 +19,24 @@ vi.mock("echarts-for-react", () => ({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockUseMeterDetail = useMeterDetail as any;
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
 describe("MeterDetailPage", () => {
   it("renders loading state", () => {
     mockUseMeterDetail.mockReturnValue({ isLoading: true });
     render(
-      <MemoryRouter initialEntries={["/meters/1"]}>
-        <Routes>
-          <Route path="/meters/:meterId" element={<MeterDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/meters/1"]}>
+          <Routes>
+            <Route path="/meters/:meterId" element={<MeterDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
     expect(screen.getByText("Cargando...")).toBeInTheDocument();
   });
@@ -30,11 +44,13 @@ describe("MeterDetailPage", () => {
   it("renders error state", () => {
     mockUseMeterDetail.mockReturnValue({ isError: true });
     render(
-      <MemoryRouter initialEntries={["/meters/1"]}>
-        <Routes>
-          <Route path="/meters/:meterId" element={<MeterDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/meters/1"]}>
+          <Routes>
+            <Route path="/meters/:meterId" element={<MeterDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
     expect(screen.getByText("Error al cargar el detalle del medidor.")).toBeInTheDocument();
   });
@@ -63,14 +79,16 @@ describe("MeterDetailPage", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/meters/m-1"]}>
-        <Routes>
-          <Route path="/meters/:meterId" element={<MeterDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/meters/m-1"]}>
+          <Routes>
+            <Route path="/meters/:meterId" element={<MeterDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
 
-    expect(screen.getByText("Test Meter")).toBeInTheDocument();
+    expect(screen.getAllByText("Test Meter")[0]).toBeInTheDocument();
     expect(screen.getByText("Loc")).toBeInTheDocument();
     expect(screen.getByTestId("mock-echarts")).toBeInTheDocument();
   });

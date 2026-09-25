@@ -1,11 +1,13 @@
 import { useDashboardSummary } from "../api/queries/useDashboardSummary";
-import { formatDateTime } from "../domain/formatting";
+import { useMeters } from "../api/queries/useMeters";
+import { formatDateTime, formatKwh } from "../domain/formatting";
 import { StatCard } from "../components/ui/StatCard";
 import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import styles from "./DashboardPage.module.css";
 
 export default function DashboardPage() {
   const { data: dashboardSummary, isLoading, isError } = useDashboardSummary();
+  const { data: meters, isLoading: metersLoading, isError: metersError } = useMeters();
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -13,6 +15,14 @@ export default function DashboardPage() {
 
   if (isError || !dashboardSummary) {
     return <div>Error al cargar el dashboard.</div>;
+  }
+
+  let totalConsumptionDisplay = "—";
+  if (metersLoading) {
+    totalConsumptionDisplay = "Cargando...";
+  } else if (!metersError && meters) {
+    const total = meters.reduce((acc, m) => acc + m.consumption_kwh, 0);
+    totalConsumptionDisplay = formatKwh(total);
   }
 
   return (
@@ -23,6 +33,11 @@ export default function DashboardPage() {
       </div>
 
       <div className={styles["dashboard__stats-grid"]}>
+        <StatCard
+          label="Consumo Total"
+          value={totalConsumptionDisplay}
+        />
+
         <StatCard
           label="Anomalías detectadas"
           value={dashboardSummary.anomalies_detected.toString()}

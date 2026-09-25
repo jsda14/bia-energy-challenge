@@ -38,6 +38,22 @@
   font-size: 0.875rem;
 }
 
+.select--multi {
+  min-height: 88px;
+  min-width: 200px;
+  padding: var(--space-2);
+}
+
+.select--multi option {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.select--multi option:checked {
+  background-color: var(--color-primary);
+  color: var(--color-bg-elevated, var(--color-bg));
+}
+
 .empty {
   padding: var(--space-4);
   text-align: center;
