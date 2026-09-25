@@ -1,6 +1,6 @@
 """Tests de integración para SqlAlchemyEventRepository (RN-01, RN-04)."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 import pytest
 from app.adapters.outbound.persistence.db import (
     create_all_tables,
@@ -35,8 +35,8 @@ def test_get_by_meter_id_empty(session):
 def test_save_many_and_get_all_ordered(session):
     """Valida persistencia y ordenamiento cronológico de eventos."""
     repo = SqlAlchemyEventRepository(session)
-    t1 = datetime(2026, 9, 2, 8, 0)
-    t2 = datetime(2026, 9, 5, 14, 0)
+    t1 = datetime(2026, 9, 2, 8, 0, tzinfo=timezone.utc)
+    t2 = datetime(2026, 9, 5, 14, 0, tzinfo=timezone.utc)
 
     events = [
         Event(
@@ -71,13 +71,13 @@ def test_get_by_meter_id_filters_correctly(session):
     events = [
         Event(
             meter_id="M-104",
-            event_timestamp=datetime(2026, 9, 5, 14, 0),
+            event_timestamp=datetime(2026, 9, 5, 14, 0, tzinfo=timezone.utc),
             event_type=EventType.OPERATIONAL_CHANGE,
             description="Línea nueva",
         ),
         Event(
             meter_id="M-106",
-            event_timestamp=datetime(2026, 9, 2, 8, 0),
+            event_timestamp=datetime(2026, 9, 2, 8, 0, tzinfo=timezone.utc),
             event_type=EventType.SCHEDULED_OUTAGE,
             description="Mantenimiento",
         ),
@@ -95,7 +95,7 @@ def test_save_many_idempotency(session):
     repo = SqlAlchemyEventRepository(session)
     event = Event(
         meter_id="M-104",
-        event_timestamp=datetime(2026, 9, 5, 14, 0),
+        event_timestamp=datetime(2026, 9, 5, 14, 0, tzinfo=timezone.utc),
         event_type=EventType.OPERATIONAL_CHANGE,
         description="Línea nueva",
     )

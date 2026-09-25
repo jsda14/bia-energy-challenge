@@ -71,9 +71,9 @@ def test_cb06_filters_no_results(client):
 def test_e2e_analyze_all_meters(client, test_engine):
     # Need to insert a meter to test CB-02
     from app.adapters.outbound.persistence.orm_models import MeterORM
-    from datetime import datetime
+    from datetime import datetime, timezone
     with sessionmaker(bind=test_engine)() as session:
-        session.add(MeterORM(meter_id="M-100", name="Test", location="Loc", status="active", created_at=datetime.utcnow()))
+        session.add(MeterORM(meter_id="M-100", name="Test", location="Loc", status="active", created_at=datetime.now(timezone.utc)))
         session.commit()
     
     # CB-02: Meter without readings

@@ -1,6 +1,6 @@
 """Tests de integración para SqlAlchemyReadingRepository (RN-01, RN-04, CB-02, CB-03)."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytest
 from app.adapters.outbound.persistence.db import (
     create_all_tables,
@@ -35,9 +35,9 @@ def test_get_by_meter_id_empty_returns_empty_list(session):
 def test_save_many_and_get_by_meter_id_ordered(session):
     """Valida persistencia y ordenamiento ascendente por timestamp (RN-01)."""
     repo = SqlAlchemyReadingRepository(session)
-    t0 = datetime(2026, 9, 1, 10, 0)
-    t1 = datetime(2026, 9, 1, 11, 0)
-    t2 = datetime(2026, 9, 1, 12, 0)
+    t0 = datetime(2026, 9, 1, 10, 0, tzinfo=timezone.utc)
+    t1 = datetime(2026, 9, 1, 11, 0, tzinfo=timezone.utc)
+    t2 = datetime(2026, 9, 1, 12, 0, tzinfo=timezone.utc)
 
     # Insertamos desordenadas intencionalmente
     readings = [
@@ -82,7 +82,7 @@ def test_save_many_and_get_by_meter_id_ordered(session):
 def test_get_by_meter_id_and_range(session):
     """Valida filtrado inclusivo por rango [start, end]."""
     repo = SqlAlchemyReadingRepository(session)
-    base_ts = datetime(2026, 9, 1, 0, 0)
+    base_ts = datetime(2026, 9, 1, 0, 0, tzinfo=timezone.utc)
 
     readings = [
         Reading(
@@ -110,7 +110,7 @@ def test_get_by_meter_id_and_range(session):
 def test_get_by_meter_id_and_range_empty(session):
     """Valida CB-03: rango sin intersección retorna lista vacía."""
     repo = SqlAlchemyReadingRepository(session)
-    base_ts = datetime(2026, 9, 1, 0, 0)
+    base_ts = datetime(2026, 9, 1, 0, 0, tzinfo=timezone.utc)
     readings = [
         Reading(
             meter_id="M-101",
@@ -132,7 +132,7 @@ def test_get_by_meter_id_and_range_empty(session):
 def test_save_many_idempotency(session):
     """Valida RN-04: save_many duplicando (meter_id, timestamp) no crea duplicados ni lanza excepción."""
     repo = SqlAlchemyReadingRepository(session)
-    ts = datetime(2026, 9, 1, 10, 0)
+    ts = datetime(2026, 9, 1, 10, 0, tzinfo=timezone.utc)
 
     r1 = Reading(
         meter_id="M-101",

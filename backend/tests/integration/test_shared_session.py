@@ -1,6 +1,6 @@
 import pytest
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import create_engine
 from app.adapters.outbound.persistence.db import create_all_tables, get_session
 from app.adapters.outbound.persistence.anomaly_repository import SqlAlchemyAnomalyRepository
@@ -28,13 +28,13 @@ def test_shared_session_atomicity():
             variation_pct=100.0,
             affected_variables=['consumption_kwh'],
             correlated_event=None,
-            window_start=datetime(2026, 1, 1),
-            window_end=datetime(2026, 1, 2),
+            window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+            window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
         )
         
         ar = AnomalyRecord(
             meter_id='M-SHARED',
-            detected_at=datetime.utcnow(),
+            detected_at=datetime.now(timezone.utc),
             type=AnomalyType.REAL_ANOMALY,
             severity=Severity.HIGH,
             confidence=0.95,
@@ -50,8 +50,8 @@ def test_shared_session_atomicity():
             id=run_id,
             requested_meter_id='M-SHARED',
             status=AnalysisRunStatus.COMPLETED,
-            started_at=datetime.utcnow(),
-            finished_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
+            finished_at=datetime.now(timezone.utc),
             anomalies_detected_count=1,
             error_message=None
         )
@@ -78,13 +78,13 @@ def test_transaction_rollback_atomicity():
             variation_pct=100.0,
             affected_variables=['consumption_kwh'],
             correlated_event=None,
-            window_start=datetime(2026, 1, 1),
-            window_end=datetime(2026, 1, 2),
+            window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+            window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
         )
         
         ar = AnomalyRecord(
             meter_id='M-ROLLBACK',
-            detected_at=datetime.utcnow(),
+            detected_at=datetime.now(timezone.utc),
             type=AnomalyType.REAL_ANOMALY,
             severity=Severity.HIGH,
             confidence=0.95,

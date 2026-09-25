@@ -1,7 +1,7 @@
 """Script de carga inicial (seed) de datos a partir de readings.csv y events.csv."""
 
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
 
@@ -51,7 +51,11 @@ def load_readings_csv(csv_path: str) -> list[dict]:
         for row_idx, row in enumerate(reader, start=2):
             try:
                 meter_id = str(row["meter_id"]).strip()
-                timestamp = datetime.fromisoformat(row["timestamp"].strip())
+                # readings.csv no trae sufijo de zona — se asume UTC (mismo
+                # supuesto que el resto del backend, que genera todo en UTC).
+                timestamp = datetime.fromisoformat(row["timestamp"].strip()).replace(
+                    tzinfo=timezone.utc
+                )
                 consumption_kwh = float(row["consumption_kwh"])
                 voltage_v = float(row["voltage_v"])
                 current_a = float(row["current_a"])
@@ -96,9 +100,11 @@ def load_events_csv(csv_path: str) -> list[dict]:
         for row_idx, row in enumerate(reader, start=2):
             try:
                 meter_id = str(row["meter_id"]).strip()
+                # Mismo supuesto que readings.csv: sin sufijo de zona, se
+                # asume UTC.
                 event_timestamp = datetime.fromisoformat(
                     row["event_timestamp"].strip()
-                )
+                ).replace(tzinfo=timezone.utc)
                 event_type_str = str(row["event_type"]).strip()
                 event_type = EventType(event_type_str)
                 description = str(row["description"]).strip()

@@ -1,6 +1,6 @@
 """Implementación de MeterRepositoryPort mediante SQLAlchemy."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
@@ -82,7 +82,7 @@ class SqlAlchemyMeterRepository(MeterRepositoryPort):
             name=meter.name,
             location=meter.location,
             status=meter.status,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         self._session.add(new_meter)
         self._session.flush()
