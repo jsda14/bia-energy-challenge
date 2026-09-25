@@ -13,3 +13,10 @@ class AnomalyRunRepositoryPort(Protocol):
     def get_by_id(self, run_id: str) -> AnalysisRun | None:
         """Retorna la ejecución cuyo id coincide, o None si no existe."""
         ...
+
+    def get_latest(self) -> AnalysisRun | None:
+        """Retorna la ejecución más reciente por `finished_at`, o None si
+        nunca se corrió un análisis. Usado por el dashboard para mostrar
+        cuándo fue la última vez que se ejecutó `POST /ai/analyze`,
+        independientemente de si esa corrida detectó anomalías nuevas."""
+        ...

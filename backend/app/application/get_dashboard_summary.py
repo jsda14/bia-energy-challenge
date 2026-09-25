@@ -16,20 +16,21 @@ class GetDashboardSummaryUseCase:
 
     def execute(self) -> DashboardSummaryDTO:
         anomalies = self.anomaly_repo.get_all()
-        
+        latest_run = self.run_repo.get_latest()
+        last_analysis = latest_run.finished_at if latest_run else None
+
         if not anomalies:
             return DashboardSummaryDTO(
                 anomalies_detected=0,
                 high_priority_count=0,
                 average_confidence=None,
-                last_analysis_at=None,
+                last_analysis_at=last_analysis,
             )
-            
+
         anomalies_detected = len(anomalies)
         high_priority = sum(1 for a in anomalies if a.record.severity.value == "HIGH")
         avg_confidence = sum(a.record.confidence for a in anomalies) / anomalies_detected
-        last_analysis = max(a.record.detected_at for a in anomalies)
-        
+
         return DashboardSummaryDTO(
             anomalies_detected=anomalies_detected,
             high_priority_count=high_priority,

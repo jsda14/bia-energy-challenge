@@ -1,6 +1,6 @@
 """Implementación de AnomalyRunRepositoryPort mediante SQLAlchemy."""
 
-from sqlalchemy import Engine
+from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
 from app.adapters.outbound.persistence.db import get_session
@@ -35,6 +35,16 @@ class SqlAlchemyAnomalyRunRepository(AnomalyRunRepositoryPort):
         row = self._session.get(AnalysisRunORM, run_id)
         if not row:
             return None
+        return self._to_domain(row)
+
+    def get_latest(self) -> AnalysisRun | None:
+        stmt = select(AnalysisRunORM).order_by(AnalysisRunORM.finished_at.desc()).limit(1)
+        row = self._session.scalars(stmt).first()
+        if not row:
+            return None
+        return self._to_domain(row)
+
+    def _to_domain(self, row: AnalysisRunORM) -> AnalysisRun:
         return AnalysisRun(
             id=row.id,
             requested_meter_id=row.requested_meter_id,
