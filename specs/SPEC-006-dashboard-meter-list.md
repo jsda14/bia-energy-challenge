@@ -286,32 +286,34 @@ calcula `statusOptions`/`severityOptions`, mantiene
 
 ## 5. Plan de Ejecución Secuencial (Atomic Tasks)
 
-- [ ] **Paso 1: `Badge` y `StatCard`:** Implementar
+- [x] **Paso 1: `Badge` y `StatCard`:** Implementar
   `components/ui/Badge.tsx` y `components/ui/StatCard.tsx` con sus
   `.module.css` (BEM, tokens de `styles/tokens.css`, sin colores
   hardcodeados fuera de los tokens ya definidos).
-- [ ] **Paso 2: `RunAnalysisButton`:** Implementar consumiendo
+- [x] **Paso 2: `RunAnalysisButton`:** Implementar consumiendo
   `useRunAnalysis()` + `useAnalysisStore`, según sección 3.4/RN-03.
-- [ ] **Paso 3: `DashboardPage`:** Reemplazar el placeholder, cablear
+- [x] **Paso 3: `DashboardPage`:** Reemplazar el placeholder, cablear
   `useDashboardSummary()` + `RunAnalysisButton` + 4 `StatCard`, estados de
   carga/error (sección 3.7).
-- [ ] **Paso 4: `MetersTable`:** Implementar tabla con orden por columna
+- [x] **Paso 4: `MetersTable`:** Implementar tabla con orden por columna
   (estado local) y navegación a detalle (sección 3.5).
-- [ ] **Paso 5: `MetersFilterBar`:** Implementar filtro por
+- [x] **Paso 5: `MetersFilterBar`:** Implementar filtro por
   status/severity (sección 3.6).
-- [ ] **Paso 6: `MeterListPage`:** Reemplazar el placeholder, orquestar
+- [x] **Paso 6: `MeterListPage`:** Reemplazar el placeholder, orquestar
   `useMeters()` + filtro local + `MetersFilterBar` + `MetersTable`,
   estados de carga/error/lista vacía (sección 3.8).
-- [ ] **Paso 7: Validación:** `pnpm build` y `pnpm lint` en verde,
-  confirmado independientemente por los arquitectos. Verificación visual
-  manual de ambas páginas en al menos 2 viewports queda a cargo del
-  usuario antes de la demo (misma limitación de entorno que SPEC-005).
+- [x] **Paso 7: Validación:** `pnpm build` y `pnpm lint` en verde,
+  confirmado independientemente por los arquitectos (retrabajo #1:
+  estilos inline movidos a CSS Modules, ver `TASK_STATUS.md`).
+  Verificación visual manual confirmada el 2026-09-25 contra el backend
+  real corriendo — ver SPEC-009 para los hallazgos de esa verificación
+  (bug de chart y deuda de diseño, no específicos de esta página).
 
 ---
 
 ## 6. Verificación y Checklist de Salida (Pipeline de 5 Pasos)
 
-- [ ] **1. Validación Arquitectónica:**
+- [x] **1. Validación Arquitectónica:**
   - `components/ui/*` no importa nada de `api/` ni `stores/` — reciben
     todo por props.
   - `components/feature/MetersTable.tsx` y `MetersFilterBar.tsx` no hacen
@@ -323,17 +325,19 @@ calcula `statusOptions`/`severityOptions`, mantiene
     que la excepción de `Header.tsx` en SPEC-005, documentada en
     `ARCHITECTURE.md` §7.1).
   - Ningún archivo de `api/`, `stores/`, `router.tsx`, `AppLayout.tsx`,
-    `Header.tsx` fue modificado.
-  - `git diff` coincide únicamente con los archivos autorizados en la
-    Sección 1. Cero archivos de `backend/` tocados.
-- [ ] **2. Generación de Tests:**
-  - No se exige suite de tests automatizados en este SPEC (consistente
+    `Header.tsx` fue modificado — confirmado.
+  - `git diff` coincidió únicamente con los archivos autorizados en la
+    Sección 1 tras el retrabajo #1. Cero archivos de `backend/` tocados.
+- [x] **2. Generación de Tests:**
+  - No se exigió suite de tests automatizados en este SPEC (consistente
     con el criterio YAGNI aplicado en SPEC-005) — verificación por build +
-    revisión visual manual.
-- [ ] **3. Validación de Cobertura:**
-  - `pnpm build` compila sin errores de TypeScript. `pnpm lint` en verde.
-- [ ] **4. Documentación As-Built:**
-  - Comentarios JSDoc breves en los props de cada componente nuevo.
-- [ ] **5. Trazabilidad y Estado:**
+    revisión visual manual, confirmada el 2026-09-25.
+- [x] **3. Validación de Cobertura:**
+  - `pnpm build` compiló sin errores de TypeScript. `pnpm lint` en verde
+    — confirmado independientemente en ambas rondas.
+- [x] **4. Documentación As-Built:**
+  - Comentarios JSDoc breves presentes en los props de cada componente
+    nuevo — confirmado.
+- [x] **5. Trazabilidad y Estado:**
   - Checklist de este SPEC completado y entrada registrada en
-    `specs/TASK_STATUS.md`.
+    `specs/TASK_STATUS.md` (1 ronda de retrabajo documentada).

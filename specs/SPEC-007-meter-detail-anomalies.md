@@ -323,60 +323,64 @@ evento correlacionado" si `null`), Ventana (`formatDateTime(window_start)`
 
 ## 5. Plan de Ejecución Secuencial (Atomic Tasks)
 
-- [ ] **Paso 1: Setup de Vitest:** Instalar dependencias de testing de la
+- [x] **Paso 1: Setup de Vitest:** Instalar dependencias de testing de la
   sección 2, configurar `vitest.config.ts` (entorno `jsdom`,
   `setupFiles: ["src/test/setup.ts"]`), `src/test/setup.ts` importando
   `@testing-library/jest-dom`, script `"test": "vitest run"` en
   `package.json`. Confirmar que `pnpm test` corre (aunque sea 0 tests
   todavía) antes de continuar.
-- [ ] **Paso 2: `DetailField`:** Implementar componente + test (renderiza
+- [x] **Paso 2: `DetailField`:** Implementar componente + test (renderiza
   label/value, aplica clase de tono correcta).
-- [ ] **Paso 3: `MeterHistoryChart`:** Instalar `echarts`/
+- [x] **Paso 3: `MeterHistoryChart`:** Instalar `echarts`/
   `echarts-for-react`. Implementar según sección 3.3. Tests: renderiza
   sin crashear con 0/1/N readings (CB-02), cambia de serie única a
   comparación al togglear el checkbox, agrega línea de baseline solo
   cuando `Serie A === "consumption_kwh"` y `baselineKwh !== null`.
-- [ ] **Paso 4: `MeterDetailPage`:** Reemplazar el placeholder, cablear
+- [x] **Paso 4: `MeterDetailPage`:** Reemplazar el placeholder, cablear
   `useMeterDetail` + `DetailField` × N + `MeterHistoryChart` (sección
   3.5). Test: smoke test de los 4 estados (loading/error/con datos/
   baseline null).
-- [ ] **Paso 5: `AnomaliesTable`:** Implementar según sección 3.4 (mismo
+- [x] **Paso 5: `AnomaliesTable`:** Implementar según sección 3.4 (mismo
   patrón que `MetersTable`). Test: orden cíclico por columna, navegación
   al click/Enter/Space.
-- [ ] **Paso 6: `AnomaliesPage`:** Reemplazar el placeholder (sección
+- [x] **Paso 6: `AnomaliesPage`:** Reemplazar el placeholder (sección
   3.6). Test: smoke test de los 3 estados (loading/error/vacío/con datos).
-- [ ] **Paso 7: `AnomalyDetailPage`:** Reemplazar el placeholder (sección
+- [x] **Paso 7: `AnomalyDetailPage`:** Reemplazar el placeholder (sección
   3.7), incluyendo CB-03. Test: smoke test de los estados + CB-03.
-- [ ] **Paso 8: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
-  verde, confirmado independientemente por los arquitectos. Verificación
-  visual manual del chart y ambas tablas en al menos 2 viewports queda a
-  cargo del usuario antes de la demo (misma limitación de entorno que
-  SPEC-005/006).
+- [x] **Paso 8: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
+  verde, confirmado independientemente por los arquitectos (retrabajo
+  #1: bug de escala en `variation_pct`, ver `TASK_STATUS.md`).
+  Verificación visual manual confirmada el 2026-09-25 contra el backend
+  real corriendo — reveló un bug real de `yAxis.name` superpuesto en
+  `MeterHistoryChart`, corregido en SPEC-009 (no en este SPEC, ya
+  cerrado y aprobado antes de esa verificación).
 
 ---
 
 ## 6. Verificación y Checklist de Salida (Pipeline de 5 Pasos)
 
-- [ ] **1. Validación Arquitectónica:**
+- [x] **1. Validación Arquitectónica:**
   - `components/ui/DetailField.tsx` no importa nada de `api/` ni `stores/`.
   - `components/feature/MeterHistoryChart.tsx` y `AnomaliesTable.tsx` no
     hacen fetch propio — reciben todo por props desde las páginas.
   - Ningún archivo de `api/`, `stores/`, `router.tsx`, `AppLayout.tsx`,
     `Header.tsx`, ni los componentes/páginas de SPEC-006 protegidos en la
-    sección 1 fue modificado.
-  - `specs/TASK_STATUS.md` no fue tocado.
-  - `git diff` coincide únicamente con los archivos autorizados en la
+    sección 1 fue modificado — confirmado.
+  - `specs/TASK_STATUS.md` no fue tocado — confirmado en ambas entregas.
+  - `git diff` coincidió únicamente con los archivos autorizados en la
     Sección 1. Cero archivos de `backend/` tocados.
-- [ ] **2. Generación de Tests:**
+- [x] **2. Generación de Tests:**
   - Suite de Vitest + Testing Library presente para los 6 archivos
     listados en la sección 1 (`DetailField`, `MeterHistoryChart`,
-    `AnomaliesTable`, y las 3 páginas) — primera vez que el frontend
-    tiene cobertura automatizada.
-- [ ] **3. Validación de Cobertura:**
-  - `pnpm build`, `pnpm lint`, `pnpm test` en verde.
-- [ ] **4. Documentación As-Built:**
-  - Comentarios JSDoc breves en los props de cada componente nuevo.
-- [ ] **5. Trazabilidad y Estado:**
-  - Checklist de este SPEC completado. **La entrada en
-    `specs/TASK_STATUS.md` la agregan los arquitectos, no el agente**
-    (ver instrucción 7 al inicio de este documento).
+    `AnomaliesTable`, y las 3 páginas) — 18/18 tests, primera cobertura
+    automatizada del frontend, confirmada independientemente.
+- [x] **3. Validación de Cobertura:**
+  - `pnpm build`, `pnpm lint`, `pnpm test` en verde — confirmado
+    independientemente en ambas rondas.
+- [x] **4. Documentación As-Built:**
+  - Comentarios JSDoc breves presentes en los props de cada componente
+    nuevo — confirmado.
+- [x] **5. Trazabilidad y Estado:**
+  - Checklist de este SPEC completado. Entrada registrada en
+    `specs/TASK_STATUS.md` por los arquitectos (1 ronda de retrabajo
+    documentada).

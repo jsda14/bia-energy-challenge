@@ -222,48 +222,58 @@ Requisitos exactos:
 
 ## 5. Plan de Ejecución Secuencial (Atomic Tasks)
 
-- [ ] **Paso 1: Extender `MeterHistoryChart`:** Agregar
+- [x] **Paso 1: Extender `MeterHistoryChart`:** Agregar
   `highlightStart`/`highlightEnd` opcionales según sección 3.1. Tests
   nuevos en `MeterHistoryChart.test.tsx`: con highlight, sin highlight
   (comportamiento idéntico a SPEC-007), highlight coexistiendo con
   baseline. Confirmar que los tests YA EXISTENTES de SPEC-007 en este
   mismo archivo siguen pasando sin modificarlos (backward-compatible).
-- [ ] **Paso 2: `AnomalyDetailPage` — evidencia visual:** Agregar
+- [x] **Paso 2: `AnomalyDetailPage` — evidencia visual:** Agregar
   `useMeterDetail` + sección "Evidencia Visual" según sección 3.2. Tests
   nuevos en `AnomalyDetailPage.test.tsx` cubriendo CB-01. Confirmar que
   los tests existentes de SPEC-007 en este archivo siguen pasando.
-- [ ] **Paso 3: E2E de navegación:** Crear `e2e/navigation.test.tsx`
+- [x] **Paso 3: E2E de navegación:** Crear `e2e/navigation.test.tsx`
   según sección 3.3 (los 3 tests descritos, como mínimo).
-- [ ] **Paso 4: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
+- [x] **Paso 4: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
   verde (incluyendo TODOS los tests heredados de SPEC-007, no solo los
-  nuevos), confirmado independientemente por los arquitectos.
-  Verificación visual manual del highlight en al menos 1 caso real
-  (recomendado: M-109 o M-112, casos con ventana de anomalía bien
-  definida) queda a cargo del usuario antes de la demo.
+  nuevos), confirmado independientemente por los arquitectos (retrabajo
+  #1: `pnpm build` roto por un error de tipos en el mock del E2E, no
+  detectado por `pnpm test`, ver `TASK_STATUS.md`). Verificación visual
+  manual confirmada el 2026-09-25 contra el backend real corriendo —
+  reveló que el `yAxis.name` de `MeterHistoryChart` se superpone con los
+  datos (bug preexistente de SPEC-007, no introducido por la extensión
+  de este SPEC), corregido en SPEC-009.
 
 ---
 
 ## 6. Verificación y Checklist de Salida (Pipeline de 5 Pasos)
 
-- [ ] **1. Validación Arquitectónica:**
+- [x] **1. Validación Arquitectónica:**
   - `MeterHistoryChart.tsx` sigue sin hacer fetch propio — recibe todo
     por props, incluyendo las 2 props nuevas.
-  - `AnomalyDetailPage.tsx` es la única página modificada en este SPEC.
+  - `AnomalyDetailPage.tsx` es la única página modificada en este SPEC
+    — confirmado.
   - Ningún archivo de `api/`, `stores/`, `router.tsx`, layout, ni
     componentes/páginas protegidos de SPEC-005/006/007 fue modificado.
-  - `specs/TASK_STATUS.md` no fue tocado.
-  - `git diff` coincide únicamente con los archivos autorizados en la
+  - `specs/TASK_STATUS.md` no fue tocado — confirmado en las dos
+    entregas de este SPEC (tercera vez consecutiva sin el problema).
+  - `git diff` coincidió únicamente con los archivos autorizados en la
     Sección 1. Cero archivos de `backend/` tocados.
-- [ ] **2. Generación de Tests:**
+- [x] **2. Generación de Tests:**
   - Tests nuevos para el highlight de `MeterHistoryChart`, para la
     sección de evidencia visual de `AnomalyDetailPage`, y el primer
-    E2E de navegación del proyecto (mínimo 3 escenarios, sección 3.3).
+    E2E de navegación del proyecto (3 escenarios, sección 3.3) —
+    23/23 tests totales, confirmado independientemente.
   - Todos los tests heredados de SPEC-007 siguen pasando sin
     modificaciones no autorizadas.
-- [ ] **3. Validación de Cobertura:**
-  - `pnpm build`, `pnpm lint`, `pnpm test` en verde.
-- [ ] **4. Documentación As-Built:**
-  - Comentarios JSDoc breves en las props nuevas de `MeterHistoryChart`.
-- [ ] **5. Trazabilidad y Estado:**
-  - Checklist de este SPEC completado. **La entrada en
-    `specs/TASK_STATUS.md` la agregan los arquitectos**, no el agente.
+- [x] **3. Validación de Cobertura:**
+  - `pnpm build`, `pnpm lint`, `pnpm test` en verde — confirmado
+    independientemente en ambas rondas (el retrabajo #1 fue precisamente
+    por `pnpm build` fallando en la primera entrega).
+- [x] **4. Documentación As-Built:**
+  - Comentarios JSDoc breves presentes en las props nuevas de
+    `MeterHistoryChart` — confirmado.
+- [x] **5. Trazabilidad y Estado:**
+  - Checklist de este SPEC completado. Entrada registrada en
+    `specs/TASK_STATUS.md` por los arquitectos (1 ronda de retrabajo
+    documentada).
