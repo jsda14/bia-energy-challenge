@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AnomalyDetailPage from "./AnomalyDetailPage";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { useAnomalyDetail } from "../api/queries/useAnomalyDetail";
@@ -8,10 +9,20 @@ import { useMeterDetail } from "../api/queries/useMeterDetail";
 vi.mock("../api/queries/useAnomalyDetail");
 vi.mock("../api/queries/useMeterDetail");
 
+// RunAnalysisButton (agregado en el detalle de anomalía) usa useRunAnalysis
+// internamente — se mockea igual que en MeterDetailPage.test.tsx.
+vi.mock("../api/queries/useRunAnalysis", () => ({
+  useRunAnalysis: () => ({ mutate: vi.fn(), isPending: false })
+}));
+
 // Mock echarts to avoid canvas rendering issues in jsdom
 vi.mock("echarts-for-react", () => ({
   default: () => <div data-testid="mock-echarts" />
 }));
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockUseAnomalyDetail = useAnomalyDetail as any;
@@ -23,11 +34,13 @@ describe("AnomalyDetailPage", () => {
     mockUseAnomalyDetail.mockReturnValue({ isLoading: true });
     mockUseMeterDetail.mockReturnValue({ isLoading: false });
     render(
-      <MemoryRouter initialEntries={["/anomalies/1"]}>
-        <Routes>
-          <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/anomalies/1"]}>
+          <Routes>
+            <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
     expect(screen.getByText("Cargando...")).toBeInTheDocument();
   });
@@ -36,11 +49,13 @@ describe("AnomalyDetailPage", () => {
     mockUseAnomalyDetail.mockReturnValue({ isError: true });
     mockUseMeterDetail.mockReturnValue({ isLoading: false });
     render(
-      <MemoryRouter initialEntries={["/anomalies/1"]}>
-        <Routes>
-          <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/anomalies/1"]}>
+          <Routes>
+            <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
     expect(screen.getByText("Error al cargar el detalle de la anomalía.")).toBeInTheDocument();
   });
@@ -84,13 +99,15 @@ describe("AnomalyDetailPage", () => {
     });
     
     render(
-      <MemoryRouter initialEntries={["/anomalies/1"]}>
-        <Routes>
-          <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/anomalies/1"]}>
+          <Routes>
+            <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
-    
+
     expect(screen.getByText("meter-123")).toBeInTheDocument();
     expect(screen.getByText("Test reason")).toBeInTheDocument();
     expect(screen.getByText("Sin evento correlacionado")).toBeInTheDocument();
@@ -129,11 +146,13 @@ describe("AnomalyDetailPage", () => {
     });
     
     render(
-      <MemoryRouter initialEntries={["/anomalies/1"]}>
-        <Routes>
-          <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/anomalies/1"]}>
+          <Routes>
+            <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
 
     expect(screen.getByText("Test reason")).toBeInTheDocument();

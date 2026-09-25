@@ -4,6 +4,7 @@ import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
+import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatDateTime, severityToColorToken, formatVariationPct } from "../domain/formatting";
 import styles from "./AnomalyDetailPage.module.css";
@@ -29,7 +30,10 @@ export default function AnomalyDetailPage() {
           { label: anomaly.type },
         ]}
       />
-      <h1 className={styles.title}>Detalle de Anomalía</h1>
+      <div className={styles.header}>
+        <h1 className={styles.header__title}>Detalle de Anomalía</h1>
+        <RunAnalysisButton meterId={anomaly.meter_id} />
+      </div>
       
       <div className={styles.detailGrid}>
         <DetailField label="Medidor" value={anomaly.meter_id} />

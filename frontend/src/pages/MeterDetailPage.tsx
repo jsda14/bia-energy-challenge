@@ -3,7 +3,6 @@ import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
-import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatKwh, formatVariationPct, meterStatusToColorToken } from "../domain/formatting";
 import styles from "./MeterDetailPage.module.css";
@@ -30,7 +29,6 @@ export default function MeterDetailPage() {
       />
       <div className={styles.header}>
         <h1 className={styles.header__title}>Detalle de Medidor</h1>
-        <RunAnalysisButton meterId={meter.meter_id} />
       </div>
       
       <div className={styles.detailGrid}>
