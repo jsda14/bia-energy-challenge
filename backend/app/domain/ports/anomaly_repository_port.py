@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Protocol
 from app.domain.models.anomaly import AnomalyRecord, PersistedAnomaly
 from app.domain.ports.ai_explainer_port import AIExplanation
@@ -5,6 +6,15 @@ from app.domain.ports.ai_explainer_port import AIExplanation
 
 class AnomalyRepositoryPort(Protocol):
     """Puerto para persistir y consultar anomalías detectadas."""
+
+    def exists(self, meter_id: str, anomaly_type: str, window_start: datetime, window_end: datetime) -> bool:
+        """Retorna True si ya existe una anomalía persistida con esta
+        combinación exacta (meter_id, type, window_start, window_end) —
+        la misma clave natural de idempotencia que usa `save_many`. Permite
+        al caller (AnalyzeMeterUseCase) evitar pedirle una explicación al
+        AIExplainerPort (posiblemente una llamada real y costosa a Claude)
+        para una anomalía que de todos modos no se va a insertar de nuevo."""
+        ...
 
     def get_all(self) -> list[PersistedAnomaly]:
         """Retorna todas las anomalías persistidas, sin filtros, ordenadas

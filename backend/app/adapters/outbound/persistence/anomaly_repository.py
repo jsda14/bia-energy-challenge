@@ -65,17 +65,54 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
         rows = self._session.scalars(stmt).all()
         return [self._to_domain(row) for row in rows]
 
+    def exists(self, meter_id: str, anomaly_type: str, window_start, window_end) -> bool:
+        stmt = select(AnomalyORM.id).where(
+            AnomalyORM.meter_id == meter_id,
+            AnomalyORM.type == anomaly_type,
+            AnomalyORM.window_start == window_start,
+            AnomalyORM.window_end == window_end,
+        )
+        return self._session.scalars(stmt).first() is not None
+
     def save_many(self, items: list[tuple[AnomalyRecord, AIExplanation]]) -> list[str]:
-        inserted_ids = []
-        
+        """Inserta anomalías en bloque de forma idempotente por
+        (meter_id, type, window_start, window_end).
+
+        El `AnomalyDetector` es determinista: sobre el mismo histórico de
+        lecturas/eventos, dos corridas de `POST /ai/analyze` producen
+        exactamente la misma ventana temporal para el mismo incidente real.
+        Sin esta idempotencia, cada corrida duplicaba las anomalías ya
+        detectadas (confirmado en producción: 19 filas para un único
+        incidente real de M-112 tras varias corridas) — infla el Dashboard
+        y la tabla de Anomalías sin aportar información nueva. Si ya existe
+        una anomalía con esa combinación exacta, no se re-inserta (se omite
+        de `inserted_ids`, ya que no hay una fila nueva que referenciar).
+        """
+        if not items:
+            return []
+
+        meter_ids = {anomaly.meter_id for anomaly, _ in items}
+        existing_stmt = select(
+            AnomalyORM.meter_id, AnomalyORM.type, AnomalyORM.window_start, AnomalyORM.window_end
+        ).where(AnomalyORM.meter_id.in_(meter_ids))
+        existing_keys = set(self._session.execute(existing_stmt).all())
+
+        seen = set(existing_keys)
+        inserted_ids: list[str] = []
+
         for anomaly, explanation in items:
+            key = (anomaly.meter_id, anomaly.type.value, anomaly.evidence.window_start, anomaly.evidence.window_end)
+            if key in seen:
+                continue
+            seen.add(key)
+
             new_id = str(uuid.uuid4())
             inserted_ids.append(new_id)
-            
+
             affected_vars_str = ""
             if anomaly.evidence.affected_variables:
                 affected_vars_str = ",".join(anomaly.evidence.affected_variables)
-                
+
             new_orm = AnomalyORM(
                 id=new_id,
                 meter_id=anomaly.meter_id,
@@ -94,6 +131,6 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
                 window_end=anomaly.evidence.window_end,
             )
             self._session.add(new_orm)
-            
+
         self._session.flush()
         return inserted_ids

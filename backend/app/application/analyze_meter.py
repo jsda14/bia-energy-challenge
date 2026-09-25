@@ -1,6 +1,6 @@
 import uuid
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class AnalyzeMeterUseCase:
         self.detector = detector
 
     def execute(self, meter_id: str | None = None) -> AnalysisRun:
-        started_at = datetime.utcnow()
+        started_at = datetime.now(timezone.utc)
         
         if meter_id is not None:
             m = self.meter_repo.get_by_meter_id(meter_id)
@@ -45,7 +45,7 @@ class AnalyzeMeterUseCase:
                     requested_meter_id=meter_id,
                     status=AnalysisRunStatus.FAILED,
                     started_at=started_at,
-                    finished_at=datetime.utcnow(),
+                    finished_at=datetime.now(timezone.utc),
                     anomalies_detected_count=0,
                     error_message=f"Meter '{meter_id}' not found",
                 )
@@ -65,12 +65,28 @@ class AnalyzeMeterUseCase:
                 
                 anomalies = self.detector.analyze(m.meter_id, readings, events, started_at)
                 if anomalies:
-                    items_to_save = []
-                    for anomaly in anomalies:
-                        explanation = self.explainer.explain(anomaly)
-                        items_to_save.append((anomaly, explanation))
-                    self.anomaly_repo.save_many(items_to_save)
-                    total_anomalies += len(anomalies)
+                    # Filtrar ANTES de pedir explicación: el detector es
+                    # determinista, así que una corrida repetida sobre el
+                    # mismo histórico vuelve a "detectar" el mismo incidente
+                    # ya persistido. Sin este filtro, cada corrida gastaría
+                    # una llamada real al AIExplainerPort (potencialmente
+                    # Claude, con costo real) por una anomalía que
+                    # save_many de todos modos iba a descartar como
+                    # duplicada.
+                    new_anomalies = [
+                        a
+                        for a in anomalies
+                        if not self.anomaly_repo.exists(
+                            a.meter_id, a.type.value, a.evidence.window_start, a.evidence.window_end
+                        )
+                    ]
+                    if new_anomalies:
+                        items_to_save = []
+                        for anomaly in new_anomalies:
+                            explanation = self.explainer.explain(anomaly)
+                            items_to_save.append((anomaly, explanation))
+                        inserted_ids = self.anomaly_repo.save_many(items_to_save)
+                        total_anomalies += len(inserted_ids)
             except Exception as e:
                 logger.warning(f"Exception analyzing meter {m.meter_id}: {e}")
                 # Si es para todos, atrapamos para no tumbar el análisis completo
@@ -83,7 +99,7 @@ class AnalyzeMeterUseCase:
                         requested_meter_id=meter_id,
                         status=AnalysisRunStatus.FAILED,
                         started_at=started_at,
-                        finished_at=datetime.utcnow(),
+                        finished_at=datetime.now(timezone.utc),
                         anomalies_detected_count=total_anomalies,
                         error_message=error_msg,
                     )
@@ -95,7 +111,7 @@ class AnalyzeMeterUseCase:
             requested_meter_id=meter_id,
             status=AnalysisRunStatus.COMPLETED,
             started_at=started_at,
-            finished_at=datetime.utcnow(),
+            finished_at=datetime.now(timezone.utc),
             anomalies_detected_count=total_anomalies,
             error_message=None,
         )
