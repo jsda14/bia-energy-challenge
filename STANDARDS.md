@@ -99,20 +99,118 @@ de saltarse en un bucle de tool-calling que una prohibición en prosa.
 
 ## 4. Frontend (React / Vite / TypeScript)
 
-- **TypeScript estricto**: `strict: true` en `tsconfig.json`. Prohibido `any`
-  salvo justificación explícita en comentario inline (`// any: <razón>`).
+### 4.1 Stack y gestor de paquetes
+
+- **Gestor de paquetes**: `pnpm` — no `npm` ni `yarn`. `pnpm-lock.yaml` se
+  commitea, nunca `package-lock.json` ni `yarn.lock`.
+- **Build**: Vite. **TypeScript estricto**: `strict: true` en
+  `tsconfig.json`. Prohibido `any` salvo justificación explícita en
+  comentario inline (`// any: <razón>`).
 - **Componentes funcionales** con hooks. Sin clases de componente.
-- **Estado del servidor** vs **estado de UI** separados: fetching/cache de datos
-  del backend en una capa dedicada (`src/api/` + hook por recurso), no mezclado
-  con estado local de formularios/filtros.
-- **Naming**: componentes en `PascalCase.tsx`, hooks en `useCamelCase.ts`, resto en
-  `camelCase.ts`.
+- **Routing**: React Router. Rutas declarativas por recurso
+  (`/meters`, `/meters/:meterId`, `/anomalies`, `/anomalies/:id`) — nunca
+  un switch manual de "página activa" en estado local; la URL es la fuente
+  de verdad de qué se está viendo, para soportar botón atrás del navegador
+  y deep-linking.
+- **Estado de servidor**: TanStack Query (React Query) para todo fetching a
+  la API del backend — cache, loading/error states, y el patrón de
+  invalidación/refetch tras `POST /ai/analyze`. Nunca `fetch` +
+  `useState`/`useEffect` a mano para datos del servidor.
+- **Estado de cliente global**: Zustand, solo para estado de UI genuinamente
+  compartido entre pantallas/componentes no relacionados por props (ej.
+  filtros/orden de la tabla de medidores si se preservan al navegar,
+  estado visible globalmente de "análisis en curso" tras disparar
+  `POST /ai/analyze`, notificaciones/toasts). Redux queda descartado por
+  completo — demasiado boilerplate (actions/reducers/store/dispatch) para
+  este alcance, sin que aporte nada que Zustand no resuelva más simple.
+  Estado local de un solo componente (un input, un toggle) sigue siendo
+  `useState` normal — Zustand es solo para lo que de verdad cruza
+  fronteras de componentes no emparentados.
+- **Regla de separación** (las tres piezas de estado nunca se mezclan):
+  - **Estado de servidor** (datos del backend) → TanStack Query.
+  - **Estado de cliente compartido** (UI global) → Zustand.
+  - **Estado de UI local** (un componente, no compartido) → `useState`.
+  Un store de Zustand nunca cachea datos que ya vienen de TanStack Query
+  (eso duplicaría la fuente de verdad) — solo guarda estado que no viene
+  del servidor.
+- **Naming**: componentes en `PascalCase.tsx`, hooks en `useCamelCase.ts`,
+  resto en `camelCase.ts`.
 - **Sin lógica de negocio duplicada del backend** (p.ej. no recalcular
-  severidad/confianza en el cliente) — el frontend renderiza lo que la API ya
-  clasificó.
-- **Accesibilidad mínima**: elementos interactivos con roles/aria apropiados,
-  contraste legible, la app debe sentirse "producto SaaS" (ver sección 21 del PDF),
-  no un panel de pruebas.
+  severidad/confianza en el cliente) — el frontend renderiza lo que la API
+  ya clasificó.
+- **Accesibilidad mínima**: elementos interactivos con roles/aria
+  apropiados, contraste legible, la app debe sentirse "producto SaaS" (ver
+  sección 21 del PDF), no un panel de pruebas.
+
+### 4.2 Validación de datos: Zod, a mano, fuente única de verdad en frontend
+
+- Cada Response schema del backend (`DashboardSummaryResponse`,
+  `MeterSummaryResponse`, `AnomalyDetailResponse`, etc. — ya definidos
+  exactos en SPEC-003) se replica como un schema `zod` en
+  `frontend/src/api/schemas.ts`. El tipo TypeScript se infiere del propio
+  schema (`z.infer<typeof X>`), nunca se escribe una interfaz duplicada a
+  mano por separado.
+- Toda respuesta de la API se parsea con su schema Zod antes de usarse en
+  un componente (`schema.parse(response.data)`, nunca `as Tipo` para
+  forzar un cast sin validar). Si el backend cambia y rompe el contrato,
+  el frontend lo detecta al parsear, no de forma silenciosa en producción.
+- Prohibido generar tipos automáticamente desde OpenAPI
+  (`openapi-typescript` u otra herramienta de codegen) — decisión
+  deliberada para no depender de un paso de build adicional ni de tener el
+  backend levantado para generar tipos, dado el alcance de este MVP.
+
+### 4.3 Estilos: CSS Modules + BEM estricto, sin frameworks de utilidades
+
+- **Prohibido Tailwind, Bootstrap, Material UI, Chakra, o cualquier
+  framework de componentes/utilidades pre-estilados.** Decisión
+  deliberada: se busca un diseño visual propio, no reconocible como "hecho
+  con un framework de IA por defecto".
+- **CSS Modules** (`Componente.module.css`, uno por componente) +
+  **convención BEM estricta** dentro de cada módulo:
+  `.bloque`, `.bloque__elemento`, `.bloque__elemento--modificador`. El
+  "bloque" es el nombre del componente en kebab-case (ej. componente
+  `MeterCard` → clases `.meter-card`, `.meter-card__header`,
+  `.meter-card__header--critical`).
+- **Tokens de diseño** en variables CSS globales (`src/styles/tokens.css`):
+  paleta de color, espaciado, tipografía, radios, sombras — nunca colores o
+  medidas "mágicas" hardcodeadas dentro de un módulo de componente. Todo
+  módulo de componente consume `var(--token-x)`, nunca un valor literal
+  repetido.
+- **Nada de estilos inline** (`style={{...}}`) salvo un valor
+  verdaderamente dinámico calculado en runtime (ej. el ancho de una barra
+  de progreso) — y aun así, preferir una CSS custom property inyectada
+  (`style={{ '--progress': pct }}`) consumida desde el CSS Module, no
+  propiedades de layout/color hardcodeadas inline.
+- El diseño visual (paleta, tipografía, jerarquía, "personalidad" de la
+  UI) se define en el SPEC de frontend correspondiente, no en este
+  documento — este documento fija la convención técnica (BEM + CSS
+  Modules + tokens), no los valores de diseño en sí.
+
+### 4.4 Mobile-first y breakpoints
+
+- Todo CSS se escribe **mobile-first**: los estilos base (sin media query)
+  son los del viewport más angosto; cada `@media (min-width: ...)` añade o
+  sobreescribe para viewports más anchos. Nunca al revés
+  (`max-width` como base con excepciones hacia abajo).
+- **Breakpoints fijos** (variables CSS + constantes TS si hace falta
+  lógica de layout en JS, nunca un valor de breakpoint hardcodeado suelto
+  en un componente):
+
+  | Nombre | Ancho mínimo | Uso típico |
+  |---|---|---|
+  | `xs` | 480px | móvil grande / phablet |
+  | `sm` | 640px | móvil horizontal |
+  | `md` | 768px | tablet |
+  | `lg` | 1024px | tablet horizontal / laptop pequeña |
+  | `laptop` | 1366px | laptop estándar |
+  | `xl` | 1440px | desktop |
+  | `fhd` | 1920px | monitor Full HD |
+  | `qhd` | 2560px | monitor 2K/QHD |
+
+- Layouts de datos densos (tablas de medidores, grillas de KPIs) deben
+  aprovechar el espacio extra en `laptop`/`xl`/`fhd`/`qhd` (más columnas,
+  paneles side-by-side) en vez de simplemente centrar contenido con
+  márgenes vacíos crecientes — es un dashboard de datos, no un blog.
 
 ## 5. Testing
 

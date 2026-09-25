@@ -100,12 +100,29 @@ bia-energy-challenge/
 │   └── alembic/ (opcional si se decide versionar schema)
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/                   # Dashboard, MeterList, MeterDetail, Anomalies, Investigation
-│   │   ├── components/
-│   │   ├── api/                     # cliente HTTP tipado (fetch/axios + tipos generados o manuales)
-│   │   ├── hooks/
-│   │   └── types/
-│   ├── package.json
+│   │   ├── domain/                  # Núcleo puro: tipos/reglas de presentación sin IO
+│   │   │   ├── types.ts              # Tipos de dominio del frontend (derivados de los schemas Zod)
+│   │   │   └── formatting.ts         # Funciones puras: formateo de kWh, %, fechas, severidad→color
+│   │   ├── api/                      # Adapter outbound: único lugar que conoce la URL/forma HTTP del backend
+│   │   │   ├── client.ts             # Cliente fetch base (headers, base URL, manejo de errores HTTP)
+│   │   │   ├── schemas.ts            # Schemas Zod (fuente única de verdad de tipos de respuesta)
+│   │   │   └── queries/              # Un archivo por recurso: useMeters.ts, useAnomalies.ts, etc.
+│   │   │                             #   (hooks de TanStack Query que usan client.ts + schemas.ts)
+│   │   ├── components/               # Adapter inbound: presentación pura, reciben datos ya tipados
+│   │   │   ├── ui/                    # Componentes genéricos reusables (Button, Badge, Card, Table…)
+│   │   │   └── feature/               # Componentes específicos de dominio (MeterCard, AnomalyRow…)
+│   │   ├── stores/                   # Estado de cliente global (Zustand) — solo UI, nunca datos
+│   │   │                             #   de servidor ya cubiertos por api/queries/
+│   │   ├── pages/                    # Orquestan: llaman hooks de api/queries + stores/ + componen
+│   │   │                             #   components/ — Dashboard, MeterList, MeterDetail, Anomalies,
+│   │   │                             #   Investigation
+│   │   ├── styles/
+│   │   │   ├── tokens.css             # Variables CSS: paleta, espaciado, tipografía, breakpoints
+│   │   │   └── reset.css
+│   │   ├── router.tsx                 # Definición de rutas (React Router)
+│   │   └── main.tsx                   # Entry point
+│   ├── package.json                  # pnpm
+│   ├── pnpm-lock.yaml
 │   └── vite.config.ts
 ├── specs/                           # SPECs (SDD) + TASK_STATUS.md
 ├── ARCHITECTURE.md
@@ -200,9 +217,70 @@ Investigación → Acción`. Páginas mínimas:
   baseline, eventos relacionados, severidad/confianza, acción recomendada,
   evidencia (gráfica con la ventana anómala resaltada).
 
-Cliente HTTP tipado contra los DTOs del backend (compartir tipos vía generación
-manual o `openapi-typescript` si se decide más adelante — a definir en SPEC de
-frontend).
+### 7.1 Arquitectura por capas (adaptación del principio hexagonal)
+
+El frontend no tiene el mismo tipo de "dominio con reglas de negocio" que el
+backend (esas reglas ya viven en el `AnomalyDetector` — el frontend nunca
+las duplica, ver `STANDARDS.md` §4.1). Pero sí aplicamos la misma disciplina
+de separación de capas y regla de dependencia:
+
+```
+domain/       → tipos + funciones puras de presentación (formatear kWh, %, fechas,
+                mapear severidad→color). Cero IO, cero React, cero fetch.
+api/          → único lugar que sabe que existe un backend HTTP. Client + schemas
+                Zod + hooks de TanStack Query (estado de SERVIDOR). Es el
+                "adapter outbound" del frontend.
+stores/       → estado de CLIENTE global (Zustand) — solo UI compartida entre
+                pantallas (filtros persistidos, "análisis en curso", toasts).
+                Nunca duplica datos que ya vienen de api/ — fuentes de verdad
+                distintas y no superpuestas (ver STANDARDS.md §4.1).
+components/   → presentación pura: reciben props ya tipadas y formateadas, nunca
+                llaman a la API ni leen un store directamente ni conocen la
+                forma del JSON crudo.
+pages/        → "adapter inbound" + composition root de cada pantalla: usan los
+                hooks de api/ y stores/ para obtener datos/estado, los pasan a
+                components/ para renderizar. Es la única capa que conecta
+                api/ + stores/ con components/.
+```
+
+**Regla de dependencia:** `domain/` no importa nada de `api/`, `stores/`,
+`components/` ni `pages/`. `components/` no importa nada de `api/` ni de
+`stores/` — si un componente necesita datos del servidor o estado global,
+los recibe como props desde `pages/`, nunca los pide/lee él mismo. Esto
+permite testear `components/` con datos de mentira (Testing Library) sin
+mockear HTTP ni un store, igual que el backend testea `domain/` sin
+mockear SQLAlchemy.
+
+> **Excepción documentada (SPEC-005):** `components/layout/Header.tsx` lee
+> `useAnalysisStore().isRunning` directamente, en vez de recibirlo como
+> prop desde `AppLayout`. Es un desvío consciente de la regla de arriba,
+> aceptado porque el propio SPEC-005 lo especificó así en su sección 3.6
+> (contradicción entre esa sección y esta regla general, detectada en
+> auditoría — el error de diseño es del SPEC, no de la implementación) y
+> porque el costo de mantenerlo (un único componente de layout leyendo un
+> booleano de un store trivial, no un patrón que se repita en componentes
+> de negocio) es menor que el de refactorizarlo para una demo de 5-10 min.
+> Nuevos componentes de `components/` (SPEC-006 en adelante) SÍ deben
+> seguir la regla general sin excepción — esta es puntual a `Header.tsx`.
+
+### 7.2 Cliente HTTP tipado
+
+Ver `STANDARDS.md` §4.2 — schemas Zod escritos a mano en `api/schemas.ts`,
+réplica exacta de los Response schemas ya definidos en SPEC-003
+(`DashboardSummaryResponse`, `MeterSummaryResponse`, `MeterDetailResponse`,
+`AnomalySummaryResponse`, `AnomalyDetailResponse`, `AnalysisRunResponse`).
+Cada hook de `api/queries/` parsea la respuesta con su schema antes de
+devolver datos a `pages/` — nunca se confía en el tipo de TypeScript solo
+(que es borrado en runtime), la validación de Zod es la que realmente
+protege contra un contrato roto.
+
+### 7.3 Estilos y diseño visual
+
+Ver `STANDARDS.md` §4.3-4.4 para la convención técnica vinculante (CSS
+Modules + BEM estricto, sin frameworks de utilidades, mobile-first con 8
+breakpoints fijos). El diseño visual concreto (paleta, tipografía,
+jerarquía — con el objetivo explícito de no verse como "hecho con IA por
+defecto") se define en el primer SPEC de frontend, no aquí.
 
 ## 8. Decisiones registradas (ADR-lite)
 
