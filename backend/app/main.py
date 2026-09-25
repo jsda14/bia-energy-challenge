@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
@@ -31,6 +32,23 @@ from app.adapters.inbound.api.dependencies import (
 )
 
 app = FastAPI(title="Bia Energy Challenge API")
+
+# CORS: habilita al frontend Vite (dev, cualquier puerto localhost) a
+# llamar esta API desde el navegador. Sin esto, el navegador bloquea el
+# preflight y ninguna petición del frontend llega nunca al backend, aunque
+# curl/TestClient (que no aplican política CORS) parezcan funcionar bien.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def startup_event():
