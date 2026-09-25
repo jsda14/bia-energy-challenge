@@ -14,6 +14,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-005](SPEC-005-frontend-foundation.md) | Frontend — Fundación (Setup, Cliente HTTP, Diseño Base, Layout) | ✅ Aprobado | 1 | 2026-09-24 |
 | [SPEC-006](SPEC-006-dashboard-meter-list.md) | Frontend — Dashboard y Listado de Medidores | ✅ Aprobado | 1 | 2026-09-25 |
 | [SPEC-007](SPEC-007-meter-detail-anomalies.md) | Frontend — Detalle de Medidor y Anomalías | ✅ Aprobado | 1 | 2026-09-25 |
+| [SPEC-008](SPEC-008-investigation-evidence-e2e.md) | Frontend — Evidencia Visual de Investigación y E2E | ✅ Aprobado | 1 | 2026-09-25 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -323,3 +324,49 @@ instrucciones al agente) funcionó.
 principales del flujo del PDF con contenido real (Dashboard, Meters,
 Meter Detail, Anomalies, Anomaly Detail) — solo falta el flujo de
 Investigation (SPEC-008).
+
+---
+
+## SPEC-008 — Frontend: Evidencia Visual de Investigación y E2E
+
+**Estado:** ✅ Aprobado (2026-09-25, 1 ronda de retrabajo).
+
+**Resumen:** Cierra el flujo de "Investigation" del PDF sin crear una
+página nueva — confirmado en `ARCHITECTURE.md` §7 que ese flujo ya
+estaba cubierto por `AnomalyDetailPage` (SPEC-007); lo único pendiente
+era "gráfica con la ventana anómala resaltada". `MeterHistoryChart` se
+extendió de forma aditiva y 100% retrocompatible con dos props
+opcionales (`highlightStart`/`highlightEnd`) que agregan un `markArea`
+semitransparente sobre el histórico, aplicado siempre (independiente de
+qué variable esté seleccionada, a diferencia del `markLine` de baseline
+que solo aplica a consumo). `AnomalyDetailPage` ahora también consulta
+`useMeterDetail(anomaly.meter_id)` como query independiente para poder
+renderizar el chart con la ventana resaltada, sin que un fallo en esa
+consulta afecte el resto de la ficha. Primer test E2E del proyecto
+(`e2e/navigation.test.tsx`): 3 escenarios de navegación real entre las 5
+rutas usando `createMemoryRouter` con el árbol de rutas real de
+`router.tsx`, `apiClient` mockeado con datos completos. 23/23 tests en
+total (18 heredados de SPEC-007 sin regresión + 5 nuevos).
+
+**Retrabajo #1 (motivo):** el reporte de cierre original afirmó
+`pnpm build` exitoso, pero corriéndolo de forma independiente (no solo
+`pnpm test`, que no hace type-checking estricto vía `tsc`) dio un error
+real de TypeScript: el mock de `apiClient` en `navigation.test.tsx` se
+castea directamente a un tipo `{ get: Mock; post: Mock }` sin pasar por
+`unknown`, algo que `tsc -b` rechaza (`TS2352`) pero que Vitest no
+detecta porque transpila sin chequeo de tipos estricto. Corregido:
+`apiClient as unknown as { get: Mock; post: Mock }`. Gemini reconoció la
+causa exacta (Vitest "enmascaró" el error) y esta vez sí confirmó
+`pnpm build` de punta a punta antes de reportar — verificado
+independientemente, correcto.
+
+**Tercera vez consecutiva sin tocar `specs/TASK_STATUS.md`** (SPEC-007 y
+SPEC-008, ambas entregas de cada una) — la instrucción explícita sigue
+funcionando de forma sostenida.
+
+**Veredicto: APROBADO.** Con esto el roadmap original de frontend
+(SPEC-005 a SPEC-008) queda completo: fundación, Dashboard+Meters,
+MeterDetail+Anomalies, e Investigation+E2E — las 5 pantallas del flujo
+del PDF con contenido real, primer gráfico interactivo del proyecto, y
+primera cobertura de tests automatizados (unitarios + E2E de
+navegación) del frontend.
