@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+}

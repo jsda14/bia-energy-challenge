@@ -1,0 +1,25 @@
+.detailField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.detailField--warning .value {
+  color: var(--color-warning-text);
+}
+
+.detailField--critical .value {
+  color: var(--color-critical-text);
+}
