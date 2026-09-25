@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAnalysisStore } from "../../stores/useAnalysisStore";
+import { ThemeToggle } from "../ui/ThemeToggle";
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -37,10 +38,13 @@ export default function Header() {
           </NavLink>
         </nav>
 
-        <div className={styles.header__status}>
-          {isRunning && (
-            <span className={styles["header__status-badge"]}>Analizando...</span>
-          )}
+        <div className={styles.header__actions}>
+          <div className={styles.header__status}>
+            {isRunning && (
+              <span className={styles["header__status-badge"]}>Analizando...</span>
+            )}
+          </div>
+          <ThemeToggle />
         </div>
       </div>
     </header>

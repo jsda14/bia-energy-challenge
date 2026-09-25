@@ -53,10 +53,21 @@
 }
 
 .row:hover, .row:focus-visible {
-  background-color: rgba(0, 102, 204, 0.05);
+  background-color: var(--color-neutral); /* Usar variable del theme */
   outline: none;
 }
 
 .row:last-child .td {
   border-bottom: none;
+}
+
+@media (min-width: 1366px) {
+  .sortButton {
+    padding: var(--space-4);
+    font-size: 1rem;
+  }
+  .td {
+    padding: var(--space-4);
+    font-size: 1rem;
+  }
 }

@@ -37,6 +37,12 @@
   color: var(--color-primary);
 }
 
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .header__status {
   display: flex;
   align-items: center;
@@ -70,7 +76,7 @@
     justify-content: center;
   }
   
-  .header__status {
+  .header__actions {
     min-width: 100px;
     justify-content: flex-end;
   }

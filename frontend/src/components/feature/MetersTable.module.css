@@ -53,7 +53,7 @@
 }
 
 .row:hover, .row:focus-visible {
-  background-color: rgba(0, 102, 204, 0.05); /* very light primary */
+  background-color: var(--color-neutral); /* Usar variable del theme */
   outline: none; /* override default outline for rows, relying on bg color */
 }
 
@@ -68,4 +68,15 @@
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+}
+
+@media (min-width: 1366px) {
+  .sortButton {
+    padding: var(--space-4);
+    font-size: 1rem;
+  }
+  .td {
+    padding: var(--space-4);
+    font-size: 1rem;
+  }
 }

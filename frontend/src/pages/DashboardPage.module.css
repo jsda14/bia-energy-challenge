@@ -17,3 +17,9 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-4);
 }
+
+@media (min-width: 1366px) {
+  .dashboard__stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

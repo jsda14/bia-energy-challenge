@@ -35,6 +35,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         type: "value",
         name: VARIABLE_LABELS[seriesA],
         position: "left",
+        nameLocation: "end",
       },
     ];
 
@@ -43,6 +44,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         type: "value",
         name: VARIABLE_LABELS[seriesB],
         position: "right",
+        nameLocation: "end",
       });
     }
 
@@ -88,7 +90,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
     return {
       tooltip: { trigger: "axis" },
       legend: { data: compareEnabled ? [VARIABLE_LABELS[seriesA], VARIABLE_LABELS[seriesB]] : [VARIABLE_LABELS[seriesA]] },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      grid: { top: "15%", left: "3%", right: "4%", bottom: "3%", containLabel: true },
       xAxis: {
         type: "category",
         boundaryGap: false,
