@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useAnomalyDetail } from "../api/queries/useAnomalyDetail";
 import { useMeterDetail } from "../api/queries/useMeterDetail";
+import { useRegenerateExplanation } from "../api/queries/useRegenerateExplanation";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
@@ -11,8 +12,10 @@ import styles from "./AnomalyDetailPage.module.css";
 
 export default function AnomalyDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: anomaly, isLoading, isError } = useAnomalyDetail(id || "");
+  const anomalyId = id || "";
+  const { data: anomaly, isLoading, isError } = useAnomalyDetail(anomalyId);
   const { data: meter, isLoading: isMeterLoading, isError: isMeterError } = useMeterDetail(anomaly?.meter_id ?? "");
+  const { mutate: regenerate, isPending: isRegenerating, isError: isRegenerateError } = useRegenerateExplanation();
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -85,7 +88,17 @@ export default function AnomalyDetailPage() {
       </div>
 
       <div className={styles.textSection}>
-        <h2 className={styles.subtitle}>Razón</h2>
+        <div className={styles.aiHeader}>
+          <h2 className={styles.aiTitle}>Razón</h2>
+          <button
+            className={styles.button}
+            onClick={() => regenerate(anomalyId)}
+            disabled={isRegenerating}
+          >
+            {isRegenerating ? "La IA está analizando…" : "Regenerar explicación con IA"}
+          </button>
+        </div>
+        {isRegenerateError && <p className={styles.errorText}>Error al regenerar la explicación.</p>}
         <p className={styles.text}>{anomaly.reason}</p>
       </div>
 
