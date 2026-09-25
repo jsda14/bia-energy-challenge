@@ -15,6 +15,8 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-006](SPEC-006-dashboard-meter-list.md) | Frontend — Dashboard y Listado de Medidores | ✅ Aprobado | 1 | 2026-09-25 |
 | [SPEC-007](SPEC-007-meter-detail-anomalies.md) | Frontend — Detalle de Medidor y Anomalías | ✅ Aprobado | 1 | 2026-09-25 |
 | [SPEC-008](SPEC-008-investigation-evidence-e2e.md) | Frontend — Evidencia Visual de Investigación y E2E | ✅ Aprobado | 1 | 2026-09-25 |
+| [SPEC-009](SPEC-009-visual-polish-theming.md) | Frontend — Sistema de Diseño (Teal/Slate), Dark/Light Mode y Fix de Verificación en Navegador | ✅ Aprobado | 1 | 2026-09-25 |
+| [SPEC-010](SPEC-010-ux-fixes-and-data-features.md) | Frontend — Fixes de UX y Funcionalidad Pendiente del PDF | ✅ Aprobado | 2 | 2026-09-25 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -370,3 +372,103 @@ MeterDetail+Anomalies, e Investigation+E2E — las 5 pantallas del flujo
 del PDF con contenido real, primer gráfico interactivo del proyecto, y
 primera cobertura de tests automatizados (unitarios + E2E de
 navegación) del frontend.
+
+---
+
+## SPEC-009 — Frontend: Sistema de Diseño, Dark/Light Mode y Fixes de Verificación en Navegador
+
+**Estado:** ✅ Aprobado (2026-09-25, 1 ronda de retrabajo).
+
+**Resumen:** Primera vez que el proyecto se levantó de punta a punta
+(backend real + frontend real) en un navegador real, en vez de
+verificarse solo con tests/curl. Reveló deuda de diseño acumulada desde
+SPEC-005: `tokens.css` seguía marcado `/* placeholders hasta SPEC-006 */`
+y nunca se había reemplazado. Este SPEC entrega un sistema de diseño
+real (paleta Teal/Slate, contraste AA verificado y documentado en ambos
+modos), dark/light mode (`useThemeStore` + `ThemeToggle`), corrige el
+`yAxis.name` de `MeterHistoryChart` superpuesto sobre los datos, y aplica
+breakpoints reales en Dashboard/Detail/Tablas (antes casi sin usar pese a
+estar definidos desde SPEC-005).
+
+**Retrabajo #1:** `pnpm build` fallaba por un cast de TypeScript inválido
+del mock de `apiClient` en el test E2E heredado (no relacionado al
+theming en sí, pero corregido en la misma ronda). Corregido con
+`as unknown as {...}`.
+
+**Hallazgos de backend encontrados en la misma sesión de verificación
+en navegador (corregidos directamente por los arquitectos, fuera del
+flujo de Gemini):**
+- Sin `CORSMiddleware` — el frontend real nunca pudo llamar al backend
+  desde el navegador (curl/TestClient no aplican política CORS, por eso
+  nunca se había detectado). Corregido.
+- `GetDashboardSummaryUseCase` nunca usaba `AnomalyRunRepositoryPort`
+  (inyectado, no leído) — "Última corrida" se derivaba de
+  `max(detected_at)` entre anomalías en vez del `AnalysisRun` real,
+  quedando desactualizada si una corrida no detectaba nada nuevo.
+  Corregido con `get_latest()` nuevo en el puerto.
+- Timestamps naive (`datetime.utcnow()`) sin sufijo de zona — el
+  frontend los interpretaba como hora local, mostrando la hora UTC sin
+  convertir. Fix estructural: `UTCDateTime` (TypeDecorator) en las 9
+  columnas de fecha del sistema, ya que SQLite descarta el `tzinfo` al
+  leer de vuelta un datetime aware (confirmado empíricamente) —
+  "arreglar solo el origen" no alcanzaba. DB real borrada y re-sembrada.
+- `AnomalyRepository.save_many()` sin idempotencia — cada corrida de
+  análisis duplicaba las anomalías ya detectadas (confirmado en
+  producción: 19 filas para el único incidente real de M-112).
+  Corregido con clave natural `(meter_id, type, window_start,
+  window_end)`, más un `exists()` que evita gastar una llamada real al
+  `AIExplainerPort` (Claude, con costo real) en algo que de todos modos
+  se iba a descartar.
+- `ClaudeExplainerAdapter` respondía en inglés (prompt sin instrucción
+  de idioma) — corregido, verificado con una llamada real a Claude tras
+  configurar `BIA_ANTHROPIC_API_KEY` en `backend/.env`.
+
+**Veredicto: APROBADO.** Primera verificación real de integración
+frontend↔backend del proyecto — encontró y corrigió 5 bugs de backend
+que ningún test unitario/integración había expuesto, todos verificados
+end-to-end contra el servidor real (incluyendo confirmación con Claude
+real: análisis completo detecta 4 anomalías reales, un segundo análisis
+inmediato da 0 nuevas en 0.38s sin gastar llamadas a Claude).
+
+---
+
+## SPEC-010 — Frontend: Fixes de UX y Funcionalidad Pendiente del PDF
+
+**Estado:** ✅ Aprobado (2026-09-25, 2 rondas de retrabajo + 1 fix
+directo de los arquitectos).
+
+**Resumen:** 8 hallazgos de la verificación en navegador, incluyendo 2
+requisitos del PDF descartados por error en SPEC-006 (búsqueda por
+`meter_id`, KPI "Consumo Total"). También: gráfico multi-variable real
+(antes limitado a 2 series), fix del bug de merge de ECharts
+(`notMerge`), filtro en Anomalías, breadcrumb, botón de análisis
+individual por medidor. El hallazgo #8 (`SourceBadge`, indicador visual
+de IA real vs. fallback) quedó correctamente **bloqueado** — el schema
+actual no expone el origen de la explicación, requiere una decisión de
+contrato de backend fuera de alcance de este SPEC.
+
+**Retrabajo #1:** estilos inline en `MeterDetailPage.tsx` (mismo patrón
+de SPEC-006), y el `markArea` de highlight dependía de `index === 0`
+del array de variables en vez de aplicarse a todas las series activas
+(desvío del contrato original de SPEC-008).
+
+**Retrabajo #2 (corrección de diseño de interacción, no bug de
+código):** el usuario pidió explícitamente que el selector de variables
+del gráfico fuera un único checkbox "Comparar variables" + un
+`<select multiple>` (no 4 checkboxes sueltos como la primera entrega, ni
+un `<select multiple>` que permitiera quitar `consumption_kwh` como
+intentó una iteración intermedia) — consumo siempre es la serie base,
+el select solo ofrece las otras 3 variables.
+
+**Fix final directo de los arquitectos (sin pasar por Gemini):** el
+`<select multiple>` de la segunda entrega tenía un estilo inline
+(`style={{ minHeight: "80px" }}`, la misma clase de violación que se
+acababa de pedir corregir) y se veía como un listbox nativo sin
+estilizar. Corregido directamente: clase `.select--multi` en
+`MeterHistoryChart.module.css` con altura/ancho mínimos y estado
+`:checked` tintado con `var(--color-primary)`.
+
+**Tercera vez y más que TASK_STATUS.md no fue tocado** en ninguna de
+las 3 entregas de esta SPEC.
+
+**Veredicto: APROBADO.**
