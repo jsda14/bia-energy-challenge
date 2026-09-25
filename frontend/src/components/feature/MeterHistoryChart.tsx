@@ -9,6 +9,8 @@ export type ChartVariable = "consumption_kwh" | "voltage_v" | "current_a" | "pow
 interface MeterHistoryChartProps {
   readings: Reading[];
   baselineKwh: number | null;
+  highlightStart?: string;
+  highlightEnd?: string;
 }
 
 const VARIABLE_LABELS: Record<ChartVariable, string> = {
@@ -18,7 +20,7 @@ const VARIABLE_LABELS: Record<ChartVariable, string> = {
   power_factor: "Factor de potencia",
 };
 
-export function MeterHistoryChart({ readings, baselineKwh }: MeterHistoryChartProps) {
+export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highlightEnd }: MeterHistoryChartProps) {
   const [seriesA, setSeriesA] = useState<ChartVariable>("consumption_kwh");
   const [seriesB, setSeriesB] = useState<ChartVariable>("voltage_v");
   const [compareEnabled, setCompareEnabled] = useState(false);
@@ -63,6 +65,15 @@ export function MeterHistoryChart({ readings, baselineKwh }: MeterHistoryChartPr
       };
     }
 
+    if (highlightStart && highlightEnd) {
+      series[0].markArea = {
+        data: [[{ xAxis: highlightStart }, { xAxis: highlightEnd }]],
+        itemStyle: {
+          color: "rgba(114, 28, 36, 0.15)"
+        }
+      };
+    }
+
     if (compareEnabled) {
       series.push({
         name: VARIABLE_LABELS[seriesB],
@@ -86,7 +97,7 @@ export function MeterHistoryChart({ readings, baselineKwh }: MeterHistoryChartPr
       yAxis,
       series,
     };
-  }, [readings, seriesA, seriesB, compareEnabled, baselineKwh]);
+  }, [readings, seriesA, seriesB, compareEnabled, baselineKwh, highlightStart, highlightEnd]);
 
   if (readings.length === 0) {
     return <div className={styles.empty}>Sin datos históricos para este medidor.</div>;

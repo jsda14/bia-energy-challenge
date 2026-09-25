@@ -1,13 +1,16 @@
 import { useParams } from "react-router-dom";
 import { useAnomalyDetail } from "../api/queries/useAnomalyDetail";
+import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
+import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatDateTime, severityToColorToken, formatVariationPct } from "../domain/formatting";
 import styles from "./AnomalyDetailPage.module.css";
 
 export default function AnomalyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: anomaly, isLoading, isError } = useAnomalyDetail(id || "");
+  const { data: meter, isLoading: isMeterLoading, isError: isMeterError } = useMeterDetail(anomaly?.meter_id ?? "");
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -52,6 +55,22 @@ export default function AnomalyDetailPage() {
           label="Ventana de Detección" 
           value={`${formatDateTime(anomaly.window_start)} – ${formatDateTime(anomaly.window_end)}`} 
         />
+      </div>
+
+      <div className={styles.textSection}>
+        <h2 className={styles.subtitle}>Evidencia Visual</h2>
+        {isMeterLoading ? (
+          <div>Cargando evidencia visual…</div>
+        ) : isMeterError || !meter ? (
+          <div>Error al cargar la evidencia visual.</div>
+        ) : (
+          <MeterHistoryChart 
+            readings={meter.readings} 
+            baselineKwh={meter.baseline_kwh}
+            highlightStart={anomaly.window_start}
+            highlightEnd={anomaly.window_end}
+          />
+        )}
       </div>
 
       <div className={styles.textSection}>

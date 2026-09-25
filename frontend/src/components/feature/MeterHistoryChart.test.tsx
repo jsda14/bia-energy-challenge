@@ -42,4 +42,16 @@ describe("MeterHistoryChart", () => {
     
     expect(screen.getByTestId("select-series-b")).toBeInTheDocument();
   });
+
+  it("renders with highlight correctly without crashing", () => {
+    render(
+      <MeterHistoryChart 
+        readings={mockReadings} 
+        baselineKwh={10} 
+        highlightStart="2024-01-01T00:00:00Z" 
+        highlightEnd="2024-01-01T01:00:00Z" 
+      />
+    );
+    expect(screen.getByTestId("mock-echarts")).toBeInTheDocument();
+  });
 });
