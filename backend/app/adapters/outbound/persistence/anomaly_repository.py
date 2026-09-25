@@ -46,7 +46,8 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
             id=row.id,
             record=record,
             reason=row.reason,
-            recommended_action=row.recommended_action
+            recommended_action=row.recommended_action,
+            explanation_source=row.explanation_source,
         )
 
     def get_all(self) -> list[PersistedAnomaly]:
@@ -71,6 +72,7 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
             return False
         row.reason = explanation.reason
         row.recommended_action = explanation.recommended_action
+        row.explanation_source = explanation.source
         self._session.flush()
         return True
 
@@ -131,6 +133,7 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
                 confidence=anomaly.confidence,
                 reason=explanation.reason,
                 recommended_action=explanation.recommended_action,
+                explanation_source=explanation.source,
                 baseline_kwh=anomaly.evidence.baseline_kwh,
                 observed_kwh=anomaly.evidence.observed_kwh,
                 variation_pct=anomaly.evidence.variation_pct,

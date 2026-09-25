@@ -19,6 +19,7 @@ class GetAnomalyDetailUseCase:
             confidence=a.record.confidence,
             reason=a.reason,
             recommended_action=a.recommended_action,
+            explanation_source=a.explanation_source,
             baseline_kwh=ev.baseline_kwh,
             observed_kwh=ev.observed_kwh,
             variation_pct=ev.variation_pct,

@@ -106,6 +106,9 @@ class AnomalyORM(Base):
     confidence: Mapped[float] = mapped_column(Float)
     reason: Mapped[str] = mapped_column(String)
     recommended_action: Mapped[str] = mapped_column(String)
+    # "ai" si reason/recommended_action vinieron de una llamada real y
+    # exitosa a Claude, "template" si es el fallback determinista.
+    explanation_source: Mapped[str] = mapped_column(String, default="template", server_default="template")
     baseline_kwh: Mapped[float] = mapped_column(Float)
     observed_kwh: Mapped[float] = mapped_column(Float)
     variation_pct: Mapped[float] = mapped_column(Float)

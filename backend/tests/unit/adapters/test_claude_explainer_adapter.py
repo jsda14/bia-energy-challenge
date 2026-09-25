@@ -64,6 +64,7 @@ def test_explain_normal_flow(mock_event_repo, anomaly_record):
         
         assert explanation.reason == "The voltage dropped."
         assert explanation.recommended_action == "Check wiring."
+        assert explanation.source == "ai"
         assert mock_client.messages.create.call_count == 2
         mock_event_repo.get_by_meter_id.assert_called_once_with("M-101")
 
@@ -81,6 +82,7 @@ def test_explain_fallback_on_exception(mock_event_repo, anomaly_record):
         
         assert explanation.reason == expected.reason
         assert explanation.recommended_action == expected.recommended_action
+        assert explanation.source == "template"
         assert mock_client.messages.create.call_count == 1
 
 def test_explain_fallback_missing_tool_args(mock_event_repo, anomaly_record):
@@ -106,6 +108,7 @@ def test_explain_fallback_missing_tool_args(mock_event_repo, anomaly_record):
         fallback = TemplateExplainerAdapter()
         expected = fallback.explain(anomaly_record)
         assert explanation.reason == expected.reason
+        assert explanation.source == "template"
 
 def test_explain_max_iterations_exhausted(mock_event_repo, anomaly_record):
     with patch("app.adapters.outbound.ai.claude_explainer_adapter.anthropic.Anthropic") as mock_anthropic:
@@ -129,6 +132,7 @@ def test_explain_max_iterations_exhausted(mock_event_repo, anomaly_record):
         fallback = TemplateExplainerAdapter()
         expected = fallback.explain(anomaly_record)
         assert explanation.reason == expected.reason
+        assert explanation.source == "template"
         assert mock_client.messages.create.call_count == adapter.MAX_ITERATIONS
 
 def test_explain_handles_multiple_tools_and_unknown(mock_event_repo, anomaly_record):

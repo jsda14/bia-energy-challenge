@@ -206,3 +206,33 @@ def test_update_explanation_replaces_reason_and_action_only(session):
     assert fetched.record.evidence.variation_pct == 100.0
     assert fetched.record.detected_at == datetime(2026, 1, 1, 5, tzinfo=timezone.utc)
 
+
+def test_explanation_source_persisted_and_updated(session):
+    """explanation_source viaja correctamente por save_many() y
+    update_explanation() — confirma que el campo llega y vuelve completo
+    a través de la persistencia real, no solo en memoria."""
+    repo = SqlAlchemyAnomalyRepository(session)
+
+    ev = AnomalyEvidence(
+        baseline_kwh=10.0, observed_kwh=20.0, variation_pct=100.0,
+        affected_variables=[], correlated_event=None,
+        window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+    )
+    ar = AnomalyRecord(
+        meter_id="M-100", detected_at=datetime.now(timezone.utc),
+        type=AnomalyType.REAL_ANOMALY, severity=Severity.HIGH,
+        confidence=0.9, evidence=ev,
+    )
+
+    # Insertado con el fallback determinista (source default "template").
+    inserted_ids = repo.save_many([(ar, AIExplanation(reason="R", recommended_action="A"))])
+    anomaly_id = inserted_ids[0]
+    assert repo.get_by_id(anomaly_id).explanation_source == "template"
+
+    # Regenerado con una explicación real de IA.
+    repo.update_explanation(
+        anomaly_id, AIExplanation(reason="R2", recommended_action="A2", source="ai")
+    )
+    assert repo.get_by_id(anomaly_id).explanation_source == "ai"
+

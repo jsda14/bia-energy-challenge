@@ -96,6 +96,9 @@ class PersistedAnomaly(BaseModel):
         reason: Explicación en lenguaje natural (de AIExplanation.reason).
         recommended_action: Acción recomendada (de
             AIExplanation.recommended_action).
+        explanation_source: Origen real de reason/recommended_action —
+            "ai" (Claude real) o "template" (fallback determinista). Ver
+            AIExplanation.source para el detalle completo.
     """
 
     model_config = {"frozen": True}
@@ -104,3 +107,4 @@ class PersistedAnomaly(BaseModel):
     record: AnomalyRecord
     reason: str
     recommended_action: str
+    explanation_source: str = "template"

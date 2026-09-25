@@ -62,6 +62,7 @@ class AnomalyDetailResponse(BaseModel):
     confidence: float
     reason: str
     recommended_action: str
+    explanation_source: str
     baseline_kwh: float
     observed_kwh: float
     variation_pct: float

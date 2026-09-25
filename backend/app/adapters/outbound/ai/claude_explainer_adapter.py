@@ -81,7 +81,9 @@ class ClaudeExplainerAdapter(AIExplainerPort):
                             elif block.name == "submit_explanation":
                                 # Pydantic will validate the required fields. If missing, it raises ValidationError
                                 # which is caught by the broad except Exception block and triggers fallback.
-                                return AIExplanation(**block.input)
+                                # source="ai" explicit here: this is the ONLY real path where the
+                                # text genuinely came from a successful Claude tool-use call.
+                                return AIExplanation(**block.input, source="ai")
                             else:
                                 tool_results.append({
                                     "type": "tool_result",
