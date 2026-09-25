@@ -13,6 +13,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-004](SPEC-004-claude-explainer-adapter.md) | IA — Adapter Claude (agentic loop, tool-use nativo) | ✅ Aprobado | 0 | 2026-09-24 |
 | [SPEC-005](SPEC-005-frontend-foundation.md) | Frontend — Fundación (Setup, Cliente HTTP, Diseño Base, Layout) | ✅ Aprobado | 1 | 2026-09-24 |
 | [SPEC-006](SPEC-006-dashboard-meter-list.md) | Frontend — Dashboard y Listado de Medidores | ✅ Aprobado | 1 | 2026-09-25 |
+| [SPEC-007](SPEC-007-meter-detail-anomalies.md) | Frontend — Detalle de Medidor y Anomalías | ✅ Aprobado | 1 | 2026-09-25 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -271,3 +272,54 @@ encoding de la misma forma que en SPEC-005 (mojibake, mezcla de
 terminadores de línea) — reparado directamente por los arquitectos a
 partir de la última versión limpia commiteada. Segunda vez que ocurre;
 a vigilar en las próximas entregas.
+
+---
+
+## SPEC-007 — Frontend: Detalle de Medidor y Anomalías
+
+**Estado:** ✅ Aprobado (2026-09-25, 1 ronda de retrabajo).
+
+**Resumen:** Contenido real de `MeterDetailPage` (ficha de detalle vía
+`DetailField` + `MeterHistoryChart`, primer gráfico del proyecto con
+ECharts) y de `AnomaliesPage`/`AnomalyDetailPage` (`AnomaliesTable`,
+mismo patrón de orden/accesibilidad que `MetersTable` de SPEC-006).
+`MeterHistoryChart` permite comparar dinámicamente dos variables del
+histórico de lecturas (consumo/voltaje/corriente/power factor) con doble
+eje Y y línea de referencia de baseline condicional, usando colores
+hardcodeados en `chartColors.ts` sincronizados a mano con
+`styles/tokens.css` (decisión tomada en la revisión del plan para evitar
+la fragilidad de `getComputedStyle` en jsdom). Primera SPEC de frontend
+con cobertura de tests automatizados: 18 tests (Vitest + Testing
+Library) sobre los 6 archivos nuevos, setup de Vitest incluido.
+`pnpm build`/`pnpm lint`/`pnpm test` verificados de forma independiente
+en ambas rondas.
+
+**Retrabajo #1 (motivo):**
+1. Bug real de escala en `AnomalyDetailPage.tsx`: `variation_pct` del
+   backend ya viene como porcentaje plano (ej. `78.9` = +78.9%), pero el
+   código calculaba `(variation_pct * 100).toFixed(1)}%`, multiplicando
+   por 100 de más (mostraba "7890.0%" en vez de "78.9%"); el umbral de
+   tono crítico también usaba la escala equivocada (`> 0.3` en vez de
+   `> 30`). El propio test usaba `variation_pct: 1.0` como fixture, por
+   lo que pasaba en verde sin exponer el bug — mismo patrón ya visto
+   antes en el proyecto (test que pasa sin probar la propiedad real).
+   Corregido: se reemplazó el cálculo a mano por `formatVariationPct()`
+   de `domain/formatting.ts` (ya existente, ya usado en el resto del
+   proyecto), umbral corregido a `> 30`, fixture del test corregido a un
+   valor realista (`78.9`) con la aserción exacta esperada. Gemini
+   detectó y corrigió por su cuenta, durante el propio retrabajo, que
+   `formatVariationPct` usa `Intl.NumberFormat("es-ES", ...)` y formatea
+   con coma decimal ("+78,9%", no "+78.9%") — ajustó el test al
+   comportamiento real y correcto en vez de forzar un resultado
+   inconsistente con el resto del proyecto.
+
+**Mejora de proceso confirmada:** por primera vez desde que se detectó
+el patrón (SPEC-005 y SPEC-006), el agente **no tocó
+`specs/TASK_STATUS.md`** en ninguna de las dos entregas de esta SPEC —
+la instrucción explícita agregada al SPEC-007 (punto 7 de las
+instrucciones al agente) funcionó.
+
+**Veredicto: APROBADO.** El sistema tiene ahora las 5 pantallas
+principales del flujo del PDF con contenido real (Dashboard, Meters,
+Meter Detail, Anomalies, Anomaly Detail) — solo falta el flujo de
+Investigation (SPEC-008).
