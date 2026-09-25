@@ -551,3 +551,42 @@ componentes desde SPEC-010).
 SPEC: el usuario señaló que quedan ajustes de estilo adicionales que
 "siguen sin convencer" — se tratarán como su propia SPEC futura
 (número pendiente de asignar), no se mezclan con el cierre de esta.
+
+---
+
+## Fix — `SourceBadge` (hallazgo #8 de SPEC-010, resuelto)
+
+**Estado:** ✅ Resuelto (2026-09-25). No es una SPEC numerada — cambio
+puntual de backend (arquitectos) + frontend (Gemini), ambos con
+auditoría completa.
+
+**Resumen:** SPEC-010 bloqueó `SourceBadge` correctamente porque
+`anomalyDetailResponseSchema` no tenía ningún campo que indicara si
+`reason`/`recommended_action` venían de Claude real o del fallback
+determinista — implementar una heurística (ej. detección de idioma) se
+descartó explícitamente por frágil.
+
+**Backend (arquitectos, directo):** `AIExplanation` gana
+`source: Literal["ai", "template"] = "template"`. `ClaudeExplainerAdapter`
+lo fija a `"ai"` únicamente en el único camino real de éxito (una
+llamada validada a `submit_explanation`) — los 3 caminos de fallback
+mantienen el default seguro. Propagado a través de
+`PersistedAnomaly.explanation_source` (columna nueva en `AnomalyORM`,
+default `"template"`, sin migración necesaria en SQLite), `AnomalyDetailDTO`,
+y `AnomalyDetailResponse`. Verificado end-to-end con una llamada real a
+Claude: `GET /anomalies/{id}` devolvió `explanation_source: "ai"` tras
+regenerar una explicación. 85/85 tests (83 heredados + 2 nuevos de
+integración/adapters).
+
+**Frontend (Gemini):** nuevo componente `SourceBadge` — `"Generado por
+IA"` en tonos primary para `source === "ai"`, `"Plantilla predefinida"`
+en tonos neutral para `"template"` o cualquier valor no reconocido
+(nunca expone el string crudo, mismo criterio de fallback que
+`severityToColorToken`). Integrado en `AiExplanationBlock` junto al
+título. `anomalyDetailResponseSchema` gana `explanation_source:
+z.string()` (no `z.enum`, mismo criterio de tolerancia a valores
+futuros del proyecto desde SPEC-005). 52/52 tests, `pnpm build`/`pnpm
+lint` verdes, verificado independientemente. `TASK_STATUS.md` no fue
+tocado.
+
+**Veredicto: APROBADO.**
