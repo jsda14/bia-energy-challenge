@@ -1,0 +1,39 @@
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  gap: var(--space-2);
+}
+
+.stat-card__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Modifiers for emphasis */
+.stat-card--warning {
+  border-color: var(--color-warning);
+  background-color: #fffaf0; /* Light warning tint */
+}
+.stat-card--warning .stat-card__value {
+  color: var(--color-warning-text);
+}
+
+.stat-card--critical {
+  border-color: var(--color-critical);
+  background-color: #fff5f5; /* Light critical tint */
+}
+.stat-card--critical .stat-card__value {
+  color: var(--color-critical-text);
+}
