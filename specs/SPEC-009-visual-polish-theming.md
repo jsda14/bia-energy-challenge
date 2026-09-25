@@ -331,25 +331,25 @@ este SPEC exige explícitamente esta verificación manual antes de cerrar.
 
 ## 5. Plan de Ejecución Secuencial (Atomic Tasks)
 
-- [ ] **Paso 1: Rediseño de `tokens.css`:** Implementar la paleta real
+- [x] **Paso 1: Rediseño de `tokens.css`:** Implementar la paleta real
   (claro + oscuro) según sección 3.1, verificando contraste AA con una
   herramienta de tu elección antes de continuar (documentá los valores
   hex elegidos y su ratio de contraste en un comentario en el propio
   archivo).
-- [ ] **Paso 2: `useThemeStore` + aplicación de `data-theme`:**
+- [x] **Paso 2: `useThemeStore` + aplicación de `data-theme`:**
   Implementar el store (sección 3.2) + el efecto que aplica el atributo
   al DOM (RN-02). Test del store.
-- [ ] **Paso 3: `ThemeToggle` + integración en `Header`:** Implementar
+- [x] **Paso 3: `ThemeToggle` + integración en `Header`:** Implementar
   el componente (sección 3.3) y agregarlo al header (sección 3.4). Test
   del componente (click alterna el tema, refleja el estado del store).
-- [ ] **Paso 4: Fix de `MeterHistoryChart`:** Corregir el `yAxis.name`
+- [x] **Paso 4: Fix de `MeterHistoryChart`:** Corregir el `yAxis.name`
   superpuesto (sección 3.5). Verificar visualmente en el navegador
   (arrancando `pnpm dev` contra el backend real ya corriendo) que el
   label ya no se superpone, en `MeterDetailPage` y `AnomalyDetailPage`.
-- [ ] **Paso 5: Breakpoints reales:** Aplicar los ajustes de la sección
+- [x] **Paso 5: Breakpoints reales:** Aplicar los ajustes de la sección
   3.6 a Dashboard, Meter/Anomaly Detail, y las 2 tablas.
-- [ ] **Paso 6: `<title>`:** Corregir `index.html`.
-- [ ] **Paso 7: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
+- [x] **Paso 6: `<title>`:** Corregir `index.html`.
+- [x] **Paso 7: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
   verde (incluyendo TODOS los tests heredados). Verificación visual
   manual en al menos 3 viewports (`xs`, `laptop`, `fhd`) y en ambos
   modos de tema, contra el backend real corriendo — no alcanza con que
@@ -359,7 +359,7 @@ este SPEC exige explícitamente esta verificación manual antes de cerrar.
 
 ## 6. Verificación y Checklist de Salida (Pipeline de 5 Pasos)
 
-- [ ] **1. Validación Arquitectónica:**
+- [x] **1. Validación Arquitectónica:**
   - `ThemeToggle.tsx` es la única excepción nueva autorizada a tocar
     `stores/` directamente (mismo criterio que `RunAnalysisButton`).
   - `useThemeStore.ts` no aplica `data-theme` al DOM él mismo (RN de
@@ -370,16 +370,16 @@ este SPEC exige explícitamente esta verificación manual antes de cerrar.
   - `specs/TASK_STATUS.md` no fue tocado.
   - `git diff` coincide únicamente con los archivos autorizados en la
     Sección 1. Cero archivos de `backend/` tocados.
-- [ ] **2. Generación de Tests:**
+- [x] **2. Generación de Tests:**
   - Tests para `useThemeStore` (toggle alterna el valor, CB-01) y
     `ThemeToggle` (click dispara el toggle, refleja el label/ícono
     correcto según el estado).
   - Todos los tests heredados de SPEC-005 a 008 siguen pasando.
-- [ ] **3. Validación de Cobertura:**
+- [x] **3. Validación de Cobertura:**
   - `pnpm build`, `pnpm lint`, `pnpm test` en verde.
-- [ ] **4. Documentación As-Built:**
+- [x] **4. Documentación As-Built:**
   - Comentario en `tokens.css` documentando los ratios de contraste
     verificados para el primary/critical en ambos modos.
-- [ ] **5. Trazabilidad y Estado:**
+- [x] **5. Trazabilidad y Estado:**
   - Checklist de este SPEC completado. **La entrada en
     `specs/TASK_STATUS.md` la agregan los arquitectos**, no el agente.

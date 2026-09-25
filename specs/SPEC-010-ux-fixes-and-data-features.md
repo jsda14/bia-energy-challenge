@@ -308,12 +308,12 @@ export function SourceBadge(props: SourceBadgeProps): JSX.Element { ... }
 
 ## 5. Plan de Ejecución Secuencial (Atomic Tasks)
 
-- [ ] **Paso 1: Búsqueda en Medidores** (hallazgo #1, sección 3.1). Tests
+- [x] **Paso 1: Búsqueda en Medidores** (hallazgo #1, sección 3.1). Tests
   de `MetersFilterBar` (input renderiza, dispara `onSearchChange`) y de
   `MeterListPage` (filtra combinando búsqueda + selects).
-- [ ] **Paso 2: KPI Consumo Total** (hallazgo #2, sección 3.2). Test de
+- [x] **Paso 2: KPI Consumo Total** (hallazgo #2, sección 3.2). Test de
   `DashboardPage` cubriendo CB-02.
-- [ ] **Paso 3: Multi-variable + fix de merge + fix de label de eje X en
+- [x] **Paso 3: Multi-variable + fix de merge + fix de label de eje X en
   `MeterHistoryChart`** (hallazgos #3, #4 y #4b, sección 3.3). Tests:
   selección de 1/2/3/4 variables simultáneas, RN-02 (no permite
   vaciar), y una prueba explícita de que `notMerge` está presente en las
@@ -321,19 +321,23 @@ export function SourceBadge(props: SourceBadgeProps): JSX.Element { ... }
   `MeterHistoryChart.test.tsx` desde SPEC-007). El fix de `grid.bottom`
   se verifica visualmente (no hay assertion automatizada razonable para
   "el label no se superpone visualmente"), documentado en el Paso 7.
-- [ ] **Paso 4: `AnomaliesFilterBar` + integración en `AnomaliesPage`**
+- [x] **Paso 4: `AnomaliesFilterBar` + integración en `AnomaliesPage`**
   (hallazgo #5, sección 3.4). Tests del filtro + de la página.
-- [ ] **Paso 5: `Breadcrumb`** (hallazgo #6, sección 3.5), integrado en
+- [x] **Paso 5: `Breadcrumb`** (hallazgo #6, sección 3.5), integrado en
   `MeterDetailPage` y `AnomalyDetailPage`. Test del componente + smoke
   test de que aparece en ambas páginas.
-- [ ] **Paso 6: `RunAnalysisButton` individual en `MeterDetailPage`**
+- [x] **Paso 6: `RunAnalysisButton` individual en `MeterDetailPage`**
   (hallazgo #7, sección 3.6). Test de que se renderiza con el
   `meterId` correcto.
-- [ ] **Paso 7: `SourceBadge`** (hallazgo #8, sección 3.7) — **solo si
-  el campo de origen existe en el schema real**; si no, emitir
-  `BLOCKED_BY_BOUNDARY` como se indica y detenerse en este paso sin
-  tocar `AnomalyDetailPage` para este hallazgo específico.
-- [ ] **Paso 8: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
+- [x] **Paso 7: `SourceBadge`** (hallazgo #8, sección 3.7) — **BLOQUEADO
+  correctamente por Gemini**: `anomalyDetailResponseSchema` no expone el
+  origen de la explicación (Claude vs. fallback). Emitió
+  `BLOCKED_BY_BOUNDARY` tal como se pedía, sin implementar una
+  heurística frágil. `SourceBadge`/`AnomalyDetailPage` no se tocaron
+  para este hallazgo — queda pendiente de una decisión de contrato de
+  backend (agregar un campo `explanation_source` o similar) antes de
+  poder retomarlo en un SPEC futuro.
+- [x] **Paso 8: Validación:** `pnpm build`, `pnpm lint`, `pnpm test` en
   verde (incluyendo TODOS los tests heredados), confirmado
   independientemente por los arquitectos. Verificación visual manual de
   los 8 fixes contra el backend real corriendo.
@@ -342,20 +346,20 @@ export function SourceBadge(props: SourceBadgeProps): JSX.Element { ... }
 
 ## 6. Verificación y Checklist de Salida (Pipeline de 5 Pasos)
 
-- [ ] **1. Validación Arquitectónica:**
+- [x] **1. Validación Arquitectónica:**
   - Ningún archivo de `api/`, `stores/`, `router.tsx`, layout, ni
     `tokens.css` fue modificado.
   - `AnomaliesFilterBar`/`MetersFilterBar` no hacen fetch propio.
   - `specs/TASK_STATUS.md` no fue tocado.
   - `git diff` coincide únicamente con los archivos autorizados en la
     Sección 1. Cero archivos de `backend/` tocados.
-- [ ] **2. Generación de Tests:**
+- [x] **2. Generación de Tests:**
   - Cobertura para los 7-8 hallazgos implementados (según si el #8 se
     bloqueó o no), sin romper ningún test heredado.
-- [ ] **3. Validación de Cobertura:**
+- [x] **3. Validación de Cobertura:**
   - `pnpm build`, `pnpm lint`, `pnpm test` en verde.
-- [ ] **4. Documentación As-Built:**
+- [x] **4. Documentación As-Built:**
   - Comentarios JSDoc breves en los componentes/props nuevos.
-- [ ] **5. Trazabilidad y Estado:**
+- [x] **5. Trazabilidad y Estado:**
   - Checklist de este SPEC completado. **La entrada en
     `specs/TASK_STATUS.md` la agregan los arquitectos, no el agente.**
