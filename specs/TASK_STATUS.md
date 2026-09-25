@@ -17,6 +17,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-008](SPEC-008-investigation-evidence-e2e.md) | Frontend — Evidencia Visual de Investigación y E2E | ✅ Aprobado | 1 | 2026-09-25 |
 | [SPEC-009](SPEC-009-visual-polish-theming.md) | Frontend — Sistema de Diseño (Teal/Slate), Dark/Light Mode y Fix de Verificación en Navegador | ✅ Aprobado | 1 | 2026-09-25 |
 | [SPEC-010](SPEC-010-ux-fixes-and-data-features.md) | Frontend — Fixes de UX y Funcionalidad Pendiente del PDF | ✅ Aprobado | 2 | 2026-09-25 |
+| [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -472,3 +473,81 @@ estilizar. Corregido directamente: clase `.select--multi` en
 las 3 entregas de esta SPEC.
 
 **Veredicto: APROBADO.**
+
+---
+
+## SPEC-011 — Frontend: Rediseño Visual "Bia Pulse" (Identidad de Marca Real)
+
+**Estado:** ✅ Aprobado (2026-09-25, 2 rondas de reescritura completa).
+
+**Resumen:** Reemplaza la paleta genérica Teal/Slate de SPEC-009 por un
+sistema anclado al logo real de la marca
+(`frontend/src/assets/img/bia-icon.jpg` — orbe azul-noche→violeta
+eléctrico con rayo lila, descubierto en el repo durante esta sesión).
+Fix de un bug de dominio preexistente (`severityToColorToken`:
+`MEDIUM`/`HIGH` daban el mismo color, `LOW` era más grave que
+`neutral`). Menú mobile colapsable (`MobileNav`) funcional por primera
+vez. Sistema de motion "Pulse" (un solo `@keyframes` reutilizado en 3
+contextos: botón de análisis, indicador "en vivo", loader de IA) con
+soporte de `prefers-reduced-motion`. `AiExplanationBlock` reestructurado
+para cubrir "Razón" y "Acción Recomendada" bajo un único ciclo de carga
+(antes solo cubría "Razón", dejando "Acción Recomendada" sin loading
+visible durante la regeneración). 49/49 tests, `pnpm build`/`pnpm lint`
+verificados independientemente.
+
+**Historial de 2 intentos previos (documentado en detalle en
+`PROJECT_NOTES.md`, resumen acá):**
+1. **v1 (paleta Deep Navy + Electric Lilac, glow genérico):** nunca se
+   ejecutó — rechazada en la revisión del plan por ser indistinguible
+   del cliché visual "dashboard de IA genérico" (navy+violeta+glow),
+   justo lo que se pedía evitar.
+2. **v2 (paleta "Copper Signal", industrial/cobre):** sí se ejecutó
+   completa (incluyó el primer uso de `react-markdown`/`remark-gfm`,
+   que se mantiene en v3), pero fue rechazada por el usuario al verla
+   corriendo: paleta sin ninguna relación con el logo real (nunca se
+   miró el asset), Dashboard sin jerarquía visual, overlay de loader
+   superpuesto con "texto de fondo raro", header sin menú mobile
+   funcional, y el bug de severidad confirmado. **v2 nunca llegó a
+   commitearse** — quedó reemplazada en el mismo working tree antes de
+   cerrar el ciclo de commits, así que no existe en el historial de git
+   como una entrega separada.
+
+**Verificación de contraste AA — hallazgo real encontrado por los
+arquitectos antes de aprobar el plan:** `--color-primary` propuesto en
+modo claro (`#6A63E0`) daba 4.40:1, por debajo del mínimo AA (4.5:1) —
+la propia SPEC ya lo marcaba como "estimado, verificar antes de fijar".
+Los arquitectos calcularon el ajuste mínimo necesario (`#6660D9`,
+4.64:1) antes de mandar la SPEC al agente, en vez de dejarlo como tarea
+abierta. El resto de los 12 valores de contraste que el agente declaró
+en `tokens.css` fueron verificados independientemente con el mismo
+método de cálculo (luminancia relativa WCAG) — los 12 coincidieron
+exactamente.
+
+**Cambio de proceso de esta sesión:** por decisión explícita del
+usuario, esta implementación la ejecutó **un agente Claude distinto de
+Gemini** (Gemini valorado como "flojo para estilos" en esta sesión) —
+primera vez que el proyecto usa un agente codificador distinto de
+Gemini para una SPEC completa. Mismo protocolo de Boundary Protocol,
+Plan Mode, y auditoría independiente aplicado sin cambios.
+
+**Consolidación de versiones:** tras el cierre, se consolidaron los 3
+archivos de SPEC (`v1`/`v2`/`v3`) en un único
+`specs/SPEC-011-brand-visual-redesign.md` con el contenido final
+auditado — mantener 3 versiones por separado no aportaba valor una vez
+cerrado el ciclo (v1 nunca se ejecutó, v2 nunca se commiteó). El
+razonamiento de diseño de cada iteración queda documentado en la
+sección 0 del archivo final y en `PROJECT_NOTES.md`, no como archivos
+de spec duplicados.
+
+**Hallazgos menores corregidos directamente por los arquitectos (sin
+retrabajo formal):** un comentario de contraste desactualizado en
+`tokens.css` (decía 8.24:1, el valor real y correctamente usado era
+9.91:1 — solo el comentario estaba desincronizado) y un `color: #ffffff`
+hardcodeado en `RunAnalysisButton.module.css` (reemplazado por
+`var(--color-bg-elevated, #ffffff)`, mismo patrón ya usado en otros
+componentes desde SPEC-010).
+
+**Veredicto: APROBADO.** Pendiente explícito, no resuelto en esta
+SPEC: el usuario señaló que quedan ajustes de estilo adicionales que
+"siguen sin convencer" — se tratarán como su propia SPEC futura
+(número pendiente de asignar), no se mezclan con el cierre de esta.
