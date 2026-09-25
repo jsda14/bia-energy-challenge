@@ -141,6 +141,11 @@ de saltarse en un bucle de tool-calling que una prohibición en prosa.
 - **Accesibilidad mínima**: elementos interactivos con roles/aria
   apropiados, contraste legible, la app debe sentirse "producto SaaS" (ver
   sección 21 del PDF), no un panel de pruebas.
+- **Testing (dependencias autorizadas desde SPEC-007, ver sección 5)**:
+  `vitest`, `@testing-library/react`, `@testing-library/jest-dom`,
+  `@testing-library/user-event`, `jsdom` (entorno de test de Vitest). No
+  agregar Cypress/Playwright ni otro runner de e2e navegador-real — fuera
+  de alcance de este proyecto.
 
 ### 4.2 Validación de datos: Zod, a mano, fuente única de verdad en frontend
 
@@ -226,6 +231,25 @@ de saltarse en un bucle de tool-calling que una prohibición en prosa.
   dataset**: M-109 (real), M-104 (explicable), M-106 (falso positivo), M-112
   (calidad de datos) — usando fixtures derivadas de `readings.csv`/`events.csv`,
   nunca de `expected_results.csv` (no disponible ni debe estarlo).
+- **Frontend**: `Vitest` + `@testing-library/react`. SPEC-005 (fundación,
+  sin componentes de negocio) y SPEC-006 (Dashboard + Meter List, primera
+  entrega con lógica real) quedaron sin tests automatizados por decisión
+  explícita — deuda aceptada y cerrada, no se exige cobertura retroactiva
+  sobre esas dos SPECs. **A partir de SPEC-007 inclusive**, toda SPEC de
+  frontend que implemente lógica no trivial (ordenamiento, filtrado,
+  formateo condicional, manejo de estados de error/carga, reglas de
+  negocio RN-*/CB-* propias de esa página) debe incluir su propia
+  cobertura de Vitest + Testing Library dentro del mismo SPEC, en la
+  sección 5 (Plan de Ejecución) — mismo criterio que el backend: tests
+  desde que existe lógica real que probar, no una SPEC de testing
+  retroactiva al final del proyecto.
+  - Prioridad de cobertura: `domain/` (funciones puras, fácil de testear
+    exhaustivamente) > lógica de componentes de `components/feature/`
+    (sort, filtro, casos borde) > páginas (`pages/`, smoke test de que
+    renderiza sin crashear en cada estado: loading/error/vacío/con datos).
+  - No se exige cobertura de `components/ui/` puramente presentacionales
+    (`Badge`, `StatCard`) salvo que tengan lógica condicional propia más
+    allá de mapear props a clases CSS.
 - **Frontend**: tests de componentes críticos (Dashboard, MeterDetail, Anomalies)
   con Vitest + Testing Library, a nivel de comportamiento (qué ve el usuario), no
   de implementación interna.
