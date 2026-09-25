@@ -227,8 +227,8 @@ describe("AnomalyDetailPage", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
-    expect(screen.getByText("La IA está analizando…")).toBeInTheDocument();
-    expect(screen.getByText("La IA está analizando…")).toBeDisabled();
+    expect(screen.getAllByText("La IA está analizando…").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "La IA está analizando…" })).toBeDisabled();
 
     // Test error
     mockUseRegenerateExplanation.mockReturnValue({ mutate: mutateMock, isPending: false, isError: true });

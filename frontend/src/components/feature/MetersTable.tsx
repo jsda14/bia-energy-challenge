@@ -109,12 +109,12 @@ export function MetersTable({ meters }: MetersTableProps) {
                 tabIndex={0}
                 onKeyDown={(e) => handleKeyDown(e, meter.meter_id)}
               >
-                <td className={styles.td}>{meter.name}</td>
-                <td className={styles.td}>
+                <td className={styles.td} data-label="Nombre">{meter.name}</td>
+                <td className={styles.td} data-label="Estado">
                   <Badge label={meter.status} tone={meterStatusToColorToken(meter.status)} />
                 </td>
-                <td className={styles.td}>{formatKwh(meter.consumption_kwh)}</td>
-                <td className={styles.td}>
+                <td className={styles.td} data-label="Consumo">{formatKwh(meter.consumption_kwh)}</td>
+                <td className={styles.td} data-label="Variación">
                   {meter.variation_pct !== null ? (
                     hasHighVariation ? (
                       <Badge 
@@ -128,7 +128,7 @@ export function MetersTable({ meters }: MetersTableProps) {
                     "—"
                   )}
                 </td>
-                <td className={styles.td}>
+                <td className={styles.td} data-label="Severidad">
                   {meter.anomaly_severity !== null ? (
                     <Badge 
                       label={meter.anomaly_severity} 

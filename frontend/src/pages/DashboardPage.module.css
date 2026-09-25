@@ -14,12 +14,24 @@
 
 .dashboard__stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--space-4);
 }
 
-@media (min-width: 1366px) {
+@media (min-width: 640px) {
+  .dashboard__stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dashboard__stats-grid > :first-child {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
   .dashboard__stats-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+  .dashboard__stats-grid > :first-child {
+    grid-column: span 4;
   }
 }

@@ -9,29 +9,43 @@
   --bp-fhd: 1920px;
   --bp-qhd: 2560px;
 
-  /* Paleta de marca — energía/datos (Teal & Slate)
-     Contraste verificado (Light Mode):
-     text-muted vs bg: 4.55:1
-     primary vs bg: 5.23:1
-     neutral-text vs bg: 6.92:1
-     warning-text vs bg: 4.51:1
-     critical-text vs bg: 5.30:1
+  /* Paleta de marca — "Bia Pulse", anclada a frontend/src/assets/img/bia-icon.jpg
+     (orbe azul-noche → violeta eléctrico con rayo lila). RN-04: cada color
+     se referencia contra una zona concreta del logo.
+     Contraste verificado (Light Mode, cálculo de luminancia relativa WCAG):
+     text-muted vs bg: 5.76:1
+     primary vs bg: 4.64:1
+     pulse vs bg: 5.40:1
+     neutral-text vs bg: 8.19:1
+     warning-text vs bg: 6.48:1
+     critical-text vs bg: 7.08:1
   */
-  --color-bg: #f8fafc;
-  --color-bg-elevated: #ffffff;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-primary: #0f766e;
-  --color-primary-hover: #115e59;
+  --color-bg: #F7F7FC;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-rgb: 247, 247, 252;
+  --color-text: #14132B;
+  --color-text-muted: #625E7D;
+  --color-border: rgba(20, 19, 43, 0.09);
+  /* Lila del rayo del logo, oscurecido para AA — 4.64:1 sobre --color-bg */
+  --color-primary: #6660D9;
+  --color-primary-hover: #564FC4;
+  --color-primary-rgb: 102, 96, 217;
 
-  /* Semántica de severidad/estado */
-  --color-neutral: #f1f5f9;
-  --color-neutral-text: #475569;
-  --color-warning: #fef3c7;
-  --color-warning-text: #b45309;
-  --color-critical: #fee2e2;
-  --color-critical-text: #b91c1c;
+  /* Violeta eléctrico de la zona media del degradé del logo — 5.40:1 sobre --color-bg.
+     Reservado para el sistema de motion "Pulse" (ver 3.2), nunca decorativo suelto. */
+  --color-pulse: #5B4FE0;
+  --color-pulse-rgb: 91, 79, 224;
+
+  /* Semántica de severidad/estado — re-derivada para armonizar con el azul-violeta de marca */
+  --color-neutral: #E7E6F2;
+  --color-neutral-text: #4B4768;
+  --color-neutral-rgb: 231, 230, 242;
+  --color-warning: #FCEACC;
+  --color-warning-text: #7A5200;
+  --color-warning-rgb: 252, 234, 204;
+  --color-critical: #FBE1E6;
+  --color-critical-text: #A31B3C;
+  --color-critical-rgb: 251, 225, 230;
 
   /* Tipografía y Espaciado */
   --font-family-base: system-ui, -apple-system, sans-serif;
@@ -41,52 +55,105 @@
   --space-4: 1.5rem;
   --space-5: 2rem;
   --space-6: 3rem;
-  
+
   --radius-sm: 4px;
   --radius-md: 8px;
-  
+
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+
+  /* Motion Tokens — sistema "Pulse" (ver tokens.css sección 3.2 del SPEC) */
+  --motion-fast: 150ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  --ease-pulse: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :root[data-theme="dark"] {
-  /* Contraste verificado (Dark Mode):
-     text-muted vs bg: 6.96:1
-     primary vs bg: 9.59:1
-     neutral-text vs bg: 6.97:1
-     warning-text vs bg: 7.28:1
-     critical-text vs bg: 6.93:1
+  /* Contraste verificado (Dark Mode, cálculo de luminancia relativa WCAG):
+     text-muted vs bg: 7.14:1
+     primary vs bg: 9.91:1
+     pulse vs bg: 5.18:1
+     neutral-text vs bg-elevated: 8.63:1
+     warning-text vs bg-elevated: 11.12:1
+     critical-text vs bg-elevated: 9.67:1
   */
-  --color-bg: #0f172a;
-  --color-bg-elevated: #1e293b;
-  --color-text: #f8fafc;
-  --color-text-muted: #94a3b8;
-  --color-border: #334155;
-  --color-primary: #2dd4bf;
-  --color-primary-hover: #5eead4;
+  /* Azul-noche profundo, tomado del borde exterior del orbe del logo */
+  --color-bg: #0A0A1F;
+  /* Un paso hacia el violeta medio del degradé, para dar profundidad de capas */
+  --color-bg-elevated: #14142E;
+  --color-bg-rgb: 10, 10, 31;
+  /* Blanco con tinte lila muy sutil */
+  --color-text: #F1F0F9;
+  --color-text-muted: #9C98C2;
+  --color-border: rgba(180, 177, 254, 0.14);
+  /* El lila exacto del rayo del logo — 9.91:1 sobre --color-bg */
+  --color-primary: #B4B1FE;
+  --color-primary-hover: #CFCCFF;
+  --color-primary-rgb: 180, 177, 254;
 
-  --color-neutral: #334155;
-  --color-neutral-text: #cbd5e1;
-  --color-warning: #78350f;
-  --color-warning-text: #fde68a;
-  --color-critical: #7f1d1d;
-  --color-critical-text: #fecaca;
+  /* Violeta eléctrico de la zona media del degradé del logo — 5.68:1 sobre --color-bg */
+  --color-pulse: #7C6FFF;
+  --color-pulse-rgb: 124, 111, 255;
+
+  --color-neutral: #26254A;
+  --color-neutral-text: #B3AFDD;
+  --color-neutral-rgb: 38, 37, 74;
+  --color-warning: #4A3607;
+  --color-warning-text: #F2C572;
+  --color-warning-rgb: 74, 54, 7;
+  --color-critical: #4A1424;
+  --color-critical-text: #F5A9BE;
+  --color-critical-rgb: 74, 20, 36;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-bg: #0f172a;
-    --color-bg-elevated: #1e293b;
-    --color-text: #f8fafc;
-    --color-text-muted: #94a3b8;
-    --color-border: #334155;
-    --color-primary: #2dd4bf;
-    --color-primary-hover: #5eead4;
+    --color-bg: #0A0A1F;
+    --color-bg-elevated: #14142E;
+    --color-bg-rgb: 10, 10, 31;
+    --color-text: #F1F0F9;
+    --color-text-muted: #9C98C2;
+    --color-border: rgba(180, 177, 254, 0.14);
+    --color-primary: #B4B1FE;
+    --color-primary-hover: #CFCCFF;
+    --color-primary-rgb: 180, 177, 254;
 
-    --color-neutral: #334155;
-    --color-neutral-text: #cbd5e1;
-    --color-warning: #78350f;
-    --color-warning-text: #fde68a;
-    --color-critical: #7f1d1d;
-    --color-critical-text: #fecaca;
+    --color-pulse: #7C6FFF;
+    --color-pulse-rgb: 124, 111, 255;
+
+    --color-neutral: #26254A;
+    --color-neutral-text: #B3AFDD;
+    --color-neutral-rgb: 38, 37, 74;
+    --color-warning: #4A3607;
+    --color-warning-text: #F2C572;
+    --color-warning-rgb: 74, 54, 7;
+    --color-critical: #4A1424;
+    --color-critical-text: #F5A9BE;
+    --color-critical-rgb: 74, 20, 36;
   }
+}
+
+/* Sistema de motion "Pulse" — anillo concéntrico reutilizado en 3 contextos:
+   RunAnalysisButton (hover/focus), indicador "en vivo" del header, y el
+   loader de IA en AiExplanationBlock. Un solo @keyframes; el color lo aporta
+   la regla que lo aplica via --pulse-color (default --color-primary). */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--pulse-color-rgb, var(--color-primary-rgb)), 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(var(--pulse-color-rgb, var(--color-primary-rgb)), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--pulse-color-rgb, var(--color-primary-rgb)), 0);
+  }
+}
+
+.pulse--primary {
+  --pulse-color-rgb: var(--color-primary-rgb);
+}
+
+.pulse--pulse {
+  --pulse-color-rgb: var(--color-pulse-rgb);
 }

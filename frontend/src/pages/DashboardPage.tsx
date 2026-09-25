@@ -36,6 +36,7 @@ export default function DashboardPage() {
         <StatCard
           label="Consumo Total"
           value={totalConsumptionDisplay}
+          featured
         />
 
         <StatCard

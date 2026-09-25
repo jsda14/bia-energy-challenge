@@ -8,6 +8,7 @@ import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatDateTime, severityToColorToken, formatVariationPct } from "../domain/formatting";
+import { AiExplanationBlock } from "../components/feature/AiExplanationBlock";
 import styles from "./AnomalyDetailPage.module.css";
 
 export default function AnomalyDetailPage() {
@@ -88,23 +89,13 @@ export default function AnomalyDetailPage() {
       </div>
 
       <div className={styles.textSection}>
-        <div className={styles.aiHeader}>
-          <h2 className={styles.aiTitle}>Razón</h2>
-          <button
-            className={styles.button}
-            onClick={() => regenerate(anomalyId)}
-            disabled={isRegenerating}
-          >
-            {isRegenerating ? "La IA está analizando…" : "Regenerar explicación con IA"}
-          </button>
-        </div>
-        {isRegenerateError && <p className={styles.errorText}>Error al regenerar la explicación.</p>}
-        <p className={styles.text}>{anomaly.reason}</p>
-      </div>
-
-      <div className={styles.textSection}>
-        <h2 className={styles.subtitle}>Acción Recomendada</h2>
-        <p className={styles.text}>{anomaly.recommended_action}</p>
+        <AiExplanationBlock
+          reason={anomaly.reason}
+          recommendedAction={anomaly.recommended_action}
+          isRegenerating={isRegenerating}
+          isRegenerateError={isRegenerateError}
+          onRegenerate={() => regenerate(anomalyId)}
+        />
       </div>
     </div>
   );

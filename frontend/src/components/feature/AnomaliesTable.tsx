@@ -100,13 +100,13 @@ export function AnomaliesTable({ anomalies }: AnomaliesTableProps) {
               onKeyDown={(e) => handleKeyDown(e, anomaly.id)}
               data-testid={`anomaly-row-${anomaly.id}`}
             >
-              <td className={styles.td}>{anomaly.meter_id}</td>
-              <td className={styles.td}>{anomaly.type}</td>
-              <td className={styles.td}>
+              <td className={styles.td} data-label="Medidor">{anomaly.meter_id}</td>
+              <td className={styles.td} data-label="Tipo">{anomaly.type}</td>
+              <td className={styles.td} data-label="Severidad">
                 <Badge label={anomaly.severity} tone={severityToColorToken(anomaly.severity)} />
               </td>
-              <td className={styles.td}>{(anomaly.confidence * 100).toFixed(0)}%</td>
-              <td className={styles.td}>{formatDateTime(anomaly.detected_at)}</td>
+              <td className={styles.td} data-label="Confianza">{(anomaly.confidence * 100).toFixed(0)}%</td>
+              <td className={styles.td} data-label="Detectada">{formatDateTime(anomaly.detected_at)}</td>
             </tr>
           ))}
         </tbody>

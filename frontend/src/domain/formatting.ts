@@ -31,8 +31,9 @@ export function formatDateTime(isoString: string): string {
 export function severityToColorToken(severity: string): "neutral" | "warning" | "critical" {
   switch (severity) {
     case "LOW":
-      return "warning";
+      return "neutral";
     case "MEDIUM":
+      return "warning";
     case "HIGH":
       return "critical";
     default:

@@ -1,0 +1,67 @@
+.markdown-text {
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.markdown-text__paragraph {
+  margin: 0 0 var(--space-3) 0;
+}
+
+.markdown-text__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-text__strong {
+  font-weight: 700;
+}
+
+.markdown-text__list {
+  margin: 0 0 var(--space-3) 0;
+  padding-left: var(--space-4);
+}
+
+.markdown-text__list:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-text__list-item {
+  margin-bottom: var(--space-1);
+}
+
+.markdown-text__list-item:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-text__table-wrapper {
+  overflow-x: auto;
+  margin: 0 0 var(--space-3) 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.markdown-text__table-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-text__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.markdown-text__table-header {
+  background-color: var(--color-neutral);
+  border-bottom: 2px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.markdown-text__table-cell {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.markdown-text__table tr:last-child .markdown-text__table-cell {
+  border-bottom: none;
+}
