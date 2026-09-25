@@ -146,6 +146,14 @@ de saltarse en un bucle de tool-calling que una prohibición en prosa.
   `@testing-library/user-event`, `jsdom` (entorno de test de Vitest). No
   agregar Cypress/Playwright ni otro runner de e2e navegador-real — fuera
   de alcance de este proyecto.
+- **Gráficas (dependencia autorizada desde SPEC-007, único caso de uso:
+  histórico de lecturas en `MeterDetailPage`)**: `echarts` +
+  `echarts-for-react` (wrapper oficial de React). Theming vía la opción
+  `theme`/`option` de ECharts leyendo colores de `styles/tokens.css` en
+  vez de la paleta por defecto de la librería — nunca debe verse como un
+  chart "de catálogo" sin personalizar. No agregar ninguna otra librería
+  de gráficas (Chart.js, Recharts, Victory, D3 standalone, etc.) — una
+  sola es suficiente para todo el proyecto.
 
 ### 4.2 Validación de datos: Zod, a mano, fuente única de verdad en frontend
 
