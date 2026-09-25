@@ -65,6 +65,15 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
         rows = self._session.scalars(stmt).all()
         return [self._to_domain(row) for row in rows]
 
+    def update_explanation(self, anomaly_id: str, explanation: AIExplanation) -> bool:
+        row = self._session.get(AnomalyORM, anomaly_id)
+        if not row:
+            return False
+        row.reason = explanation.reason
+        row.recommended_action = explanation.recommended_action
+        self._session.flush()
+        return True
+
     def exists(self, meter_id: str, anomaly_type: str, window_start, window_end) -> bool:
         stmt = select(AnomalyORM.id).where(
             AnomalyORM.meter_id == meter_id,

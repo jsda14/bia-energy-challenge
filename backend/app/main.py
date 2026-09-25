@@ -19,6 +19,7 @@ from app.application.list_meters import ListMetersUseCase
 from app.application.get_meter_detail import GetMeterDetailUseCase
 from app.application.list_anomalies import ListAnomaliesUseCase
 from app.application.get_anomaly_detail import GetAnomalyDetailUseCase
+from app.application.regenerate_explanation import RegenerateExplanationUseCase
 
 from app.adapters.inbound.api import meters_router, anomalies_router, dashboard_router, ai_router
 from app.adapters.inbound.api.dependencies import (
@@ -28,7 +29,8 @@ from app.adapters.inbound.api.dependencies import (
     get_list_meters_use_case as stub_list_meters,
     get_meter_detail_use_case as stub_meter_detail,
     get_list_anomalies_use_case as stub_list_anom,
-    get_anomaly_detail_use_case as stub_anom_detail
+    get_anomaly_detail_use_case as stub_anom_detail,
+    get_regenerate_explanation_use_case as stub_regen_explanation
 )
 
 app = FastAPI(title="Bia Energy Challenge API")
@@ -110,6 +112,12 @@ def build_list_anomalies_use_case(session: Session = Depends(get_db_session)) ->
 def build_anomaly_detail_use_case(session: Session = Depends(get_db_session)) -> GetAnomalyDetailUseCase:
     return GetAnomalyDetailUseCase(anomaly_repo=SqlAlchemyAnomalyRepository(session))
 
+def build_regenerate_explanation_use_case(session: Session = Depends(get_db_session)) -> RegenerateExplanationUseCase:
+    return RegenerateExplanationUseCase(
+        anomaly_repo=SqlAlchemyAnomalyRepository(session),
+        explainer=get_explainer(session),
+    )
+
 # Dependency Injection overrides for routers
 app.dependency_overrides[stub_analyze] = build_analyze_use_case
 app.dependency_overrides[stub_dash] = build_dashboard_summary_use_case
@@ -117,6 +125,7 @@ app.dependency_overrides[stub_list_meters] = build_list_meters_use_case
 app.dependency_overrides[stub_meter_detail] = build_meter_detail_use_case
 app.dependency_overrides[stub_list_anom] = build_list_anomalies_use_case
 app.dependency_overrides[stub_anom_detail] = build_anomaly_detail_use_case
+app.dependency_overrides[stub_regen_explanation] = build_regenerate_explanation_use_case
 
 app.include_router(meters_router)
 app.include_router(anomalies_router)

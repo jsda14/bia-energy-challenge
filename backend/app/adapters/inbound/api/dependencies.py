@@ -35,3 +35,6 @@ def get_list_anomalies_use_case():
 
 def get_anomaly_detail_use_case():
     raise NotImplementedError
+
+def get_regenerate_explanation_use_case():
+    raise NotImplementedError

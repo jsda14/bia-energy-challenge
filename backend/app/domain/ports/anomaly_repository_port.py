@@ -32,7 +32,16 @@ class AnomalyRepositoryPort(Protocol):
 
     def save_many(self, items: list[tuple[AnomalyRecord, AIExplanation]]) -> list[str]:
         """Persiste múltiples registros de anomalía junto con sus explicaciones.
-        
+
         Genera los IDs (UUIDv4) para cada anomalía y los retorna.
         """
+        ...
+
+    def update_explanation(self, anomaly_id: str, explanation: AIExplanation) -> bool:
+        """Actualiza únicamente `reason`/`recommended_action` de una anomalía
+        ya persistida, sin tocar ningún otro campo (type/severity/confidence/
+        evidence/detected_at permanecen intactos — esto NO es una nueva
+        detección, es solo una nueva explicación en lenguaje natural sobre
+        el mismo incidente ya detectado). Retorna True si la anomalía existía
+        y se actualizó, False si `anomaly_id` no existe."""
         ...

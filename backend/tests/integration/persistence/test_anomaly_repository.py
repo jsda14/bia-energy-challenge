@@ -165,3 +165,44 @@ def test_anomaly_repository_exists(session):
     # Otro medidor con la misma ventana no debe dar falso positivo.
     assert repo.exists("M-999", "REAL_ANOMALY", ws, we) is False
 
+
+def test_update_explanation_returns_false_for_unknown_id(session):
+    repo = SqlAlchemyAnomalyRepository(session)
+    updated = repo.update_explanation("does-not-exist", AIExplanation(reason="R", recommended_action="A"))
+    assert updated is False
+
+
+def test_update_explanation_replaces_reason_and_action_only(session):
+    repo = SqlAlchemyAnomalyRepository(session)
+
+    ev = AnomalyEvidence(
+        baseline_kwh=10.0, observed_kwh=20.0, variation_pct=100.0,
+        affected_variables=["consumption_kwh"], correlated_event=None,
+        window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+    )
+    ar = AnomalyRecord(
+        meter_id="M-100", detected_at=datetime(2026, 1, 1, 5, tzinfo=timezone.utc),
+        type=AnomalyType.REAL_ANOMALY, severity=Severity.HIGH,
+        confidence=0.9, evidence=ev,
+    )
+    inserted_ids = repo.save_many([(ar, AIExplanation(reason="Razón original", recommended_action="Acción original"))])
+    anomaly_id = inserted_ids[0]
+
+    updated = repo.update_explanation(
+        anomaly_id, AIExplanation(reason="Razón nueva", recommended_action="Acción nueva")
+    )
+    assert updated is True
+
+    fetched = repo.get_by_id(anomaly_id)
+    assert fetched is not None
+    assert fetched.reason == "Razón nueva"
+    assert fetched.recommended_action == "Acción nueva"
+    # Todo lo demás (detección/evidencia) permanece intacto — esto no es
+    # una nueva detección, solo una nueva explicación.
+    assert fetched.record.type == AnomalyType.REAL_ANOMALY
+    assert fetched.record.severity == Severity.HIGH
+    assert fetched.record.confidence == 0.9
+    assert fetched.record.evidence.variation_pct == 100.0
+    assert fetched.record.detected_at == datetime(2026, 1, 1, 5, tzinfo=timezone.utc)
+
