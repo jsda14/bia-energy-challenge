@@ -10,6 +10,7 @@ describe("AiExplanationBlock", () => {
       <AiExplanationBlock
         reason="Normal reason"
         recommendedAction="Normal action"
+        explanationSource="template"
         isRegenerating={false}
         isRegenerateError={false}
         onRegenerate={onRegenerate}
@@ -27,6 +28,7 @@ describe("AiExplanationBlock", () => {
       <AiExplanationBlock
         reason="Normal reason"
         recommendedAction="Normal action"
+        explanationSource="template"
         isRegenerating={false}
         isRegenerateError={false}
         onRegenerate={onRegenerate}
@@ -41,6 +43,7 @@ describe("AiExplanationBlock", () => {
       <AiExplanationBlock
         reason="Old reason"
         recommendedAction="Old action"
+        explanationSource="template"
         isRegenerating={true}
         isRegenerateError={false}
         onRegenerate={vi.fn()}
@@ -65,6 +68,7 @@ describe("AiExplanationBlock", () => {
       <AiExplanationBlock
         reason="Old reason"
         recommendedAction="Old action"
+        explanationSource="template"
         isRegenerating={false}
         isRegenerateError={true}
         onRegenerate={vi.fn()}
@@ -78,6 +82,7 @@ describe("AiExplanationBlock", () => {
       <AiExplanationBlock
         reason="Old reason"
         recommendedAction="Old action"
+        explanationSource="template"
         isRegenerating={true}
         isRegenerateError={false}
         onRegenerate={vi.fn()}
@@ -88,6 +93,7 @@ describe("AiExplanationBlock", () => {
       <AiExplanationBlock
         reason="New reason"
         recommendedAction="New action"
+        explanationSource="template"
         isRegenerating={false}
         isRegenerateError={false}
         onRegenerate={vi.fn()}

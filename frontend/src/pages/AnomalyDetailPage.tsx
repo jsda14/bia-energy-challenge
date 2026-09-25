@@ -92,6 +92,7 @@ export default function AnomalyDetailPage() {
         <AiExplanationBlock
           reason={anomaly.reason}
           recommendedAction={anomaly.recommended_action}
+          explanationSource={anomaly.explanation_source}
           isRegenerating={isRegenerating}
           isRegenerateError={isRegenerateError}
           onRegenerate={() => regenerate(anomalyId)}

@@ -85,7 +85,8 @@ describe("AnomalyDetailPage", () => {
         affected_variables: [],
         correlated_event: null,
         window_start: "2024-01-01T00:00:00Z",
-        window_end: "2024-01-01T01:00:00Z"
+        window_end: "2024-01-01T01:00:00Z",
+        explanation_source: "ai"
       },
       isLoading: false,
       isError: false
@@ -143,7 +144,8 @@ describe("AnomalyDetailPage", () => {
         affected_variables: [],
         correlated_event: null,
         window_start: "2024-01-01T00:00:00Z",
-        window_end: "2024-01-01T01:00:00Z"
+        window_end: "2024-01-01T01:00:00Z",
+        explanation_source: "ai"
       },
       isLoading: false,
       isError: false
@@ -184,7 +186,8 @@ describe("AnomalyDetailPage", () => {
         affected_variables: [],
         correlated_event: null,
         window_start: "2024-01-01T00:00:00Z",
-        window_end: "2024-01-01T01:00:00Z"
+        window_end: "2024-01-01T01:00:00Z",
+        explanation_source: "ai"
       },
       isLoading: false,
       isError: false

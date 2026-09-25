@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { MarkdownText } from "../ui/MarkdownText";
+import { SourceBadge } from "../ui/SourceBadge";
 import styles from "./AiExplanationBlock.module.css";
 
 interface AiExplanationBlockProps {
   reason: string;
   recommendedAction: string;
+  explanationSource: string;
   isRegenerating: boolean;
   isRegenerateError: boolean;
   onRegenerate: () => void;
@@ -23,6 +25,7 @@ function Skeleton() {
 export function AiExplanationBlock({
   reason,
   recommendedAction,
+  explanationSource,
   isRegenerating,
   isRegenerateError,
   onRegenerate,
@@ -40,7 +43,10 @@ export function AiExplanationBlock({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Explicación de IA</h2>
+        <div className={styles.titleWrapper}>
+          <h2 className={styles.title}>Explicación de IA</h2>
+          <SourceBadge source={explanationSource} />
+        </div>
         <button
           className={styles.button}
           onClick={onRegenerate}

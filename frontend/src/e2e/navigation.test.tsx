@@ -74,7 +74,8 @@ const MOCK_ANOMALY_DETAIL = {
   affected_variables: [],
   correlated_event: null,
   window_start: "2024-01-01T00:00:00Z",
-  window_end: "2024-01-01T01:00:00Z"
+  window_end: "2024-01-01T01:00:00Z",
+  explanation_source: "ai"
 };
 
 describe("E2E Navigation", () => {

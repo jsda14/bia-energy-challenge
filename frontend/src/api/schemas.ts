@@ -71,4 +71,5 @@ export const anomalyDetailResponseSchema = z.object({
   correlated_event: z.string().nullable(),
   window_start: z.string(),
   window_end: z.string(),
+  explanation_source: z.string(),
 });
