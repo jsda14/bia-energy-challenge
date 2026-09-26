@@ -8,11 +8,15 @@
   margin: 0;
 }
 
+/* Mobile-first: título y acciones apilados en columna, cada botón
+   full-width en su propia fila — evita el layout ambiguo de
+   flex-wrap (que, según el ancho exacto del viewport, dejaba los 3
+   botones en distintas combinaciones de 1/2/3 por fila, viéndose
+   roto/inconsistente). Desktop vuelve al layout horizontal. */
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--space-3);
 }
 
@@ -22,12 +26,39 @@
 
 .header__actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-2);
 }
 
+/* RunAnalysisButton se usa en varias páginas (incl. Dashboard, donde
+   no debe ser full-width) — se fuerza el ancho solo desde este
+   contenedor, sin tocar el componente compartido. */
+.header__actions > * {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .header__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: auto;
+  }
+
+  .header__actions > * {
+    width: auto;
+  }
+}
+
 .triageButton {
+  width: 100%;
   background-color: var(--color-bg-elevated);
   color: var(--color-text);
   border: 1px solid var(--color-border);
@@ -37,6 +68,12 @@
   cursor: pointer;
   min-height: 44px;
   transition: background-color var(--motion-fast) var(--ease-standard);
+}
+
+@media (min-width: 640px) {
+  .triageButton {
+    width: auto;
+  }
 }
 
 .triageButton:hover:not(:disabled) {
