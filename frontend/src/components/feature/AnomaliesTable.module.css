@@ -11,9 +11,17 @@
 
 .table,
 .table tbody,
-.table tr,
 .table td {
   display: block;
+  width: 100%;
+}
+
+/* .row (no ".table tr" genérico) para que la regla de grid de abajo
+   pueda sobreescribir el display de este selector con normalidad de
+   cascada, sin depender de !important — mismo problema real que se
+   encontró aquí: ".table tr { display: block }" tenía más
+   especificidad que ".row { display: grid }" y ganaba siempre. */
+.table tr.row {
   width: 100%;
 }
 
@@ -51,7 +59,22 @@
   outline-offset: -2px;
 }
 
+/* Card de 2 columnas, mismo patrón que MetersTable: cada campo con su
+   label pequeño en mayúscula arriba del valor, en vez de
+   label/valor en una sola línea horizontal (ese patrón se rompía
+   visualmente con 6 columnas de ancho desigual — Medidor, Tipo,
+   Severidad, Confianza, Detectada, Triage). */
 .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "meter meter"
+    "type severity"
+    "confidence detected"
+    "triage triage";
+  gap: var(--space-2);
+  align-items: start;
+  padding: var(--space-3);
   margin-bottom: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -76,22 +99,32 @@
 
 .td {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--space-3);
+  flex-direction: column;
+  align-items: flex-start;
+  border-bottom: none;
+  padding: 0;
   font-variant-numeric: tabular-nums;
 }
 
-.row:last-child .td:last-child {
-  border-bottom: none;
-}
+.td:nth-child(1) { grid-area: meter; font-weight: 600; font-size: 1.1rem; margin-bottom: var(--space-2); }
+.td:nth-child(2) { grid-area: type; }
+.td:nth-child(3) { grid-area: severity; }
+.td:nth-child(4) { grid-area: confidence; }
+.td:nth-child(5) { grid-area: detected; }
+.td:nth-child(6) { grid-area: triage; }
 
 .td::before {
   content: attr(data-label);
+  display: block;
+  font-size: 0.75rem;
   font-weight: 500;
+  text-transform: uppercase;
   color: var(--color-text-muted);
-  margin-right: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.td:nth-child(1)::before {
+  display: none;
 }
 
 /* Stagger de entrada — mismo criterio que MetersTable. */
@@ -135,7 +168,6 @@
 
   .table,
   .table tbody,
-  .table tr,
   .table td {
     display: revert;
     width: auto;
@@ -151,7 +183,8 @@
     display: table-header-group;
   }
 
-  .row {
+  .table tr.row {
+    display: table-row;
     margin-bottom: 0;
     border: none;
     border-radius: 0;
