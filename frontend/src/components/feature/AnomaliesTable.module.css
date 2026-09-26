@@ -10,8 +10,7 @@
 }
 
 .table,
-.table tbody,
-.table td {
+.table tbody {
   display: block;
   width: 100%;
 }
@@ -59,22 +58,15 @@
   outline-offset: -2px;
 }
 
-/* Card de 2 columnas, mismo patrón que MetersTable: cada campo con su
-   label pequeño en mayúscula arriba del valor, en vez de
-   label/valor en una sola línea horizontal (ese patrón se rompía
-   visualmente con 6 columnas de ancho desigual — Medidor, Tipo,
-   Severidad, Confianza, Detectada, Triage). */
+/* Card tipo "recibo": el medidor es el título de la card (fila propia,
+   sin label), cada campo siguiente es una fila horizontal completa
+   con el label a la izquierda y el valor (o badge) alineado a la
+   derecha — mismo patrón que MetersTable, elegido explícitamente en
+   vez de la grilla de 2 columnas anterior. */
 .row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "meter meter"
-    "type severity"
-    "confidence detected"
-    "triage triage";
-  gap: var(--space-2);
-  align-items: start;
-  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -99,28 +91,36 @@
 
 .td {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-bottom: none;
-  padding: 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
   font-variant-numeric: tabular-nums;
 }
 
-.td:nth-child(1) { grid-area: meter; font-weight: 600; font-size: 1.1rem; margin-bottom: var(--space-2); }
-.td:nth-child(2) { grid-area: type; }
-.td:nth-child(3) { grid-area: severity; }
-.td:nth-child(4) { grid-area: confidence; }
-.td:nth-child(5) { grid-area: detected; }
-.td:nth-child(6) { grid-area: triage; }
+.row .td:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.td:nth-child(1) {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: none;
+  padding-top: 0;
+  padding-bottom: var(--space-2);
+  justify-content: flex-start;
+}
 
 .td::before {
   content: attr(data-label);
-  display: block;
+  flex-shrink: 0;
+  margin-right: var(--space-3);
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin-bottom: var(--space-1);
 }
 
 .td:nth-child(1)::before {
@@ -204,6 +204,13 @@
     justify-content: unset;
     padding: var(--space-3);
     border-bottom: 1px solid var(--color-border);
+  }
+
+  .td:nth-child(1) {
+    font-weight: 400;
+    font-size: inherit;
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
   }
 
   .row:last-child .td {

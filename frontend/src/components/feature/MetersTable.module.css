@@ -50,16 +50,16 @@
   outline-offset: -2px;
 }
 
+/* Card tipo "recibo": el nombre es el título de la card (fila propia,
+   sin label), cada campo siguiente es una fila horizontal completa
+   con el label a la izquierda y el valor alineado a la derecha —
+   patrón elegido explícitamente en vez de la grilla de 2 columnas
+   anterior (label arriba del valor), que el usuario calificó de
+   desordenada en captura real. */
 .row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "name name"
-    "status consumption"
-    "variation severity";
-  align-items: start;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -84,32 +84,40 @@
 
 .td {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-bottom: none;
-  padding: 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
   font-variant-numeric: tabular-nums;
 }
 
-.td:nth-child(1) { grid-area: name; font-weight: 600; font-size: 1.1rem; margin-bottom: var(--space-2); }
-.td:nth-child(2) { grid-area: status; }
-.td:nth-child(3) { grid-area: consumption; }
-.td:nth-child(4) { grid-area: variation; }
-.td:nth-child(5) { grid-area: severity; }
+.row .td:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.td:nth-child(1) {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: none;
+  padding-top: 0;
+  padding-bottom: var(--space-2);
+  justify-content: flex-start;
+}
 
 .td::before {
   content: attr(data-label);
-  display: block;
+  flex-shrink: 0;
+  margin-right: var(--space-3);
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin-right: 0;
-  margin-bottom: var(--space-1);
 }
 
 .td:nth-child(1)::before {
-  display: none; /* Hide label for name */
+  display: none; /* El nombre es el título de la card, sin label */
 }
 
 .empty {
@@ -225,6 +233,10 @@
     font-weight: 400;
     font-size: inherit;
     margin-bottom: 0;
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
+    justify-content: unset;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .td::before {
