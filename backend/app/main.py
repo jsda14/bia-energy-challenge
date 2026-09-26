@@ -21,6 +21,8 @@ from app.application.list_anomalies import ListAnomaliesUseCase
 from app.application.get_anomaly_detail import GetAnomalyDetailUseCase
 from app.application.regenerate_explanation import RegenerateExplanationUseCase
 
+from app.application.get_consumption_timeline import GetConsumptionTimelineUseCase
+
 from app.adapters.inbound.api import meters_router, anomalies_router, dashboard_router, ai_router
 from app.adapters.inbound.api.dependencies import (
     get_db_session,
@@ -30,7 +32,8 @@ from app.adapters.inbound.api.dependencies import (
     get_meter_detail_use_case as stub_meter_detail,
     get_list_anomalies_use_case as stub_list_anom,
     get_anomaly_detail_use_case as stub_anom_detail,
-    get_regenerate_explanation_use_case as stub_regen_explanation
+    get_regenerate_explanation_use_case as stub_regen_explanation,
+    get_consumption_timeline_use_case as stub_consumption_timeline
 )
 
 app = FastAPI(title="Bia Energy Challenge API")
@@ -104,6 +107,7 @@ def build_meter_detail_use_case(session: Session = Depends(get_db_session)) -> G
         meter_repo=SqlAlchemyMeterRepository(session),
         reading_repo=SqlAlchemyReadingRepository(session),
         anomaly_repo=SqlAlchemyAnomalyRepository(session),
+        event_repo=SqlAlchemyEventRepository(session),
     )
 
 def build_list_anomalies_use_case(session: Session = Depends(get_db_session)) -> ListAnomaliesUseCase:
@@ -118,6 +122,12 @@ def build_regenerate_explanation_use_case(session: Session = Depends(get_db_sess
         explainer=get_explainer(session),
     )
 
+def build_consumption_timeline_use_case(session: Session = Depends(get_db_session)) -> GetConsumptionTimelineUseCase:
+    return GetConsumptionTimelineUseCase(
+        meter_repo=SqlAlchemyMeterRepository(session),
+        reading_repo=SqlAlchemyReadingRepository(session),
+    )
+
 # Dependency Injection overrides for routers
 app.dependency_overrides[stub_analyze] = build_analyze_use_case
 app.dependency_overrides[stub_dash] = build_dashboard_summary_use_case
@@ -126,6 +136,7 @@ app.dependency_overrides[stub_meter_detail] = build_meter_detail_use_case
 app.dependency_overrides[stub_list_anom] = build_list_anomalies_use_case
 app.dependency_overrides[stub_anom_detail] = build_anomaly_detail_use_case
 app.dependency_overrides[stub_regen_explanation] = build_regenerate_explanation_use_case
+app.dependency_overrides[stub_consumption_timeline] = build_consumption_timeline_use_case
 
 app.include_router(meters_router)
 app.include_router(anomalies_router)

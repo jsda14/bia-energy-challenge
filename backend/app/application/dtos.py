@@ -27,6 +27,12 @@ class ReadingDTO:
     status: str
 
 @dataclass
+class EventDTO:
+    event_timestamp: datetime
+    event_type: str
+    description: str
+
+@dataclass
 class MeterDetailDTO:
     meter_id: str
     name: str
@@ -36,6 +42,7 @@ class MeterDetailDTO:
     baseline_kwh: float | None
     variation_pct: float | None
     readings: list[ReadingDTO]
+    events: list[EventDTO]
 
 @dataclass
 class AnomalySummaryDTO:
@@ -64,3 +71,12 @@ class AnomalyDetailDTO:
     correlated_event: str | None
     window_start: datetime
     window_end: datetime
+
+@dataclass
+class ConsumptionTimelinePointDTO:
+    timestamp: datetime
+    total_consumption_kwh: float
+
+@dataclass
+class ConsumptionTimelineDTO:
+    points: list[ConsumptionTimelinePointDTO]

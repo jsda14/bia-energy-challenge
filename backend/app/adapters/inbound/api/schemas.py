@@ -35,6 +35,11 @@ class ReadingResponse(BaseModel):
     power_factor: float
     status: str
 
+class EventResponse(BaseModel):
+    event_timestamp: datetime
+    event_type: str
+    description: str
+
 class MeterDetailResponse(BaseModel):
     meter_id: str
     name: str
@@ -44,6 +49,7 @@ class MeterDetailResponse(BaseModel):
     baseline_kwh: float | None
     variation_pct: float | None
     readings: list[ReadingResponse]
+    events: list[EventResponse]
 
 class AnomalySummaryResponse(BaseModel):
     id: str
@@ -70,3 +76,10 @@ class AnomalyDetailResponse(BaseModel):
     correlated_event: str | None
     window_start: datetime
     window_end: datetime
+
+class ConsumptionTimelinePointResponse(BaseModel):
+    timestamp: datetime
+    total_consumption_kwh: float
+
+class ConsumptionTimelineResponse(BaseModel):
+    points: list[ConsumptionTimelinePointResponse]

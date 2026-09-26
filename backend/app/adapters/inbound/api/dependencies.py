@@ -38,3 +38,6 @@ def get_anomaly_detail_use_case():
 
 def get_regenerate_explanation_use_case():
     raise NotImplementedError
+
+def get_consumption_timeline_use_case():
+    raise NotImplementedError
