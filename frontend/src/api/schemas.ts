@@ -35,6 +35,12 @@ export const readingResponseSchema = z.object({
   status: z.string(),
 });
 
+export const eventResponseSchema = z.object({
+  event_timestamp: z.string(),
+  event_type: z.string(),
+  description: z.string(),
+});
+
 export const meterDetailResponseSchema = z.object({
   meter_id: z.string(),
   name: z.string(),
@@ -44,6 +50,7 @@ export const meterDetailResponseSchema = z.object({
   baseline_kwh: z.number().nullable(),
   variation_pct: z.number().nullable(),
   readings: z.array(readingResponseSchema),
+  events: z.array(eventResponseSchema),
 });
 
 export const anomalySummaryResponseSchema = z.object({
@@ -72,4 +79,13 @@ export const anomalyDetailResponseSchema = z.object({
   window_start: z.string(),
   window_end: z.string(),
   explanation_source: z.string(),
+});
+
+export const consumptionTimelinePointSchema = z.object({
+  timestamp: z.string(),
+  total_consumption_kwh: z.number(),
+});
+
+export const consumptionTimelineResponseSchema = z.object({
+  points: z.array(consumptionTimelinePointSchema),
 });
