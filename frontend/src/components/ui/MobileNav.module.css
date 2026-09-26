@@ -11,6 +11,24 @@
   padding: var(--space-2);
   gap: var(--space-1);
   z-index: 20;
+  animation: slide-down var(--motion-base) var(--ease-standard);
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
 }
 
 .link {

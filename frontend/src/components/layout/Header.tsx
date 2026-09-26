@@ -46,7 +46,12 @@ export default function Header() {
           aria-label={isMobileNavOpen ? "Cerrar menú" : "Abrir menú"}
           onClick={() => setIsMobileNavOpen((open) => !open)}
         >
-          <span className={styles.header__menuIcon} aria-hidden="true" />
+          <span
+            className={`${styles.header__menuIcon} ${isMobileNavOpen ? styles["header__menuIcon--open"] : ""}`}
+            aria-hidden="true"
+          >
+            <span className={styles.header__menuIconMiddle} />
+          </span>
         </button>
 
         <div className={styles.header__actions}>
