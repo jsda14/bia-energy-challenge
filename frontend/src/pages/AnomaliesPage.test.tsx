@@ -36,7 +36,8 @@ describe("AnomaliesPage", () => {
         severity: "HIGH",
         confidence: 0.9,
         recommended_action: "R",
-        detected_at: "2024-01-01T00:00:00Z"
+        detected_at: "2024-01-01T00:00:00Z",
+        triage_status: "NEW"
       }],
       isLoading: false,
       isError: false

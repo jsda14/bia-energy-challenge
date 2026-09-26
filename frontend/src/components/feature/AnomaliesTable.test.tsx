@@ -13,7 +13,8 @@ const mockAnomalies: AnomalySummary[] = [
     severity: "HIGH",
     confidence: 0.95,
     recommended_action: "Check",
-    detected_at: "2024-01-01T10:00:00Z"
+    detected_at: "2024-01-01T10:00:00Z",
+    triage_status: "NEW"
   }
 ];
 

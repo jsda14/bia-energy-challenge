@@ -9,6 +9,7 @@ export default function AnomaliesPage() {
   const [selectedMeterId, setSelectedMeterId] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
+  const [selectedTriageStatus, setSelectedTriageStatus] = useState<string | null>(null);
 
   const meterIdOptions = useMemo(() => {
     if (!anomalies) return [];
@@ -25,15 +26,23 @@ export default function AnomaliesPage() {
     return Array.from(new Set(anomalies.map((a) => a.severity)));
   }, [anomalies]);
 
+  const triageStatusOptions = useMemo(() => {
+    if (!anomalies) return [];
+    return Array.from(new Set(anomalies.map((a) => a.triage_status)));
+  }, [anomalies]);
+
   const filteredAnomalies = useMemo(() => {
     if (!anomalies) return [];
     return anomalies.filter((anomaly) => {
       if (selectedMeterId && anomaly.meter_id !== selectedMeterId) return false;
       if (selectedType && anomaly.type !== selectedType) return false;
       if (selectedSeverity && anomaly.severity !== selectedSeverity) return false;
+      // "Todas" (null) es el default — nunca oculta DISMISSED por defecto,
+      // solo cuando el usuario elige explícitamente un estado (SPEC-013).
+      if (selectedTriageStatus && anomaly.triage_status !== selectedTriageStatus) return false;
       return true;
     });
-  }, [anomalies, selectedMeterId, selectedType, selectedSeverity]);
+  }, [anomalies, selectedMeterId, selectedType, selectedSeverity, selectedTriageStatus]);
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -54,12 +63,15 @@ export default function AnomaliesPage() {
         meterIdOptions={meterIdOptions}
         typeOptions={typeOptions}
         severityOptions={severityOptions}
+        triageStatusOptions={triageStatusOptions}
         selectedMeterId={selectedMeterId}
         selectedType={selectedType}
         selectedSeverity={selectedSeverity}
+        selectedTriageStatus={selectedTriageStatus}
         onMeterIdChange={setSelectedMeterId}
         onTypeChange={setSelectedType}
         onSeverityChange={setSelectedSeverity}
+        onTriageStatusChange={setSelectedTriageStatus}
       />
       <AnomaliesTable anomalies={filteredAnomalies} />
     </div>

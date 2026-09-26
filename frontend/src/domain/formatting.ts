@@ -53,3 +53,15 @@ export function meterStatusToColorToken(status: string): "neutral" | "warning" |
       return "neutral";
   }
 }
+
+/** Mapea un triage_status string ("NEW"|"ACKNOWLEDGED"|"DISMISSED") a un token de color semántico. Cualquier valor no reconocido retorna "neutral" (fallback seguro, nunca lanza), mismo criterio que severityToColorToken. */
+export function triageStatusToColorToken(status: string): "neutral" | "warning" | "critical" {
+  switch (status) {
+    case "ACKNOWLEDGED":
+      return "warning";
+    case "NEW":
+    case "DISMISSED":
+    default:
+      return "neutral";
+  }
+}

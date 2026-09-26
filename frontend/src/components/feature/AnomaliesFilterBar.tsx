@@ -4,24 +4,30 @@ interface AnomaliesFilterBarProps {
   meterIdOptions: string[];
   typeOptions: string[];
   severityOptions: string[];
+  triageStatusOptions: string[];
   selectedMeterId: string | null;
   selectedType: string | null;
   selectedSeverity: string | null;
+  selectedTriageStatus: string | null;
   onMeterIdChange: (meterId: string | null) => void;
   onTypeChange: (type: string | null) => void;
   onSeverityChange: (severity: string | null) => void;
+  onTriageStatusChange: (triageStatus: string | null) => void;
 }
 
 export function AnomaliesFilterBar({
   meterIdOptions,
   typeOptions,
   severityOptions,
+  triageStatusOptions,
   selectedMeterId,
   selectedType,
   selectedSeverity,
+  selectedTriageStatus,
   onMeterIdChange,
   onTypeChange,
   onSeverityChange,
+  onTriageStatusChange,
 }: AnomaliesFilterBarProps) {
   return (
     <div className={styles.filterBar}>
@@ -77,6 +83,25 @@ export function AnomaliesFilterBar({
           {severityOptions.map((severity) => (
             <option key={severity} value={severity}>
               {severity}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className={styles.filterGroup}>
+        <label htmlFor="triageStatus-filter" className={styles.label}>
+          Estado de Triage:
+        </label>
+        <select
+          id="triageStatus-filter"
+          className={styles.select}
+          value={selectedTriageStatus || ""}
+          onChange={(e) => onTriageStatusChange(e.target.value || null)}
+        >
+          <option value="">Todas</option>
+          {triageStatusOptions.map((triageStatus) => (
+            <option key={triageStatus} value={triageStatus}>
+              {triageStatus}
             </option>
           ))}
         </select>

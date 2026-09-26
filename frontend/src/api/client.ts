@@ -13,6 +13,14 @@ export const apiClient = {
     });
   },
 
+  async patch(endpoint: string, body?: unknown) {
+    return this.request(endpoint, {
+      method: "PATCH",
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
   async request(endpoint: string, options: RequestInit) {
     const url = `${BASE_URL}${endpoint}`;
     const response = await fetch(url, options);

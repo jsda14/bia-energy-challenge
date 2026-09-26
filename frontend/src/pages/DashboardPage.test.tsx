@@ -56,7 +56,7 @@ const metersData = [
 ];
 
 const anomaliesData = [
-  { id: "1", meter_id: "M-1", type: "SPIKE", severity: "HIGH", confidence: 0.9, recommended_action: "Revisar", detected_at: "2026-09-20T00:00:00Z" },
+  { id: "1", meter_id: "M-1", type: "SPIKE", severity: "HIGH", confidence: 0.9, recommended_action: "Revisar", detected_at: "2026-09-20T00:00:00Z", triage_status: "NEW" },
 ];
 
 const timelineData = { points: [{ timestamp: "2026-09-01T00:00:00Z", total_consumption_kwh: 100 }] };

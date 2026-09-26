@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import type { AnomalySummary } from "../../domain/types";
 import { formatDateTime, severityToColorToken } from "../../domain/formatting";
 import { Badge } from "../ui/Badge";
+import { TriageStatusBadge } from "../ui/TriageStatusBadge";
 import styles from "./AnomaliesTable.module.css";
 
-export type AnomalySortableColumn = "meter_id" | "type" | "severity" | "confidence" | "detected_at";
+export type AnomalySortableColumn = "meter_id" | "type" | "severity" | "confidence" | "detected_at" | "triage_status";
 type SortDirection = "asc" | "desc" | null;
 
 interface AnomaliesTableProps {
@@ -87,6 +88,11 @@ export function AnomaliesTable({ anomalies }: AnomaliesTableProps) {
                 Detectada{getSortIcon("detected_at")}
               </button>
             </th>
+            <th className={styles.th}>
+              <button type="button" className={styles.sortButton} onClick={() => handleSort("triage_status")}>
+                Triage{getSortIcon("triage_status")}
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -107,6 +113,9 @@ export function AnomaliesTable({ anomalies }: AnomaliesTableProps) {
               </td>
               <td className={styles.td} data-label="Confianza">{(anomaly.confidence * 100).toFixed(0)}%</td>
               <td className={styles.td} data-label="Detectada">{formatDateTime(anomaly.detected_at)}</td>
+              <td className={styles.td} data-label="Triage">
+                <TriageStatusBadge status={anomaly.triage_status} />
+              </td>
             </tr>
           ))}
         </tbody>

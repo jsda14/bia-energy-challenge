@@ -31,7 +31,8 @@ const MOCK_ANOMALIES = [
     severity: "HIGH", 
     confidence: 0.99, 
     recommended_action: "Check",
-    detected_at: "2024-01-01T00:00:00Z" 
+    detected_at: "2024-01-01T00:00:00Z",
+    triage_status: "NEW"
   }
 ];
 

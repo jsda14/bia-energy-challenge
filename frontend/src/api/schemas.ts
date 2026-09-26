@@ -61,6 +61,7 @@ export const anomalySummaryResponseSchema = z.object({
   confidence: z.number(),
   recommended_action: z.string(),
   detected_at: z.string(),
+  triage_status: z.string(),
 });
 
 export const anomalyDetailResponseSchema = z.object({
@@ -79,6 +80,7 @@ export const anomalyDetailResponseSchema = z.object({
   window_start: z.string(),
   window_end: z.string(),
   explanation_source: z.string(),
+  triage_status: z.string(),
 });
 
 export const consumptionTimelinePointSchema = z.object({

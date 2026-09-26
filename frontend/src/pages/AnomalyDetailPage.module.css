@@ -12,10 +12,40 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }
 
 .header__title {
   margin: 0;
+}
+
+.header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.triageButton {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background-color var(--motion-fast) var(--ease-standard);
+}
+
+.triageButton:hover:not(:disabled) {
+  background-color: var(--color-neutral);
+}
+
+.triageButton:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
 }
 
 .subtitle {

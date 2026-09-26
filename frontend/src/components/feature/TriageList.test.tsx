@@ -23,6 +23,7 @@ function makeAnomaly(overrides: Partial<AnomalySummary>): AnomalySummary {
     confidence: 0.9,
     recommended_action: "Revisar",
     detected_at: "2026-09-20T00:00:00Z",
+    triage_status: "NEW",
     ...overrides,
   };
 }

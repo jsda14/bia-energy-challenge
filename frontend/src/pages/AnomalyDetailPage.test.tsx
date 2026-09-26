@@ -6,11 +6,12 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { useAnomalyDetail } from "../api/queries/useAnomalyDetail";
 import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { useRegenerateExplanation } from "../api/queries/useRegenerateExplanation";
+import { useUpdateTriageStatus } from "../api/queries/useUpdateTriageStatus";
 
 vi.mock("../api/queries/useAnomalyDetail");
 vi.mock("../api/queries/useMeterDetail");
 vi.mock("../api/queries/useRegenerateExplanation");
-vi.mock("../api/queries/useRegenerateExplanation");
+vi.mock("../api/queries/useUpdateTriageStatus");
 
 // RunAnalysisButton (agregado en el detalle de anomalía) usa useRunAnalysis
 // internamente — se mockea igual que en MeterDetailPage.test.tsx.
@@ -33,10 +34,13 @@ const mockUseAnomalyDetail = useAnomalyDetail as any;
 const mockUseMeterDetail = useMeterDetail as any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockUseRegenerateExplanation = useRegenerateExplanation as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockUseUpdateTriageStatus = useUpdateTriageStatus as any;
 
 describe("AnomalyDetailPage", () => {
   beforeEach(() => {
     mockUseRegenerateExplanation.mockReturnValue({ mutate: vi.fn(), isPending: false, isError: false });
+    mockUseUpdateTriageStatus.mockReturnValue({ mutate: vi.fn(), isPending: false });
   });
 
   it("renders loading state", () => {
@@ -86,7 +90,8 @@ describe("AnomalyDetailPage", () => {
         correlated_event: null,
         window_start: "2024-01-01T00:00:00Z",
         window_end: "2024-01-01T01:00:00Z",
-        explanation_source: "ai"
+        explanation_source: "ai",
+        triage_status: "NEW"
       },
       isLoading: false,
       isError: false
@@ -145,7 +150,8 @@ describe("AnomalyDetailPage", () => {
         correlated_event: null,
         window_start: "2024-01-01T00:00:00Z",
         window_end: "2024-01-01T01:00:00Z",
-        explanation_source: "ai"
+        explanation_source: "ai",
+        triage_status: "NEW"
       },
       isLoading: false,
       isError: false
@@ -187,7 +193,8 @@ describe("AnomalyDetailPage", () => {
         correlated_event: null,
         window_start: "2024-01-01T00:00:00Z",
         window_end: "2024-01-01T01:00:00Z",
-        explanation_source: "ai"
+        explanation_source: "ai",
+        triage_status: "NEW"
       },
       isLoading: false,
       isError: false
@@ -245,5 +252,104 @@ describe("AnomalyDetailPage", () => {
       </QueryClientProvider>
     );
     expect(screen.getByText("Error al regenerar la explicación.")).toBeInTheDocument();
+  });
+
+  it("renders triage status badge and handles Acknowledge/Dismiss button clicks", () => {
+    mockUseAnomalyDetail.mockReturnValue({
+      data: {
+        id: "1",
+        meter_id: "meter-123",
+        type: "SPIKE",
+        severity: "HIGH",
+        confidence: 0.99,
+        reason: "Test reason",
+        recommended_action: "Test action",
+        baseline_kwh: 100,
+        observed_kwh: 200,
+        variation_pct: 78.9,
+        affected_variables: [],
+        correlated_event: null,
+        window_start: "2024-01-01T00:00:00Z",
+        window_end: "2024-01-01T01:00:00Z",
+        explanation_source: "ai",
+        triage_status: "NEW"
+      },
+      isLoading: false,
+      isError: false
+    });
+
+    mockUseMeterDetail.mockReturnValue({
+      data: { readings: [], baseline_kwh: 100 },
+      isLoading: false,
+      isError: false
+    });
+
+    const updateTriageStatusMock = vi.fn();
+    mockUseUpdateTriageStatus.mockReturnValue({ mutate: updateTriageStatusMock, isPending: false });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/anomalies/1"]}>
+          <Routes>
+            <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByText("Nueva")).toBeInTheDocument();
+
+    screen.getByText("Marcar como Atendida").click();
+    expect(updateTriageStatusMock).toHaveBeenCalledWith({ anomalyId: "1", status: "ACKNOWLEDGED" });
+
+    screen.getByText("Descartar").click();
+    expect(updateTriageStatusMock).toHaveBeenCalledWith({ anomalyId: "1", status: "DISMISSED" });
+  });
+
+  it("disables triage buttons while the mutation is pending", () => {
+    mockUseAnomalyDetail.mockReturnValue({
+      data: {
+        id: "1",
+        meter_id: "meter-123",
+        type: "SPIKE",
+        severity: "HIGH",
+        confidence: 0.99,
+        reason: "Test reason",
+        recommended_action: "Test action",
+        baseline_kwh: 100,
+        observed_kwh: 200,
+        variation_pct: 78.9,
+        affected_variables: [],
+        correlated_event: null,
+        window_start: "2024-01-01T00:00:00Z",
+        window_end: "2024-01-01T01:00:00Z",
+        explanation_source: "ai",
+        triage_status: "ACKNOWLEDGED"
+      },
+      isLoading: false,
+      isError: false
+    });
+
+    mockUseMeterDetail.mockReturnValue({
+      data: { readings: [], baseline_kwh: 100 },
+      isLoading: false,
+      isError: false
+    });
+
+    mockUseUpdateTriageStatus.mockReturnValue({ mutate: vi.fn(), isPending: true });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/anomalies/1"]}>
+          <Routes>
+            <Route path="/anomalies/:id" element={<AnomalyDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByText("Atendida")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Marcar como Atendida" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Descartar" })).toBeDisabled();
   });
 });

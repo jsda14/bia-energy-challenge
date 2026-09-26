@@ -2,8 +2,10 @@ import { useParams } from "react-router-dom";
 import { useAnomalyDetail } from "../api/queries/useAnomalyDetail";
 import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { useRegenerateExplanation } from "../api/queries/useRegenerateExplanation";
+import { useUpdateTriageStatus } from "../api/queries/useUpdateTriageStatus";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
+import { TriageStatusBadge } from "../components/ui/TriageStatusBadge";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
@@ -17,6 +19,7 @@ export default function AnomalyDetailPage() {
   const { data: anomaly, isLoading, isError } = useAnomalyDetail(anomalyId);
   const { data: meter, isLoading: isMeterLoading, isError: isMeterError } = useMeterDetail(anomaly?.meter_id ?? "");
   const { mutate: regenerate, isPending: isRegenerating, isError: isRegenerateError } = useRegenerateExplanation();
+  const { mutate: updateTriageStatus, isPending: isUpdatingTriageStatus } = useUpdateTriageStatus();
 
   if (isLoading) {
     return <div>Cargando...</div>;
@@ -36,15 +39,37 @@ export default function AnomalyDetailPage() {
       />
       <div className={styles.header}>
         <h1 className={styles.header__title}>Detalle de Anomalía</h1>
-        <RunAnalysisButton meterId={anomaly.meter_id} />
+        <div className={styles.header__actions}>
+          <button
+            type="button"
+            className={styles.triageButton}
+            onClick={() => updateTriageStatus({ anomalyId, status: "ACKNOWLEDGED" })}
+            disabled={isUpdatingTriageStatus}
+          >
+            Marcar como Atendida
+          </button>
+          <button
+            type="button"
+            className={styles.triageButton}
+            onClick={() => updateTriageStatus({ anomalyId, status: "DISMISSED" })}
+            disabled={isUpdatingTriageStatus}
+          >
+            Descartar
+          </button>
+          <RunAnalysisButton meterId={anomaly.meter_id} />
+        </div>
       </div>
-      
+
       <div className={styles.detailGrid}>
         <DetailField label="Medidor" value={anomaly.meter_id} />
         <DetailField label="Tipo" value={anomaly.type} />
         <div className={styles.fieldWrapper}>
           <span className={styles.label}>Severidad</span>
           <Badge label={anomaly.severity} tone={severityToColorToken(anomaly.severity)} />
+        </div>
+        <div className={styles.fieldWrapper}>
+          <span className={styles.label}>Estado de Triage</span>
+          <TriageStatusBadge status={anomaly.triage_status} />
         </div>
         <DetailField label="Confianza" value={`${(anomaly.confidence * 100).toFixed(0)}%`} />
         
