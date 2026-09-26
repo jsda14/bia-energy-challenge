@@ -7,6 +7,14 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   gap: var(--space-2);
+  transition: box-shadow var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
+  opacity: 0;
+  animation: stagger-in var(--motion-base) var(--ease-standard) forwards;
+}
+
+.stat-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.12);
 }
 
 .stat-card__label {
@@ -19,6 +27,25 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 /* Modifiers for emphasis */

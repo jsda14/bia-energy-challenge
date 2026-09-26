@@ -4,11 +4,35 @@ import { useAnomalies } from "../api/queries/useAnomalies";
 import { useConsumptionTimeline } from "../api/queries/useConsumptionTimeline";
 import { formatDateTime, formatKwh } from "../domain/formatting";
 import { StatCard } from "../components/ui/StatCard";
+import { Skeleton } from "../components/ui/Skeleton";
 import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import { ConsumptionTimelineChart } from "../components/feature/ConsumptionTimelineChart";
 import { MeterStatusDistribution } from "../components/feature/MeterStatusDistribution";
 import { TriageList } from "../components/feature/TriageList";
 import styles from "./DashboardPage.module.css";
+
+function DashboardSkeleton() {
+  return (
+    <div className={styles.dashboard}>
+      <div className={styles.dashboard__header}>
+        <Skeleton width="180px" height="2rem" />
+        <Skeleton width="160px" height="44px" />
+      </div>
+      <div className={styles["dashboard__stats-grid"]}>
+        <Skeleton height="88px" />
+        <Skeleton height="72px" />
+        <Skeleton height="72px" />
+        <Skeleton height="72px" />
+        <Skeleton height="72px" />
+      </div>
+      <div className={styles.chartsGrid}>
+        <Skeleton height="320px" />
+        <Skeleton height="320px" />
+      </div>
+      <Skeleton height="200px" />
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const { data: dashboardSummary, isLoading: summaryLoading, isError: summaryError } = useDashboardSummary();
@@ -20,7 +44,7 @@ export default function DashboardPage() {
   const isError = summaryError || metersError || anomaliesError || timelineError;
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return <DashboardSkeleton />;
   }
 
   if (isError || !dashboardSummary || !meters || !anomalies || !timeline) {

@@ -72,7 +72,7 @@ describe("DashboardPage", () => {
   it("renders a loading state while any query is pending", () => {
     mockUseMeters.mockReturnValue({ isLoading: true });
     renderPage();
-    expect(screen.getByText("Cargando...")).toBeInTheDocument();
+    expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   it("renders an error state when any query fails", () => {

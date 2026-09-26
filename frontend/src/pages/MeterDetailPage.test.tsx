@@ -38,7 +38,7 @@ describe("MeterDetailPage", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
-    expect(screen.getByText("Cargando...")).toBeInTheDocument();
+    expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   it("renders error state", () => {

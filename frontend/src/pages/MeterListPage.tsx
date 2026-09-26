@@ -2,7 +2,23 @@ import { useState, useMemo } from "react";
 import { useMeters } from "../api/queries/useMeters";
 import { MetersTable } from "../components/feature/MetersTable";
 import { MetersFilterBar } from "../components/feature/MetersFilterBar";
+import { Skeleton } from "../components/ui/Skeleton";
 import styles from "./MeterListPage.module.css";
+
+function MeterListSkeleton() {
+  return (
+    <div className={styles["meter-list"]}>
+      <Skeleton width="160px" height="2rem" className={styles["meter-list__title"]} />
+      <Skeleton height="44px" />
+      <div className={styles["meter-list__skeletonRows"]}>
+        <Skeleton height="88px" />
+        <Skeleton height="88px" />
+        <Skeleton height="88px" />
+        <Skeleton height="88px" />
+      </div>
+    </div>
+  );
+}
 
 export default function MeterListPage() {
   const { data: meters, isLoading, isError } = useMeters();
@@ -39,7 +55,7 @@ export default function MeterListPage() {
   }, [meters, selectedStatus, selectedSeverity, searchQuery]);
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return <MeterListSkeleton />;
   }
 
   if (isError) {

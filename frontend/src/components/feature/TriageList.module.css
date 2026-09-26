@@ -33,12 +33,14 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: box-shadow var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
 }
 
-.item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+.item:hover,
+.item:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.12);
+  outline: none;
 }
 
 .itemHeader {

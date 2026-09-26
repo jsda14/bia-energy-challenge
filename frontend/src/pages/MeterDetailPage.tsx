@@ -2,17 +2,40 @@ import { useParams } from "react-router-dom";
 import { useMeterDetail } from "../api/queries/useMeterDetail";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
+import { Skeleton } from "../components/ui/Skeleton";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatKwh, formatVariationPct, meterStatusToColorToken } from "../domain/formatting";
 import styles from "./MeterDetailPage.module.css";
+
+function MeterDetailSkeleton() {
+  return (
+    <div className={styles.container}>
+      <Skeleton width="200px" height="1rem" />
+      <div className={styles.header}>
+        <Skeleton width="240px" height="2rem" />
+      </div>
+      <div className={styles.detailGrid}>
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+      </div>
+      <Skeleton width="220px" height="1.25rem" />
+      <Skeleton height="320px" />
+    </div>
+  );
+}
 
 export default function MeterDetailPage() {
   const { meterId } = useParams<{ meterId: string }>();
   const { data: meter, isLoading, isError } = useMeterDetail(meterId || "");
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return <MeterDetailSkeleton />;
   }
 
   if (isError || !meter) {

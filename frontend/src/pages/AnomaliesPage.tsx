@@ -2,7 +2,23 @@ import { useState, useMemo } from "react";
 import { useAnomalies } from "../api/queries/useAnomalies";
 import { AnomaliesTable } from "../components/feature/AnomaliesTable";
 import { AnomaliesFilterBar } from "../components/feature/AnomaliesFilterBar";
+import { Skeleton } from "../components/ui/Skeleton";
 import styles from "./AnomaliesPage.module.css";
+
+function AnomaliesSkeleton() {
+  return (
+    <div className={styles.container}>
+      <Skeleton width="160px" height="2rem" className={styles.title} />
+      <Skeleton height="44px" />
+      <div className={styles.skeletonRows}>
+        <Skeleton height="88px" />
+        <Skeleton height="88px" />
+        <Skeleton height="88px" />
+        <Skeleton height="88px" />
+      </div>
+    </div>
+  );
+}
 
 export default function AnomaliesPage() {
   const { data: anomalies, isLoading, isError } = useAnomalies();
@@ -45,7 +61,7 @@ export default function AnomaliesPage() {
   }, [anomalies, selectedMeterId, selectedType, selectedSeverity, selectedTriageStatus]);
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return <AnomaliesSkeleton />;
   }
 
   if (isError) {

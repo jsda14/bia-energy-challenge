@@ -12,7 +12,7 @@ describe("AnomaliesPage", () => {
   it("renders loading state", () => {
     mockUseAnomalies.mockReturnValue({ isLoading: true });
     render(<AnomaliesPage />);
-    expect(screen.getByText("Cargando...")).toBeInTheDocument();
+    expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
   it("renders error state", () => {

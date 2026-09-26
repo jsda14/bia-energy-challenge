@@ -6,12 +6,37 @@ import { useUpdateTriageStatus } from "../api/queries/useUpdateTriageStatus";
 import { DetailField } from "../components/ui/DetailField";
 import { Badge } from "../components/ui/Badge";
 import { TriageStatusBadge } from "../components/ui/TriageStatusBadge";
+import { Skeleton } from "../components/ui/Skeleton";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
 import { MeterHistoryChart } from "../components/feature/MeterHistoryChart";
 import { formatDateTime, severityToColorToken, formatVariationPct } from "../domain/formatting";
 import { AiExplanationBlock } from "../components/feature/AiExplanationBlock";
 import styles from "./AnomalyDetailPage.module.css";
+
+function AnomalyDetailSkeleton() {
+  return (
+    <div className={styles.container}>
+      <Skeleton width="200px" height="1rem" />
+      <div className={styles.header}>
+        <Skeleton width="240px" height="2rem" />
+      </div>
+      <div className={styles.detailGrid}>
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+        <Skeleton height="48px" />
+      </div>
+      <Skeleton height="320px" />
+      <Skeleton height="240px" />
+    </div>
+  );
+}
 
 export default function AnomalyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,7 +47,7 @@ export default function AnomalyDetailPage() {
   const { mutate: updateTriageStatus, isPending: isUpdatingTriageStatus } = useUpdateTriageStatus();
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return <AnomalyDetailSkeleton />;
   }
 
   if (isError || !anomaly) {
