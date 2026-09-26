@@ -19,6 +19,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-010](SPEC-010-ux-fixes-and-data-features.md) | Frontend — Fixes de UX y Funcionalidad Pendiente del PDF | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-012](SPEC-012-dashboard-redesign-and-ux.md) | Dashboard Rediseñado y Mejoras de UX del MVP Core | ✅ Aprobado | 3 | 2026-09-26 |
+| [SPEC-013](SPEC-013-triage-status-and-conversational-assistant.md) | Estado de Triage (Atendida/Descartada) y Asistente Conversacional | ✅ Aprobado | 0 | 2026-09-26 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -669,5 +670,102 @@ z.string()` (no `z.enum`, mismo criterio de tolerancia a valores
 futuros del proyecto desde SPEC-005). 52/52 tests, `pnpm build`/`pnpm
 lint` verdes, verificado independientemente. `TASK_STATUS.md` no fue
 tocado.
+
+**Veredicto: APROBADO.**
+
+---
+
+## SPEC-013 — Estado de Triage (Atendida/Descartada) y Asistente Conversacional
+
+**Estado:** ✅ Aprobado (2026-09-26, 0 rondas de retrabajo — plan revisado
+y corregido antes de ejecutar, mismo criterio de Plan Mode que redujo a
+0 los retrabajos de SPEC-004).
+
+**Resumen:** Extiende el flujo de gestión de anomalías con dos
+capacidades fuera del alcance mínimo del PDF (SPEC-001 a SPEC-012):
+un estado de triage por anomalía (`NEW`/`ACKNOWLEDGED`/`DISMISSED`,
+reversible sin restricción de transición — no hay autenticación en el
+MVP, así que no existe noción de "quién" lo cambió) y un asistente
+conversacional con Claude que consulta y propone acciones sobre los
+datos ya existentes. `GetDashboardSummaryUseCase` deliberadamente no
+se toca — sigue contando todas las anomalías sin excluir `DISMISSED`.
+
+**Decisión de arquitectura discutida antes de escribir la SPEC:** se
+evaluó explícitamente dar al asistente acceso vía MCP a SQL libre
+contra la base de datos, y se descartó — rompería la arquitectura
+hexagonal (bypass de `Ports`/casos de uso), sin validación de la
+sentencia antes de ejecutar, y abriría la puerta a que el mismo canal
+ejecutara `UPDATE`/`DELETE` no intencionados. En su lugar: mismo
+patrón de agentic loop tool-use nativo que `ClaudeExplainerAdapter`
+(SPEC-004), con tools tipadas y acotadas
+(`get_anomalies`/`get_meter_detail`/`get_dashboard_summary` de solo
+lectura, `run_analysis`/`set_triage_status` con side-effect) que
+llaman a los mismos `Ports`/casos de uso ya auditados.
+
+**Punto de seguridad central de todo el SPEC:** cualquier tool con
+side-effect nunca se ejecuta dentro del loop principal del adapter —
+solo genera un `pending_action` y corta el turno inmediatamente. La
+única vía real de ejecución es una rama aislada
+(`_execute_side_effect_tool`, llamada solo desde
+`_resolve_pending_confirmation`) que se activa exclusivamente cuando
+`pending_confirmation == {"confirmed": true}` llega en un request
+posterior, disparado por un click explícito del usuario en el panel
+del asistente — el modelo puede *proponer* una acción, nunca
+*ejecutarla* unilateralmente. Verificado en ambas capas: tests
+dedicados en el adapter (`confirmed=true` ejecuta,
+`confirmed=false` jamás lo hace) y en `AssistantPanel.test.tsx`
+("Cancelar" nunca envía `confirmed: true`), más una verificación
+end-to-end real contra el servidor (pedir "corré el análisis para
+todos los medidores", confirmar que `last_analysis_at` no cambia con
+`confirmed: false`, y que sí cambia tras confirmar explícitamente con
+`confirmed: true`).
+
+**Backend 100% stateless, sin caché de sesión:** los mensajes de
+`conversation` son el formato crudo del SDK de Anthropic (incluyendo
+bloques `tool_use`/`tool_result`), no un `{role, content: str}`
+simplificado — decisión cerrada explícitamente en la SPEC tras una
+pregunta del agente implementador durante el plan (ver historial de
+retrabajo #0 abajo). El frontend guarda y reenvía esos mensajes
+intactos; el backend nunca reconstruye ni cachea un `tool_use`
+pendiente entre requests.
+
+**Ajuste al plan antes de autorizar ejecución (no fue una ronda de
+retrabajo post-código, se resolvió en la revisión del plan mismo):**
+el agente propuso usar `triage_status: str` en el dominio (en vez del
+`Enum` que pedía el texto original de la SPEC), justificado
+correctamente por el precedente real de `explanation_source` (también
+`str`, no `Enum`) — aceptado y ya reflejado en la SPEC. Pero el plan
+dejaba el endpoint `PATCH .../triage-status` aceptando cualquier
+string sin validar, cosa que la SPEC nunca autorizó. Corregido antes
+de ejecutar: `UpdateTriageStatusRequest.status` se tipa como
+`Literal["NEW", "ACKNOWLEDGED", "DISMISSED"]` en el borde HTTP —
+Pydantic rechaza cualquier otro valor con 422 — mientras el dominio y
+la persistencia siguen siendo `str` sin restricción.
+
+**Pregunta resuelta durante el armado del plan (antes de que existiera
+código, por eso no cuenta como retrabajo):** el agente preguntó cómo
+recuperar el `tool_use` pendiente al confirmar una acción, dado que el
+backend es stateless. Se cerró la ambigüedad directamente en la SPEC
+(no como una decisión ad-hoc del agente): el frontend reenvía el
+mensaje `assistant` crudo con el `tool_use` original, el backend
+simplemente vuelve a llamar a Claude con la conversación completa —
+nunca reconstruye el bloque a mano ni agrega un concepto de sesión/id.
+
+**Hallazgo de entorno, no de código:** tras la verificación E2E del
+agente contra el servidor real, el proceso de `uvicorn` quedó caído —
+el usuario reportó "ERROR CONNECTION" en el navegador. Confirmado que
+no había ningún proceso Python escuchando en el puerto 8000; se relevó
+de nuevo en background. No relacionado con ningún bug de código de
+esta SPEC.
+
+**Verificación final:** 105/105 tests backend (8 nuevos de
+`ClaudeAssistantAdapter`, 3 de `UpdateAnomalyTriageStatusUseCase` +
+integración/e2e), 92/92 tests frontend (24 archivos, incluyendo
+`TriageStatusBadge.test.tsx` y `AssistantPanel.test.tsx`), `pnpm
+lint`/`tsc --noEmit`/`pnpm build` limpios — todo verificado de forma
+independiente, no solo el reporte de cierre del agente, incluyendo
+lectura línea por línea del punto de seguridad central en ambas capas
+(`claude_assistant_adapter.py` y `AssistantPanel.tsx`) antes de aceptar
+el cierre.
 
 **Veredicto: APROBADO.**
