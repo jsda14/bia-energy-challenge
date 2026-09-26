@@ -18,6 +18,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-009](SPEC-009-visual-polish-theming.md) | Frontend — Sistema de Diseño (Teal/Slate), Dark/Light Mode y Fix de Verificación en Navegador | ✅ Aprobado | 1 | 2026-09-25 |
 | [SPEC-010](SPEC-010-ux-fixes-and-data-features.md) | Frontend — Fixes de UX y Funcionalidad Pendiente del PDF | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
+| [SPEC-012](SPEC-012-dashboard-redesign-and-ux.md) | Dashboard Rediseñado y Mejoras de UX del MVP Core | ✅ Aprobado | 3 | 2026-09-26 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -551,6 +552,86 @@ componentes desde SPEC-010).
 SPEC: el usuario señaló que quedan ajustes de estilo adicionales que
 "siguen sin convencer" — se tratarán como su propia SPEC futura
 (número pendiente de asignar), no se mezclan con el cierre de esta.
+
+---
+
+## SPEC-012 — Dashboard Rediseñado y Mejoras de UX del MVP Core
+
+**Estado:** ✅ Aprobado (2026-09-26, 3 rondas de retrabajo/intervención).
+
+**Resumen:** Reescribe `DashboardPage` con 3 componentes nuevos
+(`ConsumptionTimelineChart` — consumo agregado de toda la red vía
+endpoint nuevo `GET /dashboard/consumption-timeline`; `MeterStatusDistribution`
+— dona de estado de medidores; `TriageList` — top 5 anomalías críticas,
+en sección de ancho completo por feedback explícito del usuario sobre
+protagonismo de layout). `MeterHistoryChart` gana grids apilados
+(`axisPointer.link`) para comparar variables sin ejes superpuestos y
+`markLine` de eventos operacionales reales (`GET /meters/{id}` extendido
+con `events`). `MetersTable` gana codificación cromática de 3 niveles
+(RN-06: `<30%` neutral, `30-80%` warning, `>=80%` critical, mismos
+umbrales del motor de detección) y micro-tendencia. `AiExplanationBlock`
+consolidado en 4 secciones. Excluye explícitamente (por decisión del
+usuario) el asistente conversacional y "Marcar como Atendida/Descartar"
+— SPEC futuro separado, no MVP core — y el stepper de etapas de
+análisis fabricado, reemplazado por un loader honesto.
+
+**Retrabajo #1 (motivo — 3 bugs confirmados en navegador real con
+capturas del usuario):**
+1. `MeterStatusDistribution.tsx` usaba tokens `var(--color-success-bg)`
+   etc. inexistentes en `tokens.css`.
+2. `ConsumptionTimelineChart.tsx` usaba `rgba(217,119,6,...)` naranja
+   hardcodeado ajeno a la paleta de marca.
+3. `DashboardPage.module.css` usaba `@media (max-width: 1024px)`,
+   violando mobile-first (`STANDARDS.md` §4.4).
+
+**Retrabajo #2 (fix de layout, no bug):** usuario pidió explícitamente
+mover `TriageList` de la columna lateral angosta a una sección de ancho
+completo debajo de la grilla principal ("más protagonismo, menos
+escondido a la derecha").
+
+**Intervención directa de los arquitectos (tercera ronda, sin pasar
+por Gemini — mismo criterio que el `<select multiple>` de SPEC-010):**
+tras el retrabajo #1, el usuario confirmó con nuevas capturas que la
+dona **seguía completamente negra** en ambos temas, pese a que Gemini
+había corregido los nombres de token a otros que sí existen
+(`var(--color-neutral)`, etc.). **Causa raíz real:** ECharts renderiza
+sobre `<canvas>` (zrender), que nunca puede resolver un string
+`"var(--color-x)"` como color válido para el motor de Canvas 2D — el
+problema nunca fue el nombre de la variable, fue el mecanismo mismo de
+pasar una referencia CSS a una API de canvas. Corregido usando el
+patrón ya establecido en `chartColors.ts` desde SPEC-007 (constantes
+hex literales), con las variantes `-text` de los tokens de severidad
+(más saturadas, con contraste real) en vez de los tokens de fondo
+pastel de `Badge` (casi invisibles en dark mode). Se agregó un
+guardrail explícito en los tests de todos los componentes con ECharts:
+fallan si el `option` contiene el string `"var(--"`, para detectar en
+CI cualquier regresión futura al mismo bug sin depender de una captura
+de pantalla.
+
+**Hallazgo adicional encontrado durante la misma verificación (no
+reportado por Gemini, cuyo cierre afirmó "100% en verde" de forma
+técnicamente cierta pero engañosa por omisión):** ningún componente
+nuevo de esta SPEC (`ConsumptionTimelineChart`, `MeterStatusDistribution`,
+`TriageList`, `DashboardPage`) ni los modificados sustancialmente
+(`MeterHistoryChart`, `MetersTable`) tenían archivo `.test.tsx`, pese a
+que la sección 6 de la propia SPEC lo exigía explícitamente. Por
+decisión del usuario, los 6 archivos de test faltantes los escribieron
+directamente los arquitectos (27 tests nuevos), no una cuarta ronda
+con Gemini.
+
+**Verificación final:** 87/87 tests backend, 79/79 tests frontend (22
+archivos), `pnpm lint`/`pnpm build` y `python -m pytest` verificados de
+forma independiente. Dona confirmada visualmente correcta por el
+usuario en ambos temas tras el fix.
+
+**Lección de proceso reforzada:** cuando el mismo componente falla dos
+veces con el mismo síntoma tras una ronda de retrabajo con el agente
+externo, intervenir directamente es más eficiente que un tercer ciclo
+— y verificar el mecanismo técnico subyacente (no solo el nombre del
+símbolo) es indispensable cuando un fix reportado como "correcto" no
+cambia el resultado observado.
+
+**Veredicto: APROBADO.**
 
 ---
 
