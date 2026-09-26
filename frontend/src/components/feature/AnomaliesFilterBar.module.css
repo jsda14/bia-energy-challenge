@@ -1,7 +1,13 @@
+/* Mobile-first: cada filtro es una fila propia, full-width, label
+   arriba del select — evita que selects de distinto ancho (según el
+   largo de su propio label: "Medidor:" vs "Estado de Triage:") queden
+   en posiciones horizontales distintas y se vean desalineados entre
+   sí. Desktop (min-width: 768px) pasa a una grilla uniforme de ancho
+   igual por columna, no a un flex de ancho variable por contenido. */
 .filterBar {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
+  flex-direction: column;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -12,28 +18,39 @@
 
 .filterGroup {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
 .select {
-  padding: var(--space-1) var(--space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: inherit;
   font-size: 0.875rem;
-  min-width: 120px;
 }
 
 .select:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: -1px;
+}
+
+@media (min-width: 768px) {
+  .filterBar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--space-3) var(--space-4);
+  }
 }
