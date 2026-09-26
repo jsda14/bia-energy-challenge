@@ -85,7 +85,7 @@ describe("AssistantPanel", () => {
   it("PUNTO CENTRAL DE SEGURIDAD: clicking 'Cancelar' never sends pending_confirmation.confirmed=true", async () => {
     const mutateMock = vi.fn();
     let callCount = 0;
-    mutateMock.mockImplementation((input, options) => {
+    mutateMock.mockImplementation((_input, options) => {
       callCount += 1;
       if (callCount === 1) {
         // Primera llamada: el envío del mensaje original, responde con pending_action.
