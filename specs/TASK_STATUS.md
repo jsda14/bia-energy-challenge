@@ -20,7 +20,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-012](SPEC-012-dashboard-redesign-and-ux.md) | Dashboard Rediseñado y Mejoras de UX del MVP Core | ✅ Aprobado | 3 | 2026-09-26 |
 | [SPEC-013](SPEC-013-triage-status-and-conversational-assistant.md) | Estado de Triage (Atendida/Descartada) y Asistente Conversacional | ✅ Aprobado | 0 | 2026-09-26 |
-| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 0 | 2026-09-26 |
+| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 1 | 2026-09-26 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -775,8 +775,8 @@ el cierre.
 
 ## SPEC-014 — Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard
 
-**Estado:** ✅ Aprobado (2026-09-26, 0 rondas de retrabajo formal — un
-ajuste de alcance resuelto durante el plan, ver abajo).
+**Estado:** ✅ Aprobado (2026-09-26, 1 ronda de retrabajo directo tras
+la primera entrega — ver "Ronda 2" abajo).
 
 **Resumen:** Pulido visual puro sobre 4 superficies ya cerradas
 funcionalmente (SPEC-009 a SPEC-013): `AssistantPanel` (indicador de
@@ -840,5 +840,60 @@ de estilos.
 permanente del proyecto — cada SPEC de estilos hasta ahora (SPEC-011,
 SPEC-012, SPEC-014) terminó necesitando verificación visual real en
 algún punto del ciclo.
+
+**Ronda 2 — el usuario rechazó el resultado con evidencia (captura
+propia marcada a mano):** pese a las capturas de Playwright que
+confirmaban el fix geométrico del ícono hamburguesa, el usuario reportó
+que en el estado *cerrado por defecto* (el que realmente se ve al
+entrar al sitio) el botón seguía sin ningún peso visual — un cuadrado
+plano genérico, lejos de un dashboard "Silicon Valley". La causa: la
+verificación de la ronda 1 solo capturó el estado *abierto* (icono ya
+transformado en X), nunca el estado cerrado por defecto — una
+auditoría real pero incompleta, no una simulación de resultado. El
+usuario señaló además que el chat del asistente seguía "rústico" (el
+indicador de carga y el Markdown sí estaban resueltos, pero no el
+tratamiento visual del contenedor/burbujas), el navbar general "no se
+ve moderno", y pidió una escala de border-radius más generosa ("tipo
+iPhone") en todo el sistema — el proyecto entero solo tenía 4px/8px de
+radio, ningún ajuste anterior lo había tocado.
+
+**Intervención directa (sin agente externo), mismo criterio ya
+aplicado con el `<select multiple>` de SPEC-010 y la dona de
+SPEC-012 — a la segunda vuelta fallida sobre el mismo síntoma,
+corregir directamente en vez de un tercer ciclo delegado:**
+1. Escala de radio nueva y sistémica en `tokens.css`
+   (`--radius-sm: 8px`, `--radius-md: 14px`, `--radius-lg: 20px`,
+   `--radius-full: 999px`), propagada automáticamente a todo el
+   proyecto vía los tokens ya usados — sin tocar componente por
+   componente. 5 componentes que hardcodeaban `999px` directo
+   (encontrados por grep) migrados al token nuevo por consistencia.
+2. Botón hamburguesa: rediseñado con fondo sólido
+   `var(--color-primary)`, forma circular, ícono blanco explícito —
+   mismo peso visual que el botón "Ejecutar análisis" en vez de un
+   control que pasa desapercibido. `ThemeToggle` recibió el mismo
+   tratamiento circular por consistencia.
+3. Navbar: link activo con pill sólida (no solo cambio de color de
+   texto, patrón Vercel/Linear), logo con chip de fondo propio, más
+   padding vertical en el header.
+4. `AssistantPanel`: header con fondo sólido + ícono (antes texto
+   plano sobre borde fino), panel con `--radius-lg`, burbujas de
+   mensaje con esquina recta del lado del remitente (patrón chat real
+   tipo iMessage/WhatsApp) en vez de un rectángulo redondeado uniforme.
+
+**Verificación visual real de este segundo ajuste, incluyendo
+específicamente el estado que se había pasado por alto la primera
+vez** (cerrado por defecto, mobile y desktop, ambos temas) — capturado
+con Playwright antes de dar el ajuste por bueno. 105/105 tests
+backend, 95/95 tests frontend, `pnpm lint`/`pnpm build` limpios,
+confirmados de nuevo tras el cambio.
+
+**Lección de proceso reforzada:** verificar solo un estado de una
+interacción (ej. el ícono ya transformado) sin verificar también su
+estado por defecto es una auditoría incompleta, no una simulación —
+pero el efecto práctico frente al usuario es el mismo: el problema
+reportado originalmente seguía sin resolverse en el estado que
+realmente importa. Cubrir explícitamente todos los estados relevantes
+de una interacción (no solo uno) pasa a ser parte del checklist de
+verificación visual, no solo "abrir y mirar una vez".
 
 **Veredicto: APROBADO.**
