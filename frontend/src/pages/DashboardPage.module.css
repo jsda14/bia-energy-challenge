@@ -35,3 +35,33 @@
     grid-column: span 4;
   }
 }
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.mainChart {
+  display: flex;
+  flex-direction: column;
+}
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .chartsGrid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.fullWidthSection {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+}

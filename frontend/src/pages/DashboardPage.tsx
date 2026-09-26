@@ -1,29 +1,35 @@
 import { useDashboardSummary } from "../api/queries/useDashboardSummary";
 import { useMeters } from "../api/queries/useMeters";
+import { useAnomalies } from "../api/queries/useAnomalies";
+import { useConsumptionTimeline } from "../api/queries/useConsumptionTimeline";
 import { formatDateTime, formatKwh } from "../domain/formatting";
 import { StatCard } from "../components/ui/StatCard";
 import { RunAnalysisButton } from "../components/ui/RunAnalysisButton";
+import { ConsumptionTimelineChart } from "../components/feature/ConsumptionTimelineChart";
+import { MeterStatusDistribution } from "../components/feature/MeterStatusDistribution";
+import { TriageList } from "../components/feature/TriageList";
 import styles from "./DashboardPage.module.css";
 
 export default function DashboardPage() {
-  const { data: dashboardSummary, isLoading, isError } = useDashboardSummary();
+  const { data: dashboardSummary, isLoading: summaryLoading, isError: summaryError } = useDashboardSummary();
   const { data: meters, isLoading: metersLoading, isError: metersError } = useMeters();
+  const { data: anomalies, isLoading: anomaliesLoading, isError: anomaliesError } = useAnomalies();
+  const { data: timeline, isLoading: timelineLoading, isError: timelineError } = useConsumptionTimeline();
+
+  const isLoading = summaryLoading || metersLoading || anomaliesLoading || timelineLoading;
+  const isError = summaryError || metersError || anomaliesError || timelineError;
 
   if (isLoading) {
     return <div>Cargando...</div>;
   }
 
-  if (isError || !dashboardSummary) {
+  if (isError || !dashboardSummary || !meters || !anomalies || !timeline) {
     return <div>Error al cargar el dashboard.</div>;
   }
 
-  let totalConsumptionDisplay = "—";
-  if (metersLoading) {
-    totalConsumptionDisplay = "Cargando...";
-  } else if (!metersError && meters) {
-    const total = meters.reduce((acc, m) => acc + m.consumption_kwh, 0);
-    totalConsumptionDisplay = formatKwh(total);
-  }
+  const totalConsumptionDisplay = formatKwh(
+    meters.reduce((acc, m) => acc + m.consumption_kwh, 0)
+  );
 
   return (
     <div className={styles.dashboard}>
@@ -67,6 +73,19 @@ export default function DashboardPage() {
               : "Nunca"
           }
         />
+      </div>
+
+      <div className={styles.chartsGrid}>
+        <div className={styles.mainChart}>
+          <ConsumptionTimelineChart points={timeline.points} />
+        </div>
+        <div className={styles.sideColumn}>
+          <MeterStatusDistribution meters={meters} />
+        </div>
+      </div>
+      
+      <div className={styles.fullWidthSection}>
+        <TriageList anomalies={anomalies} />
       </div>
     </div>
   );
