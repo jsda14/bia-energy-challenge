@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
+import { AssistantPanel } from "../feature/AssistantPanel";
 import { useThemeStore } from "../../stores/useThemeStore";
 import styles from "./AppLayout.module.css";
 
@@ -17,6 +18,7 @@ export default function AppLayout() {
       <main className={styles["app-layout__main"]}>
         <Outlet />
       </main>
+      <AssistantPanel />
     </div>
   );
 }

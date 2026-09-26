@@ -1,0 +1,174 @@
+.fab {
+  position: fixed;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  min-width: 44px;
+  min-height: 44px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-bg-elevated, #ffffff);
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* z-index superior al 20 de MobileNav — el asistente flota sobre
+   cualquier página, incluido el header/menu mobile. */
+.panel {
+  position: fixed;
+  bottom: calc(var(--space-4) + 64px);
+  right: var(--space-4);
+  width: min(360px, calc(100vw - 2 * var(--space-4)));
+  max-height: min(520px, calc(100vh - 120px));
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  overflow: hidden;
+}
+
+.header {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 120px;
+}
+
+.message {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  max-width: 85%;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.message--user {
+  align-self: flex-end;
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-text);
+}
+
+.message--assistant {
+  align-self: flex-start;
+  background: var(--color-neutral);
+  color: var(--color-text);
+}
+
+.confirmBox {
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  background: rgba(var(--color-pulse-rgb), 0.08);
+}
+
+.confirmText {
+  margin: 0 0 var(--space-2) 0;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.confirmActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.confirmButton {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary);
+  color: var(--color-bg-elevated, #ffffff);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.confirmButton:disabled {
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancelButton:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.inputRow {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.input {
+  flex: 1;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.sendButton {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary);
+  color: var(--color-bg-elevated, #ffffff);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sendButton:disabled {
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .panel {
+    right: var(--space-2);
+    left: var(--space-2);
+    width: auto;
+  }
+
+  .fab {
+    right: var(--space-2);
+  }
+}
