@@ -25,12 +25,33 @@
   opacity: 0.6;
 }
 
+/* Mobile: grid de 3 columnas (hamburguesa | brand centrado | acciones)
+   en vez de flex space-between con el orden del DOM — el orden lógico/
+   de accesibilidad (brand, nav, botón de menú, acciones) se mantiene
+   intacto en el HTML, solo el layout visual cambia via grid-column,
+   sin necesidad de reordenar el DOM ni afectar el foco de teclado. */
 .header__container {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
   position: relative;
+}
+
+.header__menuButton {
+  grid-column: 1;
+  order: -1;
+}
+
+.header__brand {
+  grid-column: 2;
+  justify-content: center;
+  order: 0;
+}
+
+.header__actions {
+  grid-column: 3;
+  order: 1;
 }
 
 .header__brand {
@@ -219,6 +240,18 @@
 }
 
 @media (min-width: 768px) {
+  /* Desktop vuelve al layout original: brand a la izquierda (no
+     centrado), nav en el medio, acciones a la derecha — el grid de 3
+     columnas centrado es un tratamiento específico de mobile. */
+  .header__container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .header__brand {
+    justify-content: flex-start;
+  }
+
   .header__nav {
     display: flex;
     flex: 1;
