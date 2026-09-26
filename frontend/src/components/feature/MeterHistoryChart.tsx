@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import ReactECharts from "echarts-for-react";
-import { CHART_COLOR_SERIES_A, CHART_COLOR_SERIES_B, CHART_COLOR_SERIES_C, CHART_COLOR_SERIES_D, CHART_COLOR_BASELINE } from "./chartColors";
+import { CHART_COLOR_SERIES_A, CHART_COLOR_SERIES_B, CHART_COLOR_SERIES_C, CHART_COLOR_SERIES_D, CHART_COLOR_BASELINE, CHART_COLOR_HIGHLIGHT_AREA } from "./chartColors";
 import styles from "./MeterHistoryChart.module.css";
 import type { Reading, Event } from "../../domain/types";
 
@@ -43,46 +43,56 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
     });
   };
 
+  const variables: ChartVariable[] = useMemo(
+    () => (compareMode ? ["consumption_kwh", ...selectedOtherVariables] : ["consumption_kwh"]),
+    [compareMode, selectedOtherVariables]
+  );
+
+  // Ancho mínimo del chart: con varios ejes Y apilados a la izquierda,
+  // comprimir el chart al 100% del contenedor en mobile dejaba muy
+  // poco espacio real para las líneas de datos (ver captura real:
+  // "espacio en blanco feo" antes del área de datos). En vez de
+  // seguir comprimiendo, el chart tiene un ancho mínimo fijo y el
+  // contenedor scrollea horizontalmente — mismo patrón ya usado en el
+  // proyecto para tablas anchas en mobile (`overflow-x: auto`).
+  const chartMinWidth = 320 + Math.max(0, variables.length - 1) * 70;
+
   const chartOptions = useMemo(() => {
     const dates = readings.map((r) => r.timestamp);
-    const variables: ChartVariable[] = compareMode 
-      ? ["consumption_kwh", ...selectedOtherVariables] 
-      : ["consumption_kwh"];
 
-    const gridCount = variables.length;
-    const gridHeight = 85 / gridCount; // leaving some space at top/bottom
-
-    const grids = variables.map((_, index) => ({
-      left: "3%",
-      right: "4%",
-      top: `${5 + index * gridHeight}%`,
-      height: `${gridHeight - 5}%`,
-      containLabel: true,
-    }));
-
-    const xAxes = variables.map((_, index) => ({
-      type: "category",
-      gridIndex: index,
-      boundaryGap: false,
-      data: dates,
-      axisLabel: {
-        show: index === gridCount - 1, // Only show labels on the bottom-most grid
-        formatter: (value: string) => {
-          const date = new Date(value);
-          return `${date.getDate()} ${date.toLocaleString('es-ES', { month: 'short' })}, ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-        },
-      },
-      axisTick: { show: index === gridCount - 1 },
-      axisLine: { show: true },
-    }));
+    // Un único grid: todas las series se superponen en el mismo
+    // espacio visual (comparables directamente entre sí), en vez de
+    // grids apilados verticalmente que se leían como gráficas
+    // independientes. Cada variable tiene su propio eje Y con su
+    // propia escala — el primero a la izquierda del grid, los
+    // siguientes también a la izquierda pero desplazados hacia afuera
+    // vía `offset` para no solaparse entre sí (patrón estándar de
+    // ECharts para múltiples ejes Y sobre un único grid).
+    //
+    // `grid.left` debe estar en la MISMA unidad (px) que `offset` de
+    // cada eje — mezclar offset en px con un left en % hizo que, con
+    // 3+ variables, el grid completo quedara empujado fuera del área
+    // visible (bug real encontrado al verificar con 3 variables
+    // superpuestas: el chart se veía vacío, solo los ejes visibles).
+    // yAxisOffsetStep debe ser mayor que nameGap (45px) + el ancho
+    // aproximado del texto rotado del nombre del eje — con offset
+    // menor o igual a ese espacio, el nombre de un eje invade el
+    // área del eje siguiente y se superponen entre sí (bug real
+    // confirmado con 3 ejes: "Voltaje (V)" se solapaba con "Factor de
+    // potencia" al no dejar margen suficiente entre ambos).
+    const yAxisOffsetStep = 70; // px entre cada eje Y adicional
+    const leftPaddingPx = 50 + Math.max(0, variables.length - 1) * yAxisOffsetStep;
 
     const yAxes = variables.map((variable, index) => ({
-      type: "value",
-      gridIndex: index,
+      type: "value" as const,
       name: VARIABLE_LABELS[variable],
-      nameLocation: "middle",
-      nameGap: 35,
-      splitLine: { show: true },
+      nameLocation: "middle" as const,
+      nameGap: 40,
+      position: "left" as const,
+      offset: index * yAxisOffsetStep,
+      axisLine: { show: true, lineStyle: { color: SERIES_COLORS[index] } },
+      axisLabel: { color: SERIES_COLORS[index] },
+      splitLine: { show: index === 0 },
     }));
 
     const series = variables.map((variable, index) => {
@@ -91,7 +101,6 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         name: VARIABLE_LABELS[variable],
         type: "line",
         data: readings.map((r) => r[variable]),
-        xAxisIndex: index,
         yAxisIndex: index,
         itemStyle: { color: SERIES_COLORS[index] },
         lineStyle: { color: SERIES_COLORS[index] },
@@ -111,7 +120,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         s.markArea = {
           data: [[{ xAxis: highlightStart }, { xAxis: highlightEnd }]],
           itemStyle: {
-            color: "rgba(114, 28, 36, 0.15)"
+            color: CHART_COLOR_HIGHLIGHT_AREA
           }
         };
       }
@@ -131,23 +140,36 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
     });
 
     return {
-      tooltip: { 
+      tooltip: {
         trigger: "axis",
         axisPointer: { type: 'cross' }
       },
-      axisPointer: {
-        link: [{ xAxisIndex: 'all' }],
-      },
-      legend: { 
+      legend: {
         data: variables.map((v) => VARIABLE_LABELS[v]),
         top: 0,
       },
-      grid: grids,
-      xAxis: xAxes,
+      grid: {
+        left: leftPaddingPx,
+        right: "4%",
+        top: "12%",
+        bottom: "12%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: dates,
+        axisLabel: {
+          formatter: (value: string) => {
+            const date = new Date(value);
+            return `${date.getDate()} ${date.toLocaleString('es-ES', { month: 'short' })}, ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+          },
+        },
+      },
       yAxis: yAxes,
       series,
     };
-  }, [readings, compareMode, selectedOtherVariables, baselineKwh, highlightStart, highlightEnd, events]);
+  }, [readings, variables, baselineKwh, highlightStart, highlightEnd, events]);
 
   if (readings.length === 0) {
     return <div className={styles.empty}>Sin datos históricos para este medidor.</div>;
@@ -195,11 +217,13 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         )}
       </div>
 
-      <ReactECharts 
-        option={chartOptions} 
-        notMerge={true}
-        style={{ height: `${compareMode ? 400 + selectedOtherVariables.length * 150 : 400}px`, width: "100%" }} 
-      />
+      <div className={styles.chartScroll}>
+        <ReactECharts
+          option={chartOptions}
+          notMerge={true}
+          style={{ height: "440px", width: "100%", minWidth: `${chartMinWidth}px` }}
+        />
+      </div>
     </div>
   );
 }

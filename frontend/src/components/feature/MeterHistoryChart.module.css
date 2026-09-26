@@ -67,6 +67,17 @@
   font-weight: 600;
 }
 
+/* Scroll horizontal cuando el chart supera el ancho del contenedor
+   (varios ejes Y superpuestos requieren un ancho mínimo — ver
+   chartMinWidth en el componente) — mismo patrón ya usado en el
+   proyecto para tablas anchas en mobile (overflow-x: auto en
+   MetersTable/AnomaliesTable), en vez de comprimir el contenido hasta
+   volverlo ilegible. */
+.chartScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .empty {
   padding: var(--space-4);
   text-align: center;

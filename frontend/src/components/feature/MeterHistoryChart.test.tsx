@@ -53,7 +53,7 @@ describe("MeterHistoryChart", () => {
     );
   });
 
-  it("enables compare mode and adds an additional stacked grid for the selected variable", async () => {
+  it("enables compare mode and overlays the selected variable on a single grid with its own y-axis", async () => {
     const user = userEvent.setup();
     render(<MeterHistoryChart readings={readings} baselineKwh={null} />);
 
@@ -63,9 +63,14 @@ describe("MeterHistoryChart", () => {
     const option = JSON.parse(chart.getAttribute("data-option") as string);
     // consumption_kwh + default selected voltage_v
     expect(option.series).toHaveLength(2);
-    expect(option.grid).toHaveLength(2);
-    // Tooltips/cursor stay synced across the stacked grids
-    expect(option.axisPointer.link).toEqual([{ xAxisIndex: "all" }]);
+    // Un único grid (no apilados) — todas las series comparten el
+    // mismo espacio visual, cada una con su propio eje Y superpuesto.
+    expect(Array.isArray(option.grid)).toBe(false);
+    expect(option.yAxis).toHaveLength(2);
+    expect(option.series[0].yAxisIndex).toBe(0);
+    expect(option.series[1].yAxisIndex).toBe(1);
+    // Un único eje X compartido, no uno por variable.
+    expect(Array.isArray(option.xAxis)).toBe(false);
   });
 
   it("toggles additional variable chips without emptying the selection (RN-02)", async () => {
