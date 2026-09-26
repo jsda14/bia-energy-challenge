@@ -1,15 +1,24 @@
+/* Mobile-first real (STANDARDS.md §4.4): la base sin media query es el
+   layout de card. La tabla tradicional es la excepción hacia arriba,
+   bajo @media (min-width: 768px). */
+
 .tableWrapper {
-  overflow-x: auto;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-bg);
-  box-shadow: var(--shadow-sm);
+  border: none;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
 }
 
-.table {
+.table,
+.table tbody,
+.table tr,
+.table td {
+  display: block;
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
+}
+
+.table thead {
+  display: none;
 }
 
 .th {
@@ -30,7 +39,7 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 0.875rem;
-  transition: background-color 0.2s;
+  transition: background-color var(--motion-fast) var(--ease-standard);
 }
 
 .sortButton:hover {
@@ -42,70 +51,134 @@
   outline-offset: -2px;
 }
 
-.td {
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-}
-
 .row {
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: box-shadow var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
+  opacity: 0;
+  animation: stagger-in var(--motion-base) var(--ease-standard) forwards;
 }
 
-.row:hover, .row:focus-visible {
-  background-color: var(--color-neutral); /* Usar variable del theme */
+.row:hover,
+.row:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.12);
   outline: none;
 }
 
-.row:last-child .td {
+.row:last-child {
+  margin-bottom: 0;
+}
+
+.td {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.row:last-child .td:last-child {
   border-bottom: none;
 }
 
-@media (max-width: 767px) {
-  .tableWrapper {
-    border: none;
-    background: none;
-    box-shadow: none;
-    overflow: visible;
-  }
-  .table, .table tbody, .table tr, .table td {
-    display: block;
-    width: 100%;
-  }
+.td::before {
+  content: attr(data-label);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-right: var(--space-3);
+}
 
-  .table thead {
-    display: none;
-  }
+/* Stagger de entrada — mismo criterio que MetersTable. */
+.row:nth-child(1) { animation-delay: 0ms; }
+.row:nth-child(2) { animation-delay: 40ms; }
+.row:nth-child(3) { animation-delay: 80ms; }
+.row:nth-child(4) { animation-delay: 120ms; }
+.row:nth-child(5) { animation-delay: 160ms; }
+.row:nth-child(6) { animation-delay: 200ms; }
+.row:nth-child(7) { animation-delay: 240ms; }
+.row:nth-child(8) { animation-delay: 280ms; }
+.row:nth-child(9) { animation-delay: 320ms; }
+.row:nth-child(10) { animation-delay: 360ms; }
 
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .row {
-    margin-bottom: var(--space-4);
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .tableWrapper {
+    overflow-x: auto;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background-color: var(--color-bg);
     box-shadow: var(--shadow-sm);
   }
 
-  .row:last-child {
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: revert;
+    width: auto;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .table thead {
+    display: table-header-group;
+  }
+
+  .row {
     margin-bottom: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .row:hover,
+  .row:focus-visible {
+    background-color: var(--color-neutral);
+    border-color: transparent;
+    box-shadow: none;
   }
 
   .td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--color-border);
+    display: table-cell;
+    justify-content: unset;
     padding: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .row:last-child .td:last-child {
+  .row:last-child .td {
     border-bottom: none;
   }
 
   .td::before {
-    content: attr(data-label);
-    font-weight: 500;
-    color: var(--color-text-muted);
-    margin-right: var(--space-3);
+    content: none;
   }
 }
 
