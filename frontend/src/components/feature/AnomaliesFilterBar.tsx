@@ -1,3 +1,4 @@
+import { triageStatusToLabel } from "../../domain/formatting";
 import styles from "./AnomaliesFilterBar.module.css";
 
 interface AnomaliesFilterBarProps {
@@ -101,7 +102,7 @@ export function AnomaliesFilterBar({
           <option value="">Todas</option>
           {triageStatusOptions.map((triageStatus) => (
             <option key={triageStatus} value={triageStatus}>
-              {triageStatus}
+              {triageStatusToLabel(triageStatus)}
             </option>
           ))}
         </select>

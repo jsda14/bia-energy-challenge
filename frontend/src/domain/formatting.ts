@@ -65,3 +65,20 @@ export function triageStatusToColorToken(status: string): "neutral" | "warning" 
       return "neutral";
   }
 }
+
+/** Mapea un triage_status string ("NEW"|"ACKNOWLEDGED"|"DISMISSED") a su
+ * etiqueta en español — mismo mapeo que TriageStatusBadge, extraído acá
+ * para reutilizarlo también en AnomaliesFilterBar sin duplicar la lógica
+ * de traducción en dos lugares. Cualquier valor no reconocido cae a
+ * "Nueva" (fallback silencioso, mismo criterio que severityToColorToken). */
+export function triageStatusToLabel(status: string): string {
+  switch (status) {
+    case "ACKNOWLEDGED":
+      return "Atendida";
+    case "DISMISSED":
+      return "Descartada";
+    case "NEW":
+    default:
+      return "Nueva";
+  }
+}
