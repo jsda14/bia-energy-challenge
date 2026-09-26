@@ -20,7 +20,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-012](SPEC-012-dashboard-redesign-and-ux.md) | Dashboard Rediseñado y Mejoras de UX del MVP Core | ✅ Aprobado | 3 | 2026-09-26 |
 | [SPEC-013](SPEC-013-triage-status-and-conversational-assistant.md) | Estado de Triage (Atendida/Descartada) y Asistente Conversacional | ✅ Aprobado | 0 | 2026-09-26 |
-| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 2 | 2026-09-26 |
+| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 5 | 2026-09-26 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -941,5 +941,53 @@ ambos temas, ícono de tema como SVG nítido, cards de `AnomaliesTable`
 alineadas en ambos temas) con Playwright antes de dar por bueno.
 105/105 tests backend (sin cambios), 95/95 tests frontend, `pnpm
 lint`/`pnpm build` limpios.
+
+**Rondas 4-5 — feedback funcional y visual adicional, resuelto
+directamente sin agente externo (mismo criterio ya aplicado desde
+SPEC-010):**
+
+1. **Bug real (no solo visual): `MeterHistoryChart` en modo "Comparar
+   variables" usaba grids apilados verticalmente** — técnicamente una
+   sola instancia de ECharts, pero visualmente indistinguible de
+   varias gráficas independientes. Corregido a un único grid con
+   múltiples ejes Y superpuestos (cada uno con su propia escala,
+   `offset` para no solaparse) — todas las series comparables
+   directamente en el mismo espacio, como pidió el usuario
+   explícitamente ("TODAS DEBEN APARECER EN LA MISMA GRÁFICA").
+   Iteración con 2 bugs propios encontrados y corregidos en el
+   camino: mezclar unidades px/% en el margen izquierdo dejaba el
+   grid empujado fuera del área visible con 3+ variables, y un
+   `yAxisOffsetStep` insuficiente hacía que los nombres de eje
+   rotados se superpusieran entre sí en viewports angostos.
+2. Chart con ancho mínimo + `overflow-x: auto` para scroll horizontal
+   en mobile en vez de seguir comprimiendo el contenido — mismo
+   patrón ya usado en el proyecto para tablas anchas.
+3. `CHART_COLOR_SERIES_C` (casi blanco puro, pensado solo para dark
+   mode) reemplazado por un rojo sutil visible en ambos temas.
+4. `markArea` de la ventana anómala resaltada, invisible en dark mode
+   por una opacidad demasiado baja sobre un color fijo — corregido con
+   `CHART_COLOR_HIGHLIGHT_AREA`.
+5. Cards mobile de `MetersTable`/`AnomaliesTable` rediseñadas al
+   patrón "recibo" (label izquierda, valor/badge alineado al borde
+   derecho) tras una segunda ronda de feedback — la grilla de 2
+   columnas anterior se veía desordenada. Bug de especificidad CSS
+   real encontrado en `AnomaliesTable` (`.table td` genérico ganaba
+   sobre `.td`, dejando `display: flex` sin efecto).
+6. Selects de filtro con ancho inconsistente entre sí en mobile —
+   corregido a full-width uniforme, label arriba del control.
+7. Botones de acción (`AnomalyDetailPage`, `AiExplanationBlock`) con
+   layout ambiguo de `flex-wrap` en mobile — corregido a columna
+   full-width consistente.
+8. Select de "Estado de Triage" mostraba los valores crudos del
+   backend en inglés (`NEW`/`ACKNOWLEDGED`/`DISMISSED`) en vez de
+   traducirlos — corregido extrayendo `triageStatusToLabel` a
+   `formatting.ts` (mismo patrón que las funciones de color
+   existentes), reutilizada también en `TriageStatusBadge` para no
+   duplicar el mapeo.
+
+**5 commits atómicos adicionales** (chart overlay + colores, cards
+mobile, filtros, botones de acción, traducción del select), todos
+verificados de forma independiente: 105/105 backend, 95/95 frontend,
+`pnpm lint` sin warnings, `pnpm build` limpio.
 
 **Veredicto: APROBADO.**
