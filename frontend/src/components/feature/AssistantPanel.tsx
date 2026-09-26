@@ -97,6 +97,7 @@ export function AssistantPanel() {
       {isOpen && (
         <div id="assistant-panel" className={styles.panel} role="dialog" aria-label="Asistente de Bia Energy">
           <div className={styles.header}>
+            <span className={styles.headerIcon} aria-hidden="true">💬</span>
             <h2 className={styles.title}>Asistente</h2>
           </div>
 
