@@ -109,6 +109,10 @@ class AnomalyORM(Base):
     # "ai" si reason/recommended_action vinieron de una llamada real y
     # exitosa a Claude, "template" si es el fallback determinista.
     explanation_source: Mapped[str] = mapped_column(String, default="template", server_default="template")
+    # Estado de gestión humana: "NEW" (default), "ACKNOWLEDGED", "DISMISSED".
+    # Validado como conjunto cerrado en el borde HTTP (Literal en
+    # UpdateTriageStatusRequest), no aquí — mismo criterio que explanation_source.
+    triage_status: Mapped[str] = mapped_column(String, default="NEW", server_default="NEW")
     baseline_kwh: Mapped[float] = mapped_column(Float)
     observed_kwh: Mapped[float] = mapped_column(Float)
     variation_pct: Mapped[float] = mapped_column(Float)

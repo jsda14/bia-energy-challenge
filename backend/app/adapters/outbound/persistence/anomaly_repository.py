@@ -48,6 +48,7 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
             reason=row.reason,
             recommended_action=row.recommended_action,
             explanation_source=row.explanation_source,
+            triage_status=row.triage_status,
         )
 
     def get_all(self) -> list[PersistedAnomaly]:
@@ -73,6 +74,14 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
         row.reason = explanation.reason
         row.recommended_action = explanation.recommended_action
         row.explanation_source = explanation.source
+        self._session.flush()
+        return True
+
+    def update_triage_status(self, anomaly_id: str, triage_status: str) -> bool:
+        row = self._session.get(AnomalyORM, anomaly_id)
+        if not row:
+            return False
+        row.triage_status = triage_status
         self._session.flush()
         return True
 
@@ -134,6 +143,7 @@ class SqlAlchemyAnomalyRepository(AnomalyRepositoryPort):
                 reason=explanation.reason,
                 recommended_action=explanation.recommended_action,
                 explanation_source=explanation.source,
+                triage_status="NEW",
                 baseline_kwh=anomaly.evidence.baseline_kwh,
                 observed_kwh=anomaly.evidence.observed_kwh,
                 variation_pct=anomaly.evidence.variation_pct,

@@ -99,6 +99,13 @@ class PersistedAnomaly(BaseModel):
         explanation_source: Origen real de reason/recommended_action —
             "ai" (Claude real) o "template" (fallback determinista). Ver
             AIExplanation.source para el detalle completo.
+        triage_status: Estado de gestión humana de la anomalía — "NEW"
+            (default, aún no revisada), "ACKNOWLEDGED" (atendida) o
+            "DISMISSED" (descartada). Reversible sin restricciones de
+            transición (SPEC-013). `str` simple, no un Enum, mismo
+            criterio que explanation_source: el conjunto cerrado de
+            valores válidos se valida en el borde HTTP (Literal en
+            UpdateTriageStatusRequest), no en el dominio.
     """
 
     model_config = {"frozen": True}
@@ -108,3 +115,4 @@ class PersistedAnomaly(BaseModel):
     reason: str
     recommended_action: str
     explanation_source: str = "template"
+    triage_status: str = "NEW"

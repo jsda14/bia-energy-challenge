@@ -236,3 +236,65 @@ def test_explanation_source_persisted_and_updated(session):
     )
     assert repo.get_by_id(anomaly_id).explanation_source == "ai"
 
+
+def test_new_anomalies_default_to_triage_status_new(session):
+    repo = SqlAlchemyAnomalyRepository(session)
+    ev = AnomalyEvidence(
+        baseline_kwh=10.0, observed_kwh=20.0, variation_pct=100.0,
+        affected_variables=[], correlated_event=None,
+        window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+    )
+    ar = AnomalyRecord(
+        meter_id="M-100", detected_at=datetime.now(timezone.utc),
+        type=AnomalyType.REAL_ANOMALY, severity=Severity.HIGH,
+        confidence=0.9, evidence=ev,
+    )
+    inserted_ids = repo.save_many([(ar, AIExplanation(reason="R", recommended_action="A"))])
+    assert repo.get_by_id(inserted_ids[0]).triage_status == "NEW"
+
+
+def test_update_triage_status_returns_false_for_unknown_id(session):
+    repo = SqlAlchemyAnomalyRepository(session)
+    updated = repo.update_triage_status("does-not-exist", "ACKNOWLEDGED")
+    assert updated is False
+
+
+def test_update_triage_status_replaces_only_that_field(session):
+    repo = SqlAlchemyAnomalyRepository(session)
+
+    ev = AnomalyEvidence(
+        baseline_kwh=10.0, observed_kwh=20.0, variation_pct=100.0,
+        affected_variables=["consumption_kwh"], correlated_event=None,
+        window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+    )
+    ar = AnomalyRecord(
+        meter_id="M-100", detected_at=datetime(2026, 1, 1, 5, tzinfo=timezone.utc),
+        type=AnomalyType.REAL_ANOMALY, severity=Severity.HIGH,
+        confidence=0.9, evidence=ev,
+    )
+    inserted_ids = repo.save_many([(ar, AIExplanation(reason="Razón", recommended_action="Acción"))])
+    anomaly_id = inserted_ids[0]
+
+    updated = repo.update_triage_status(anomaly_id, "ACKNOWLEDGED")
+    assert updated is True
+
+    fetched = repo.get_by_id(anomaly_id)
+    assert fetched is not None
+    assert fetched.triage_status == "ACKNOWLEDGED"
+    # Todo lo demás permanece intacto.
+    assert fetched.reason == "Razón"
+    assert fetched.recommended_action == "Acción"
+    assert fetched.record.type == AnomalyType.REAL_ANOMALY
+    assert fetched.record.severity == Severity.HIGH
+
+    # Reversible sin restricción: DISMISSED -> NEW también es válido.
+    updated_again = repo.update_triage_status(anomaly_id, "DISMISSED")
+    assert updated_again is True
+    assert repo.get_by_id(anomaly_id).triage_status == "DISMISSED"
+
+    updated_back = repo.update_triage_status(anomaly_id, "NEW")
+    assert updated_back is True
+    assert repo.get_by_id(anomaly_id).triage_status == "NEW"
+

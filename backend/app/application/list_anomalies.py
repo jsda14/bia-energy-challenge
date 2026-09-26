@@ -20,6 +20,7 @@ class ListAnomaliesUseCase:
                 confidence=a.record.confidence,
                 recommended_action=a.recommended_action,
                 detected_at=a.record.detected_at,
+                triage_status=a.triage_status,
             )
             for a in anomalies
         ]

@@ -20,10 +20,12 @@ from app.application.get_meter_detail import GetMeterDetailUseCase
 from app.application.list_anomalies import ListAnomaliesUseCase
 from app.application.get_anomaly_detail import GetAnomalyDetailUseCase
 from app.application.regenerate_explanation import RegenerateExplanationUseCase
+from app.application.update_anomaly_triage_status import UpdateAnomalyTriageStatusUseCase
+from app.application.ask_assistant import AskAssistantUseCase
 
 from app.application.get_consumption_timeline import GetConsumptionTimelineUseCase
 
-from app.adapters.inbound.api import meters_router, anomalies_router, dashboard_router, ai_router
+from app.adapters.inbound.api import meters_router, anomalies_router, dashboard_router, ai_router, assistant_router
 from app.adapters.inbound.api.dependencies import (
     get_db_session,
     get_analyze_meter_use_case as stub_analyze,
@@ -33,7 +35,9 @@ from app.adapters.inbound.api.dependencies import (
     get_list_anomalies_use_case as stub_list_anom,
     get_anomaly_detail_use_case as stub_anom_detail,
     get_regenerate_explanation_use_case as stub_regen_explanation,
-    get_consumption_timeline_use_case as stub_consumption_timeline
+    get_consumption_timeline_use_case as stub_consumption_timeline,
+    get_update_triage_status_use_case as stub_update_triage_status,
+    get_ask_assistant_use_case as stub_ask_assistant,
 )
 
 app = FastAPI(title="Bia Energy Challenge API")
@@ -128,6 +132,41 @@ def build_consumption_timeline_use_case(session: Session = Depends(get_db_sessio
         reading_repo=SqlAlchemyReadingRepository(session),
     )
 
+def build_update_triage_status_use_case(session: Session = Depends(get_db_session)) -> UpdateAnomalyTriageStatusUseCase:
+    return UpdateAnomalyTriageStatusUseCase(
+        anomaly_repo=SqlAlchemyAnomalyRepository(session),
+    )
+
+from app.adapters.outbound.ai.claude_assistant_adapter import ClaudeAssistantAdapter, GENERIC_ERROR_MESSAGE
+from app.domain.ports.assistant_port import AssistantPort, AssistantResponseDTO
+
+class _NoKeyAssistantAdapter(AssistantPort):
+    """Usado cuando no hay ANTHROPIC_API_KEY configurada. SPEC-013 no
+    autoriza ningún fallback determinista para el asistente (a diferencia
+    de la explicación de anomalías) — este adapter no intenta simular una
+    respuesta, solo informa el error de forma inmediata, para que
+    POST /assistant/ask nunca devuelva 500 en un entorno de desarrollo
+    sin key configurada."""
+
+    def ask(self, conversation: list[dict], pending_confirmation: dict | None) -> AssistantResponseDTO:
+        return AssistantResponseDTO(text=GENERIC_ERROR_MESSAGE)
+
+def build_ask_assistant_use_case(session: Session = Depends(get_db_session)) -> AskAssistantUseCase:
+    settings = get_settings()
+    if settings.anthropic_api_key:
+        assistant = ClaudeAssistantAdapter(
+            list_anomalies_uc=build_list_anomalies_use_case(session),
+            get_meter_detail_uc=build_meter_detail_use_case(session),
+            get_dashboard_summary_uc=build_dashboard_summary_use_case(session),
+            analyze_meter_uc=build_analyze_use_case(session),
+            update_triage_status_uc=build_update_triage_status_use_case(session),
+            api_key=settings.anthropic_api_key,
+            model=settings.claude_model,
+        )
+    else:
+        assistant = _NoKeyAssistantAdapter()
+    return AskAssistantUseCase(assistant=assistant)
+
 # Dependency Injection overrides for routers
 app.dependency_overrides[stub_analyze] = build_analyze_use_case
 app.dependency_overrides[stub_dash] = build_dashboard_summary_use_case
@@ -137,8 +176,11 @@ app.dependency_overrides[stub_list_anom] = build_list_anomalies_use_case
 app.dependency_overrides[stub_anom_detail] = build_anomaly_detail_use_case
 app.dependency_overrides[stub_regen_explanation] = build_regenerate_explanation_use_case
 app.dependency_overrides[stub_consumption_timeline] = build_consumption_timeline_use_case
+app.dependency_overrides[stub_update_triage_status] = build_update_triage_status_use_case
+app.dependency_overrides[stub_ask_assistant] = build_ask_assistant_use_case
 
 app.include_router(meters_router)
 app.include_router(anomalies_router)
 app.include_router(dashboard_router)
 app.include_router(ai_router)
+app.include_router(assistant_router)

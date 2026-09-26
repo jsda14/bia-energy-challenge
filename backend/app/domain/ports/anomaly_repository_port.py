@@ -45,3 +45,11 @@ class AnomalyRepositoryPort(Protocol):
         el mismo incidente ya detectado). Retorna True si la anomalía existía
         y se actualizó, False si `anomaly_id` no existe."""
         ...
+
+    def update_triage_status(self, anomaly_id: str, triage_status: str) -> bool:
+        """Actualiza únicamente `triage_status` de una anomalía ya
+        persistida, sin tocar ningún otro campo. Reversible en cualquier
+        dirección, sin restricción de transición (SPEC-013). Retorna True
+        si la anomalía existía y se actualizó, False si `anomaly_id` no
+        existe (mismo contrato de retorno que `update_explanation`)."""
+        ...

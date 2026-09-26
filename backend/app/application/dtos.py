@@ -53,6 +53,7 @@ class AnomalySummaryDTO:
     confidence: float
     recommended_action: str
     detected_at: datetime
+    triage_status: str
 
 @dataclass
 class AnomalyDetailDTO:
@@ -64,6 +65,7 @@ class AnomalyDetailDTO:
     reason: str
     recommended_action: str
     explanation_source: str
+    triage_status: str
     baseline_kwh: float
     observed_kwh: float
     variation_pct: float

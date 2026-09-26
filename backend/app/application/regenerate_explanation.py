@@ -39,6 +39,7 @@ class RegenerateExplanationUseCase:
             reason=explanation.reason,
             recommended_action=explanation.recommended_action,
             explanation_source=explanation.source,
+            triage_status=persisted.triage_status,
             baseline_kwh=ev.baseline_kwh,
             observed_kwh=ev.observed_kwh,
             variation_pct=ev.variation_pct,

@@ -91,3 +91,72 @@ def test_e2e_analyze_all_meters(client, test_engine):
     data = response.json()
     assert data["status"] == "COMPLETED"
     assert data["anomalies_detected_count"] == 0
+
+
+def test_update_triage_status_returns_404_for_unknown_anomaly(client):
+    response = client.patch(
+        "/anomalies/123e4567-e89b-12d3-a456-426614174000/triage-status",
+        json={"status": "ACKNOWLEDGED"},
+    )
+    assert response.status_code == 404
+
+
+def test_update_triage_status_rejects_invalid_status_value(client, test_engine):
+    # Insertar una anomalía real primero para descartar que el 422 sea en
+    # realidad un 404 disfrazado.
+    from app.adapters.outbound.persistence.orm_models import AnomalyORM
+    from datetime import datetime, timezone
+    with sessionmaker(bind=test_engine)() as session:
+        session.add(AnomalyORM(
+            id="triage-test-1", meter_id="M-100", detected_at=datetime.now(timezone.utc),
+            type="REAL_ANOMALY", severity="HIGH", confidence=0.9,
+            reason="R", recommended_action="A",
+            baseline_kwh=10.0, observed_kwh=20.0, variation_pct=100.0,
+            affected_variables="", correlated_event=None,
+            window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+            window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+        ))
+        session.commit()
+
+    response = client.patch("/anomalies/triage-test-1/triage-status", json={"status": "BOGUS"})
+    assert response.status_code == 422
+
+
+def test_update_triage_status_updates_and_is_reversible(client, test_engine):
+    from app.adapters.outbound.persistence.orm_models import AnomalyORM
+    from datetime import datetime, timezone
+    with sessionmaker(bind=test_engine)() as session:
+        session.add(AnomalyORM(
+            id="triage-test-2", meter_id="M-100", detected_at=datetime.now(timezone.utc),
+            type="REAL_ANOMALY", severity="HIGH", confidence=0.9,
+            reason="R", recommended_action="A",
+            baseline_kwh=10.0, observed_kwh=20.0, variation_pct=100.0,
+            affected_variables="", correlated_event=None,
+            window_start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+            window_end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+        ))
+        session.commit()
+
+    response = client.patch("/anomalies/triage-test-2/triage-status", json={"status": "ACKNOWLEDGED"})
+    assert response.status_code == 200
+    assert response.json()["triage_status"] == "ACKNOWLEDGED"
+
+    # Reversible sin restricción de transición.
+    response = client.patch("/anomalies/triage-test-2/triage-status", json={"status": "NEW"})
+    assert response.status_code == 200
+    assert response.json()["triage_status"] == "NEW"
+
+
+def test_assistant_ask_without_api_key_returns_generic_error_never_500(client):
+    """Sin ANTHROPIC_API_KEY configurada en el entorno de test, el
+    endpoint debe responder 200 con el mensaje de error genérico — nunca
+    un 500 (SPEC-013: sin fallback a plantilla, pero tampoco debe romper
+    el endpoint en un entorno sin key)."""
+    response = client.post(
+        "/assistant/ask",
+        json={"conversation": [{"role": "user", "content": "hola"}], "pending_confirmation": None},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["text"]
+    assert data["pending_action"] is None

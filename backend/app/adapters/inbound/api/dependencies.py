@@ -41,3 +41,9 @@ def get_regenerate_explanation_use_case():
 
 def get_consumption_timeline_use_case():
     raise NotImplementedError
+
+def get_update_triage_status_use_case():
+    raise NotImplementedError
+
+def get_ask_assistant_use_case():
+    raise NotImplementedError

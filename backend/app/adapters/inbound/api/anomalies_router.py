@@ -3,12 +3,18 @@ from app.adapters.inbound.api.dependencies import (
     get_list_anomalies_use_case,
     get_anomaly_detail_use_case,
     get_regenerate_explanation_use_case,
+    get_update_triage_status_use_case,
 )
 
-from app.adapters.inbound.api.schemas import AnomalySummaryResponse, AnomalyDetailResponse
+from app.adapters.inbound.api.schemas import (
+    AnomalySummaryResponse,
+    AnomalyDetailResponse,
+    UpdateTriageStatusRequest,
+)
 from app.application.list_anomalies import ListAnomaliesUseCase
 from app.application.get_anomaly_detail import GetAnomalyDetailUseCase
 from app.application.regenerate_explanation import RegenerateExplanationUseCase
+from app.application.update_anomaly_triage_status import UpdateAnomalyTriageStatusUseCase
 
 router = APIRouter(prefix="/anomalies", tags=["Anomalies"])
 
@@ -20,6 +26,21 @@ def list_anomalies(meter_id: str | None = None, use_case: ListAnomaliesUseCase =
 @router.get("/{anomaly_id}", response_model=AnomalyDetailResponse)
 def get_anomaly_detail(anomaly_id: str, use_case: GetAnomalyDetailUseCase = Depends(get_anomaly_detail_use_case)):
     dto = use_case.execute(anomaly_id)
+    if not dto:
+        raise HTTPException(status_code=404, detail="Anomaly not found")
+    return AnomalyDetailResponse.model_validate(dto, from_attributes=True)
+
+@router.patch("/{anomaly_id}/triage-status", response_model=AnomalyDetailResponse)
+def update_triage_status(
+    anomaly_id: str,
+    body: UpdateTriageStatusRequest,
+    use_case: UpdateAnomalyTriageStatusUseCase = Depends(get_update_triage_status_use_case),
+):
+    """Actualiza el estado de triage de una anomalía ya detectada
+    (NEW/ACKNOWLEDGED/DISMISSED), reversible sin restricción de
+    transición. Sin autenticación en el MVP — no hay noción de "quién"
+    lo cambió (SPEC-013)."""
+    dto = use_case.execute(anomaly_id, body.status)
     if not dto:
         raise HTTPException(status_code=404, detail="Anomaly not found")
     return AnomalyDetailResponse.model_validate(dto, from_attributes=True)

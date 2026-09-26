@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from pydantic import BaseModel
 
 class AnalysisRunRequest(BaseModel):
@@ -59,6 +60,7 @@ class AnomalySummaryResponse(BaseModel):
     confidence: float
     recommended_action: str
     detected_at: datetime
+    triage_status: str
 
 class AnomalyDetailResponse(BaseModel):
     id: str
@@ -69,6 +71,7 @@ class AnomalyDetailResponse(BaseModel):
     reason: str
     recommended_action: str
     explanation_source: str
+    triage_status: str
     baseline_kwh: float
     observed_kwh: float
     variation_pct: float
@@ -76,6 +79,13 @@ class AnomalyDetailResponse(BaseModel):
     correlated_event: str | None
     window_start: datetime
     window_end: datetime
+
+class UpdateTriageStatusRequest(BaseModel):
+    # Único punto de validación del conjunto cerrado de 3 estados — el
+    # dominio/persistencia siguen siendo `str` sin restricción (mismo
+    # criterio que explanation_source). Pydantic rechaza cualquier otro
+    # valor con 422 automáticamente.
+    status: Literal["NEW", "ACKNOWLEDGED", "DISMISSED"]
 
 class ConsumptionTimelinePointResponse(BaseModel):
     timestamp: datetime
