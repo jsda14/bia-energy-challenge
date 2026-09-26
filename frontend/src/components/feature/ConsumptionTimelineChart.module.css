@@ -7,6 +7,12 @@
   box-shadow: var(--shadow-sm);
 }
 
+.title {
+  margin: 0 0 var(--space-4) 0;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
 .empty {
   padding: var(--space-8);
   text-align: center;

@@ -36,10 +36,6 @@ export function ConsumptionTimelineChart({ points }: ConsumptionTimelineChartPro
       },
       yAxis: {
         type: "value",
-        name: "Consumo Total (kWh)",
-        nameTextStyle: {
-          padding: [0, 0, 0, 20]
-        },
       },
       series: [
         {
@@ -70,6 +66,7 @@ export function ConsumptionTimelineChart({ points }: ConsumptionTimelineChartPro
 
   return (
     <div className={styles.container}>
+      <h3 className={styles.title}>Consumo Total (kWh)</h3>
       <ReactECharts option={chartOptions} style={{ height: "350px", width: "100%" }} />
     </div>
   );
