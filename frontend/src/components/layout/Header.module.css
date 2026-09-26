@@ -4,7 +4,7 @@
   background: rgba(var(--color-bg-rgb), 0.92);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-4);
   box-shadow: var(--shadow-sm);
   z-index: 10;
 }
@@ -40,45 +40,78 @@
   font-weight: bold;
   font-size: 1.25rem;
   color: var(--color-primary);
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  border-radius: var(--radius-full);
+  background: rgba(var(--color-primary-rgb), 0.06);
 }
 
 .header__logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
   display: block;
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.25);
 }
 
 .header__nav {
   display: none;
-  gap: var(--space-3);
+  gap: var(--space-1);
   flex-wrap: wrap;
 }
 
 .header__link {
   color: var(--color-text-muted);
   font-weight: 500;
-  transition: color var(--motion-fast) var(--ease-standard);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  transition: color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard);
 }
 
 .header__link:hover {
   color: var(--color-text);
+  background: var(--color-neutral);
 }
 
+/* Pill sólida para el link activo — mismo peso visual que un botón
+   primario, no solo un cambio de color de texto (patrón Vercel/Linear). */
 .header__link--active {
-  color: var(--color-primary);
+  color: var(--color-bg-elevated, #ffffff);
+  background: var(--color-primary);
 }
 
+.header__link--active:hover {
+  color: var(--color-bg-elevated, #ffffff);
+  background: var(--color-primary);
+}
+
+/* Botón hamburguesa: fondo sólido + circular, mismo peso visual que
+   un botón primario (ej. "Ejecutar análisis") en vez de un cuadrado
+   plano con solo un borde fino — es el control más a la derecha del
+   header junto al brand, necesita presencia real, no pasar
+   desapercibido como un input sin estilizar. */
 .header__menuButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--color-bg-elevated, #ffffff);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--motion-fast) var(--ease-standard);
+}
+
+.header__menuButton:active {
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__menuButton {
+    transition: none;
+  }
 }
 
 /* Contenedor de referencia explícito con alto fijo (18x14px) — las 3
