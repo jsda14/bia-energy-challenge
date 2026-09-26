@@ -57,16 +57,6 @@ export default function AnomalyDetailPage() {
         />
         
         <DetailField 
-          label="Variables Afectadas" 
-          value={anomaly.affected_variables.length > 0 ? anomaly.affected_variables.join(", ") : "—"} 
-        />
-        
-        <DetailField 
-          label="Evento Correlacionado" 
-          value={anomaly.correlated_event !== null ? anomaly.correlated_event : "Sin evento correlacionado"} 
-        />
-        
-        <DetailField 
           label="Ventana de Detección" 
           value={`${formatDateTime(anomaly.window_start)} – ${formatDateTime(anomaly.window_end)}`} 
         />
@@ -84,6 +74,7 @@ export default function AnomalyDetailPage() {
             baselineKwh={meter.baseline_kwh}
             highlightStart={anomaly.window_start}
             highlightEnd={anomaly.window_end}
+            events={meter.events}
           />
         )}
       </div>
@@ -93,6 +84,8 @@ export default function AnomalyDetailPage() {
           reason={anomaly.reason}
           recommendedAction={anomaly.recommended_action}
           explanationSource={anomaly.explanation_source}
+          affectedVariables={anomaly.affected_variables}
+          correlatedEvent={anomaly.correlated_event}
           isRegenerating={isRegenerating}
           isRegenerateError={isRegenerateError}
           onRegenerate={() => regenerate(anomalyId)}

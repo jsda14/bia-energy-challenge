@@ -122,8 +122,8 @@ describe("AnomalyDetailPage", () => {
     expect(screen.getByText("Test reason")).toBeInTheDocument();
     expect(screen.getByText("Sin evento correlacionado")).toBeInTheDocument();
     expect(screen.getByText("+78,9%")).toBeInTheDocument();
-    // Test CB-03: empty affected variables shows "—"
-    expect(screen.getByText("—")).toBeInTheDocument();
+    // Test CB-03: empty affected variables shows "Ninguna"
+    expect(screen.getByText("Ninguna")).toBeInTheDocument();
     // Test that visual evidence chart is rendered
     expect(screen.getByTestId("mock-echarts")).toBeInTheDocument();
   });

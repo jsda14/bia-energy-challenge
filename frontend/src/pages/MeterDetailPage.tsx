@@ -52,7 +52,7 @@ export default function MeterDetailPage() {
       </div>
 
       <h2 className={styles.subtitle}>Historial de Lecturas</h2>
-      <MeterHistoryChart readings={meter.readings} baselineKwh={meter.baseline_kwh} />
+      <MeterHistoryChart readings={meter.readings} baselineKwh={meter.baseline_kwh} events={meter.events} />
     </div>
   );
 }

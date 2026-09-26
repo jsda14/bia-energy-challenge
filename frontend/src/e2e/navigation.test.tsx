@@ -61,7 +61,8 @@ const MOCK_METER_DETAIL = {
   consumption_kwh: 100,
   baseline_kwh: 90,
   variation_pct: 11.1,
-  readings: []
+  readings: [],
+  events: []
 };
 
 const MOCK_ANOMALY_DETAIL = {
@@ -76,6 +77,12 @@ const MOCK_ANOMALY_DETAIL = {
   window_start: "2024-01-01T00:00:00Z",
   window_end: "2024-01-01T01:00:00Z",
   explanation_source: "ai"
+};
+
+const MOCK_TIMELINE = {
+  points: [
+    { timestamp: "2024-01-01T00:00:00Z", total_consumption_kwh: 100 }
+  ]
 };
 
 describe("E2E Navigation", () => {
@@ -95,6 +102,7 @@ describe("E2E Navigation", () => {
 
     mockApiClient.get.mockImplementation(async (endpoint: string) => {
       if (endpoint === "/dashboard/summary") return MOCK_DASHBOARD;
+      if (endpoint === "/dashboard/consumption-timeline") return MOCK_TIMELINE;
       if (endpoint === "/meters") return MOCK_METERS;
       if (endpoint === "/meters/meter-123") return MOCK_METER_DETAIL;
       if (endpoint === "/anomalies") return MOCK_ANOMALIES;

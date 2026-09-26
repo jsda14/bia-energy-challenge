@@ -7,6 +7,8 @@ interface AiExplanationBlockProps {
   reason: string;
   recommendedAction: string;
   explanationSource: string;
+  affectedVariables: string[];
+  correlatedEvent: string | null;
   isRegenerating: boolean;
   isRegenerateError: boolean;
   onRegenerate: () => void;
@@ -26,6 +28,8 @@ export function AiExplanationBlock({
   reason,
   recommendedAction,
   explanationSource,
+  affectedVariables,
+  correlatedEvent,
   isRegenerating,
   isRegenerateError,
   onRegenerate,
@@ -86,6 +90,42 @@ export function AiExplanationBlock({
           ) : (
             <div className={styles.sectionEntry}>
               <MarkdownText content={recommendedAction} />
+            </div>
+          )}
+        </section>
+
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Variables Afectadas</h3>
+          {isRegenerating ? (
+            <Skeleton />
+          ) : (
+            <div className={styles.sectionEntry}>
+              {affectedVariables.length > 0 ? (
+                <ul className={styles.variableList}>
+                  {affectedVariables.map((v) => (
+                    <li key={v}>{v}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Ninguna</p>
+              )}
+            </div>
+          )}
+        </section>
+
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Evento Correlacionado</h3>
+          {isRegenerating ? (
+            <Skeleton />
+          ) : (
+            <div className={styles.sectionEntry}>
+              {correlatedEvent ? (
+                <div className={styles.eventHighlight}>
+                  {correlatedEvent}
+                </div>
+              ) : (
+                <p>Sin evento correlacionado</p>
+              )}
             </div>
           )}
         </section>

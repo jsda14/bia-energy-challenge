@@ -159,3 +159,23 @@
     animation: none;
   }
 }
+
+.variableList {
+  margin: 0;
+  padding-left: var(--space-4);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.variableList li {
+  margin-bottom: var(--space-1);
+}
+
+.eventHighlight {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  display: inline-block;
+}
