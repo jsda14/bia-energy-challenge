@@ -20,6 +20,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-012](SPEC-012-dashboard-redesign-and-ux.md) | Dashboard Rediseñado y Mejoras de UX del MVP Core | ✅ Aprobado | 3 | 2026-09-26 |
 | [SPEC-013](SPEC-013-triage-status-and-conversational-assistant.md) | Estado de Triage (Atendida/Descartada) y Asistente Conversacional | ✅ Aprobado | 0 | 2026-09-26 |
+| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 0 | 2026-09-26 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -767,5 +768,77 @@ independiente, no solo el reporte de cierre del agente, incluyendo
 lectura línea por línea del punto de seguridad central en ambas capas
 (`claude_assistant_adapter.py` y `AssistantPanel.tsx`) antes de aceptar
 el cierre.
+
+**Veredicto: APROBADO.**
+
+---
+
+## SPEC-014 — Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard
+
+**Estado:** ✅ Aprobado (2026-09-26, 0 rondas de retrabajo formal — un
+ajuste de alcance resuelto durante el plan, ver abajo).
+
+**Resumen:** Pulido visual puro sobre 4 superficies ya cerradas
+funcionalmente (SPEC-009 a SPEC-013): `AssistantPanel` (indicador de
+carga + Markdown), botón de menú hamburguesa (bug de alineación),
+tablas responsive en mobile (bug de token inexistente + mobile-first
+invertido), y viveza visual general del Dashboard, con criterios
+anclados a Grafana y Vercel Dashboard como referencia (skeleton
+loaders, transición de entrada escalonada, hover unificado, tipografía
+monoespaciada en cifras) en vez de un criterio abierto de "más vivo".
+
+**3 bugs reales verificados contra el código antes de escribir la
+SPEC** (no solo percepción visual): `.header__menuIcon` sin contenedor
+de alto fijo de referencia (las 3 barras no quedaban centradas);
+`AssistantPanel` sin indicador de carga y con un `@media (max-width:...)`
+mobile-first invertido; `MetersTable.module.css` usando
+`--color-success-text`/`--color-success-bg`, tokens que no existen en
+`tokens.css` (mismo patrón de bug ya visto en la dona de SPEC-012).
+
+**Ajuste de alcance resuelto durante el plan (antes de que existiera
+código):** el agente implementador preguntó si el skeleton loader
+aplicaba solo a `DashboardPage` (como cita literalmente el hallazgo
+correspondiente de la SPEC) o a las 5 páginas del proyecto con el
+mismo patrón de `<div>Cargando...</div>`. Se decidió extenderlo a las
+5 páginas por consistencia visual, y se actualizó la SPEC de inmediato
+para reflejarlo explícitamente antes de que el agente continuara.
+
+**Auditoría propia con verificación visual real, no solo lectura
+estática de CSS:** el agente reportó explícitamente que no podía
+verificar visualmente en un navegador (sin `chromium-cli` disponible
+en su entorno) — se le reconoció esa honestidad en vez de aceptar una
+afirmación de "se ve bien" sin evidencia. Se instaló Playwright
+(Chromium) para tomar capturas reales del navegador en light/dark y
+desktop/mobile, confirmando: el fix de la hamburguesa (transición a X
+geométricamente correcta), el panel del asistente con contraste
+suficiente en dark mode, las cards de `MetersTable` bien alineadas en
+mobile, y el Dashboard con skeleton/stagger/hover funcionando en ambos
+temas.
+
+**2 bugs adicionales encontrados durante esa verificación visual, no
+parte del alcance original de SPEC-014, corregidos en el mismo ciclo:**
+1. El `yAxis.name` de `ConsumptionTimelineChart` quedaba cortado
+   contra el borde izquierdo del grid de ECharts (preexistente desde
+   SPEC-012) — reemplazado por un `<h3>` externo, mismo patrón ya
+   usado por `MeterStatusDistribution`.
+2. La whitelist de CORS del backend (`allow_origins`, lista fija de
+   2 puertos) rompía silenciosamente en cualquier puerto de Vite
+   distinto a 5173/5174 — descubierto porque la propia verificación
+   visual terminó en el puerto 5175 al haber procesos de Vite
+   huérfanos de sesiones anteriores ocupando los puertos por defecto.
+   Corregido con `allow_origin_regex`, cumpliendo lo que el comentario
+   del código ya prometía ("cualquier puerto localhost") pero el
+   código no cumplía.
+
+**Verificación final:** 105/105 tests backend, 95/95 tests frontend
+(25 archivos), `pnpm lint`/`pnpm build` limpios — todo confirmado de
+forma independiente, más verificación visual real en navegador
+(Playwright), no solo lectura estática de CSS como en SPECs anteriores
+de estilos.
+
+**Decisión de tooling:** Playwright queda instalado como devDependency
+permanente del proyecto — cada SPEC de estilos hasta ahora (SPEC-011,
+SPEC-012, SPEC-014) terminó necesitando verificación visual real en
+algún punto del ciclo.
 
 **Veredicto: APROBADO.**
