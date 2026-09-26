@@ -20,7 +20,7 @@ que un SPEC cambia de estado (aprobado, en retrabajo, bloqueado).
 | [SPEC-011](SPEC-011-brand-visual-redesign.md) | Frontend — Rediseño Visual "Bia Pulse" (Identidad de Marca Real) | ✅ Aprobado | 2 | 2026-09-25 |
 | [SPEC-012](SPEC-012-dashboard-redesign-and-ux.md) | Dashboard Rediseñado y Mejoras de UX del MVP Core | ✅ Aprobado | 3 | 2026-09-26 |
 | [SPEC-013](SPEC-013-triage-status-and-conversational-assistant.md) | Estado de Triage (Atendida/Descartada) y Asistente Conversacional | ✅ Aprobado | 0 | 2026-09-26 |
-| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 1 | 2026-09-26 |
+| [SPEC-014](SPEC-014-visual-polish-assistant-and-responsive.md) | Pulido Visual: Asistente, Navegación Móvil, Tablas Responsive y Viveza del Dashboard | ✅ Aprobado | 2 | 2026-09-26 |
 
 **Leyenda de estado:** ⬜ No iniciado · 🟡 En progreso / en retrabajo · 🔴 Bloqueado · ✅ Aprobado
 
@@ -895,5 +895,51 @@ reportado originalmente seguía sin resolverse en el estado que
 realmente importa. Cubrir explícitamente todos los estados relevantes
 de una interacción (no solo uno) pasa a ser parte del checklist de
 verificación visual, no solo "abrir y mirar una vez".
+
+**Ronda 3 — feedback puntual adicional tras revisar en el navegador,
+sin marcar rechazo del resultado de la ronda 2:** el usuario pidió 2
+ajustes concretos, uno estructural y uno un malentendido aclarado en
+el momento:
+
+1. **Header móvil:** logo+"Bia Energy" centrado, botón de menú a la
+   izquierda (en vez del orden lineal previo, que dejaba todo a la
+   derecha). Resuelto con un grid de 3 columnas via `grid-column`, sin
+   reordenar el DOM — el orden lógico/de accesibilidad se mantiene
+   intacto, solo cambia el layout visual. Desktop revierte al layout
+   original.
+2. **"Íconos que parecen emoticones de WhatsApp":** se malinterpretó
+   inicialmente como el logo de marca (`bia-icon.jpg`) — se preguntó
+   antes de tocar ningún asset de marca, dado que cambiarlo sería una
+   decisión de producto fuera del alcance de una intervención directa.
+   El usuario aclaró que se refería al `ThemeToggle` (🌙/☀️): emojis
+   Unicode crudos, que cada sistema operativo renderiza con su propio
+   estilo de ilustración — de ahí el parecido con emojis de chat.
+   Reemplazados por SVG inline propios (`stroke="currentColor"`),
+   consistentes con el resto de íconos del proyecto.
+
+**Bug real encontrado y corregido en el mismo ciclo, sin que el
+usuario lo hubiera señalado explícitamente:** al revisar de nuevo las
+cards de `AnomaliesTable` en mobile (el usuario las calificó de
+"bastante roto visualmente, nada alineado" en la misma ronda), se
+confirmó que esa tabla nunca había recibido el mismo tratamiento
+cuidadoso que `MetersTable` — usaba un patrón de layout
+estructuralmente distinto (`label: valor` en una sola línea
+horizontal con 6 columnas de ancho desigual, en vez del grid de 2
+columnas con label arriba del valor que sí funciona bien en
+`MetersTable`). Reescrita con el mismo patrón. En el camino se
+encontró la causa real de por qué el grid mobile nunca se aplicaba:
+`.table tr` (selector compuesto, mayor especificidad CSS) ganaba
+sobre `.row` (una sola clase) en ambos breakpoints — corregido con
+`.table tr.row` explícito, sin depender de `!important`. Se encontró
+también que `.td::before` (el label) no tenía `display: block`
+explícito, causando que en algunos casos el label y el valor
+compartieran la misma línea (ej. "TIPODATA_QUALITY") — corregido en
+ambas tablas por igual, no solo en la que fallaba visiblemente.
+
+**Verificación visual real de los 3 ajustes** (header centrado en
+ambos temas, ícono de tema como SVG nítido, cards de `AnomaliesTable`
+alineadas en ambos temas) con Playwright antes de dar por bueno.
+105/105 tests backend (sin cambios), 95/95 tests frontend, `pnpm
+lint`/`pnpm build` limpios.
 
 **Veredicto: APROBADO.**
