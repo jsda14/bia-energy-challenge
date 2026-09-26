@@ -56,8 +56,15 @@
   --space-5: 2rem;
   --space-6: 3rem;
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
+  /* Escala de radio "suave" (estilo iOS/Vercel) — SPEC-014 ronda 2.
+     Reemplaza la escala anterior (4px/8px) en TODO el sistema: se
+     propaga automáticamente a cards, botones, badges e inputs sin
+     tocar componente por componente, salvo casos que ya usaban un
+     valor hardcodeado en vez del token (ver auditoría de esa ronda). */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
 
