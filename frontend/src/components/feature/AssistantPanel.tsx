@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAssistant, type RawMessage } from "../../api/queries/useAssistant";
+import { MarkdownText } from "../ui/MarkdownText";
 import styles from "./AssistantPanel.module.css";
 
 interface DisplayMessage {
@@ -99,12 +100,19 @@ export function AssistantPanel() {
             <h2 className={styles.title}>Asistente</h2>
           </div>
 
-          <div className={styles.messages}>
+          <div className={styles.messages} aria-live="polite" aria-busy={isPending}>
             {displayMessages.map((msg, i) => (
               <div key={i} className={`${styles.message} ${styles[`message--${msg.role}`]}`}>
-                {msg.text}
+                {msg.role === "assistant" ? <MarkdownText content={msg.text} /> : msg.text}
               </div>
             ))}
+            {isPending && (
+              <div className={`${styles.message} ${styles["message--assistant"]} ${styles.typingIndicator}`}>
+                <span className={styles.typingDot} />
+                <span className={styles.typingDot} />
+                <span className={styles.typingDot} />
+              </div>
+            )}
           </div>
 
           {pendingAction && (
