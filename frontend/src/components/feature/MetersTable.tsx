@@ -99,7 +99,6 @@ export function MetersTable({ meters }: MetersTableProps) {
         </thead>
         <tbody>
           {sortedMeters.map((meter) => {
-            const hasHighVariation = meter.variation_pct !== null && Math.abs(meter.variation_pct) > 30;
             return (
               <tr 
                 key={meter.meter_id} 
@@ -116,14 +115,25 @@ export function MetersTable({ meters }: MetersTableProps) {
                 <td className={styles.td} data-label="Consumo">{formatKwh(meter.consumption_kwh)}</td>
                 <td className={styles.td} data-label="Variación">
                   {meter.variation_pct !== null ? (
-                    hasHighVariation ? (
-                      <Badge 
-                        label={formatVariationPct(meter.variation_pct)} 
-                        tone="critical" 
-                      />
-                    ) : (
-                      formatVariationPct(meter.variation_pct)
-                    )
+                    (() => {
+                      const absVar = Math.abs(meter.variation_pct);
+                      const isUp = meter.variation_pct > 0;
+                      const arrow = isUp ? "▲" : "▼";
+                      let tone: "neutral" | "warning" | "critical" = "neutral";
+                      if (absVar >= 80) tone = "critical";
+                      else if (absVar >= 30) tone = "warning";
+
+                      if (tone === "neutral") {
+                        return <span className={styles.neutralVariation}>Dentro de norma</span>;
+                      }
+
+                      return (
+                        <Badge 
+                          label={`${arrow} ${formatVariationPct(absVar)}`} 
+                          tone={tone} 
+                        />
+                      );
+                    })()
                   ) : (
                     "—"
                   )}

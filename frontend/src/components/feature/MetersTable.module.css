@@ -77,16 +77,24 @@
     box-shadow: none;
     overflow: visible;
   }
-  .table, .table tbody, .table tr, .table td {
+  .table, .table tbody, .table tr {
     display: block;
     width: 100%;
   }
-
+  
   .table thead {
     display: none;
   }
 
   .row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "name name"
+      "status consumption"
+      "variation severity";
+    gap: var(--space-2);
+    padding: var(--space-3);
     margin-bottom: var(--space-4);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -100,21 +108,30 @@
 
   .td {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--space-3);
-  }
-
-  .row:last-child .td:last-child {
+    flex-direction: column;
+    align-items: flex-start;
     border-bottom: none;
+    padding: 0;
   }
+  
+  .td:nth-child(1) { grid-area: name; font-weight: 600; font-size: 1.1rem; margin-bottom: var(--space-2); }
+  .td:nth-child(2) { grid-area: status; }
+  .td:nth-child(3) { grid-area: consumption; }
+  .td:nth-child(4) { grid-area: variation; }
+  .td:nth-child(5) { grid-area: severity; }
 
   .td::before {
     content: attr(data-label);
+    font-size: 0.75rem;
     font-weight: 500;
+    text-transform: uppercase;
     color: var(--color-text-muted);
-    margin-right: var(--space-3);
+    margin-right: 0;
+    margin-bottom: var(--space-1);
+  }
+  
+  .td:nth-child(1)::before {
+    display: none; /* Hide label for name */
   }
 }
 
@@ -127,4 +144,13 @@
     padding: var(--space-4);
     font-size: 1rem;
   }
+}
+
+.neutralVariation {
+  color: var(--color-success-text);
+  background-color: var(--color-success-bg);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
 }

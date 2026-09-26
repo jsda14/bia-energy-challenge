@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 import { CHART_COLOR_SERIES_A, CHART_COLOR_SERIES_B, CHART_COLOR_SERIES_C, CHART_COLOR_SERIES_D, CHART_COLOR_BASELINE } from "./chartColors";
 import styles from "./MeterHistoryChart.module.css";
-import type { Reading } from "../../domain/types";
+import type { Reading, Event } from "../../domain/types";
 
 export type ChartVariable = "consumption_kwh" | "voltage_v" | "current_a" | "power_factor";
 
@@ -11,6 +11,7 @@ interface MeterHistoryChartProps {
   baselineKwh: number | null;
   highlightStart?: string;
   highlightEnd?: string;
+  events?: Event[];
 }
 
 const VARIABLE_LABELS: Record<ChartVariable, string> = {
@@ -27,7 +28,7 @@ const SERIES_COLORS = [
   CHART_COLOR_SERIES_D,
 ];
 
-export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highlightEnd }: MeterHistoryChartProps) {
+export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highlightEnd, events = [] }: MeterHistoryChartProps) {
   const [compareMode, setCompareMode] = useState(false);
   const [selectedOtherVariables, setSelectedOtherVariables] = useState<ChartVariable[]>(["voltage_v"]);
 
@@ -48,22 +49,53 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
       ? ["consumption_kwh", ...selectedOtherVariables] 
       : ["consumption_kwh"];
 
-    const yAxis = variables.map((variable, index) => ({
+    const gridCount = variables.length;
+    const gridHeight = 85 / gridCount; // leaving some space at top/bottom
+
+    const grids = variables.map((_, index) => ({
+      left: "3%",
+      right: "4%",
+      top: `${5 + index * gridHeight}%`,
+      height: `${gridHeight - 5}%`,
+      containLabel: true,
+    }));
+
+    const xAxes = variables.map((_, index) => ({
+      type: "category",
+      gridIndex: index,
+      boundaryGap: false,
+      data: dates,
+      axisLabel: {
+        show: index === gridCount - 1, // Only show labels on the bottom-most grid
+        formatter: (value: string) => {
+          const date = new Date(value);
+          return `${date.getDate()} ${date.toLocaleString('es-ES', { month: 'short' })}, ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        },
+      },
+      axisTick: { show: index === gridCount - 1 },
+      axisLine: { show: true },
+    }));
+
+    const yAxes = variables.map((variable, index) => ({
       type: "value",
+      gridIndex: index,
       name: VARIABLE_LABELS[variable],
-      position: index % 2 === 0 ? "left" : "right",
-      offset: Math.floor(index / 2) * 50,
-      nameLocation: "end",
+      nameLocation: "middle",
+      nameGap: 35,
+      splitLine: { show: true },
     }));
 
     const series = variables.map((variable, index) => {
-      const s: Record<string, unknown> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s: any = {
         name: VARIABLE_LABELS[variable],
         type: "line",
         data: readings.map((r) => r[variable]),
+        xAxisIndex: index,
         yAxisIndex: index,
         itemStyle: { color: SERIES_COLORS[index] },
         lineStyle: { color: SERIES_COLORS[index] },
+        showSymbol: false,
       };
 
       if (variable === "consumption_kwh" && baselineKwh !== null) {
@@ -71,10 +103,11 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
           data: [{ yAxis: baselineKwh, name: "Baseline" }],
           itemStyle: { color: CHART_COLOR_BASELINE },
           lineStyle: { color: CHART_COLOR_BASELINE },
+          label: { formatter: 'Baseline' },
         };
       }
 
-      if (highlightStart && highlightEnd) {
+      if (variable === "consumption_kwh" && highlightStart && highlightEnd) {
         s.markArea = {
           data: [[{ xAxis: highlightStart }, { xAxis: highlightEnd }]],
           itemStyle: {
@@ -83,22 +116,38 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         };
       }
 
+      if (variable === "consumption_kwh" && events.length > 0) {
+        if (!s.markLine) s.markLine = { data: [] };
+        const eventMarks = events.map((e) => ({
+          xAxis: e.event_timestamp,
+          name: e.event_type,
+          label: { formatter: e.event_type, position: 'insideStartTop' },
+          lineStyle: { color: "#eab308", type: "dashed" },
+        }));
+        s.markLine.data = [...s.markLine.data, ...eventMarks];
+      }
+
       return s;
     });
 
     return {
-      tooltip: { trigger: "axis" },
-      legend: { data: variables.map((v) => VARIABLE_LABELS[v]) },
-      grid: { top: "15%", left: "3%", right: "4%", bottom: "15%", containLabel: true },
-      xAxis: {
-        type: "category",
-        boundaryGap: false,
-        data: dates,
+      tooltip: { 
+        trigger: "axis",
+        axisPointer: { type: 'cross' }
       },
-      yAxis,
+      axisPointer: {
+        link: [{ xAxisIndex: 'all' }],
+      },
+      legend: { 
+        data: variables.map((v) => VARIABLE_LABELS[v]),
+        top: 0,
+      },
+      grid: grids,
+      xAxis: xAxes,
+      yAxis: yAxes,
       series,
     };
-  }, [readings, compareMode, selectedOtherVariables, baselineKwh, highlightStart, highlightEnd]);
+  }, [readings, compareMode, selectedOtherVariables, baselineKwh, highlightStart, highlightEnd, events]);
 
   if (readings.length === 0) {
     return <div className={styles.empty}>Sin datos históricos para este medidor.</div>;
@@ -149,7 +198,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
       <ReactECharts 
         option={chartOptions} 
         notMerge={true}
-        style={{ height: "400px", width: "100%" }} 
+        style={{ height: `${compareMode ? 400 + selectedOtherVariables.length * 150 : 400}px`, width: "100%" }} 
       />
     </div>
   );
