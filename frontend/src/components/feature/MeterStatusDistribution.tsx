@@ -68,8 +68,8 @@ export function MeterStatusDistribution({ meters }: MeterStatusDistributionProps
   }
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>Estado de Medidores</h3>
+    <div className={styles["meter-status-distribution__container"]}>
+      <h3 className={styles["meter-status-distribution__title"]}>Estado de Medidores</h3>
       <ReactECharts option={chartOptions} style={{ height: "300px", width: "100%" }} />
     </div>
   );

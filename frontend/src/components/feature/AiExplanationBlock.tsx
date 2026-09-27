@@ -16,10 +16,10 @@ interface AiExplanationBlockProps {
 
 function Skeleton() {
   return (
-    <div className={styles.skeleton}>
-      <div className={styles.skeletonLine} style={{ width: "90%" }} />
-      <div className={styles.skeletonLine} style={{ width: "70%" }} />
-      <div className={styles.skeletonLine} style={{ width: "80%" }} />
+    <div className={styles["ai-explanation-block__skeleton"]}>
+      <div className={styles["ai-explanation-block__skeleton-line"]} style={{ width: "90%" }} />
+      <div className={styles["ai-explanation-block__skeleton-line"]} style={{ width: "70%" }} />
+      <div className={styles["ai-explanation-block__skeleton-line"]} style={{ width: "80%" }} />
     </div>
   );
 }
@@ -45,14 +45,14 @@ export function AiExplanationBlock({
   }, [isRegenerating, isRegenerateError]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.titleWrapper}>
-          <h2 className={styles.title}>Explicación de IA</h2>
+    <div className={styles["ai-explanation-block__container"]}>
+      <div className={styles["ai-explanation-block__header"]}>
+        <div className={styles["ai-explanation-block__title-wrapper"]}>
+          <h2 className={styles["ai-explanation-block__title"]}>Explicación de IA</h2>
           <SourceBadge source={explanationSource} />
         </div>
         <button
-          className={styles.button}
+          className={styles["ai-explanation-block__button"]}
           onClick={onRegenerate}
           disabled={isRegenerating}
         >
@@ -61,47 +61,47 @@ export function AiExplanationBlock({
       </div>
 
       {isRegenerateError && (
-        <p className={styles.errorText}>Error al regenerar la explicación.</p>
+        <p className={styles["ai-explanation-block__error-text"]}>Error al regenerar la explicación.</p>
       )}
 
-      <div className={styles.content} aria-busy={isRegenerating} aria-live="polite">
+      <div className={styles["ai-explanation-block__content"]} aria-busy={isRegenerating} aria-live="polite">
         {isRegenerating && (
-          <div className={`${styles.loaderStatus} pulse--pulse`}>
-            <span className={styles.pulseDot} aria-hidden="true" />
+          <div className={`${styles["ai-explanation-block__loader-status"]} pulse--pulse`}>
+            <span className={styles["ai-explanation-block__pulse-dot"]} aria-hidden="true" />
             <span>La IA está analizando…</span>
           </div>
         )}
 
-        <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>Razón</h3>
+        <section className={styles["ai-explanation-block__section"]}>
+          <h3 className={styles["ai-explanation-block__section-title"]}>Razón</h3>
           {isRegenerating ? (
             <Skeleton />
           ) : (
-            <div className={styles.sectionEntry}>
+            <div className={styles["ai-explanation-block__section-entry"]}>
               <MarkdownText content={reason} />
             </div>
           )}
         </section>
 
-        <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>Acción Recomendada</h3>
+        <section className={styles["ai-explanation-block__section"]}>
+          <h3 className={styles["ai-explanation-block__section-title"]}>Acción Recomendada</h3>
           {isRegenerating ? (
             <Skeleton />
           ) : (
-            <div className={styles.sectionEntry}>
+            <div className={styles["ai-explanation-block__section-entry"]}>
               <MarkdownText content={recommendedAction} />
             </div>
           )}
         </section>
 
-        <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>Variables Afectadas</h3>
+        <section className={styles["ai-explanation-block__section"]}>
+          <h3 className={styles["ai-explanation-block__section-title"]}>Variables Afectadas</h3>
           {isRegenerating ? (
             <Skeleton />
           ) : (
-            <div className={styles.sectionEntry}>
+            <div className={styles["ai-explanation-block__section-entry"]}>
               {affectedVariables.length > 0 ? (
-                <ul className={styles.variableList}>
+                <ul className={styles["ai-explanation-block__variable-list"]}>
                   {affectedVariables.map((v) => (
                     <li key={v}>{v}</li>
                   ))}
@@ -113,14 +113,14 @@ export function AiExplanationBlock({
           )}
         </section>
 
-        <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>Evento Correlacionado</h3>
+        <section className={styles["ai-explanation-block__section"]}>
+          <h3 className={styles["ai-explanation-block__section-title"]}>Evento Correlacionado</h3>
           {isRegenerating ? (
             <Skeleton />
           ) : (
-            <div className={styles.sectionEntry}>
+            <div className={styles["ai-explanation-block__section-entry"]}>
               {correlatedEvent ? (
-                <div className={styles.eventHighlight}>
+                <div className={styles["ai-explanation-block__event-highlight"]}>
                   {correlatedEvent}
                 </div>
               ) : (
@@ -131,7 +131,7 @@ export function AiExplanationBlock({
         </section>
 
         {showUpdated && !isRegenerating && (
-          <div className={styles.updatedBadge} onAnimationEnd={() => setShowUpdated(false)}>
+          <div className={styles["ai-explanation-block__updated-badge"]} onAnimationEnd={() => setShowUpdated(false)}>
             Actualizado ahora
           </div>
         )}

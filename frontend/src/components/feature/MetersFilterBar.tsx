@@ -22,27 +22,27 @@ export function MetersFilterBar({
   onSearchChange,
 }: MetersFilterBarProps) {
   return (
-    <div className={styles.filterBar}>
-      <div className={styles.filterGroup}>
-        <label htmlFor="search-filter" className={styles.label}>
+    <div className={styles["meters-filter-bar"]}>
+      <div className={styles["meters-filter-bar__filter-group"]}>
+        <label htmlFor="search-filter" className={styles["meters-filter-bar__label"]}>
           Buscar:
         </label>
         <input
           id="search-filter"
           type="text"
-          className={styles.input}
+          className={styles["meters-filter-bar__input"]}
           placeholder="Buscar por ID o nombre..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
-      <div className={styles.filterGroup}>
-        <label htmlFor="status-filter" className={styles.label}>
+      <div className={styles["meters-filter-bar__filter-group"]}>
+        <label htmlFor="status-filter" className={styles["meters-filter-bar__label"]}>
           Estado:
         </label>
         <select
           id="status-filter"
-          className={styles.select}
+          className={styles["meters-filter-bar__select"]}
           value={selectedStatus || ""}
           onChange={(e) => onStatusChange(e.target.value || null)}
         >
@@ -55,13 +55,13 @@ export function MetersFilterBar({
         </select>
       </div>
 
-      <div className={styles.filterGroup}>
-        <label htmlFor="severity-filter" className={styles.label}>
+      <div className={styles["meters-filter-bar__filter-group"]}>
+        <label htmlFor="severity-filter" className={styles["meters-filter-bar__label"]}>
           Severidad:
         </label>
         <select
           id="severity-filter"
-          className={styles.select}
+          className={styles["meters-filter-bar__select"]}
           value={selectedSeverity || ""}
           onChange={(e) => onSeverityChange(e.target.value || null)}
         >

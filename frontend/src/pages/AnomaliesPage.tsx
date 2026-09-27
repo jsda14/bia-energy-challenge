@@ -7,10 +7,10 @@ import styles from "./AnomaliesPage.module.css";
 
 function AnomaliesSkeleton() {
   return (
-    <div className={styles.container}>
-      <Skeleton width="160px" height="2rem" className={styles.title} />
+    <div className={styles["anomalies-page__container"]}>
+      <Skeleton width="160px" height="2rem" className={styles["anomalies-page__title"]} />
       <Skeleton height="44px" />
-      <div className={styles.skeletonRows}>
+      <div className={styles["anomalies-page__skeleton-rows"]}>
         <Skeleton height="88px" />
         <Skeleton height="88px" />
         <Skeleton height="88px" />
@@ -73,8 +73,8 @@ export default function AnomaliesPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Anomalías</h1>
+    <div className={styles["anomalies-page__container"]}>
+      <h1 className={styles["anomalies-page__title"]}>Anomalías</h1>
       <AnomaliesFilterBar
         meterIdOptions={meterIdOptions}
         typeOptions={typeOptions}

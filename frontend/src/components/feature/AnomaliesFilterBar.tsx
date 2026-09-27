@@ -31,14 +31,14 @@ export function AnomaliesFilterBar({
   onTriageStatusChange,
 }: AnomaliesFilterBarProps) {
   return (
-    <div className={styles.filterBar}>
-      <div className={styles.filterGroup}>
-        <label htmlFor="meterId-filter" className={styles.label}>
+    <div className={styles["anomalies-filter-bar"]}>
+      <div className={styles["anomalies-filter-bar__filter-group"]}>
+        <label htmlFor="meterId-filter" className={styles["anomalies-filter-bar__label"]}>
           Medidor:
         </label>
         <select
           id="meterId-filter"
-          className={styles.select}
+          className={styles["anomalies-filter-bar__select"]}
           value={selectedMeterId || ""}
           onChange={(e) => onMeterIdChange(e.target.value || null)}
         >
@@ -51,13 +51,13 @@ export function AnomaliesFilterBar({
         </select>
       </div>
 
-      <div className={styles.filterGroup}>
-        <label htmlFor="type-filter" className={styles.label}>
+      <div className={styles["anomalies-filter-bar__filter-group"]}>
+        <label htmlFor="type-filter" className={styles["anomalies-filter-bar__label"]}>
           Tipo:
         </label>
         <select
           id="type-filter"
-          className={styles.select}
+          className={styles["anomalies-filter-bar__select"]}
           value={selectedType || ""}
           onChange={(e) => onTypeChange(e.target.value || null)}
         >
@@ -70,13 +70,13 @@ export function AnomaliesFilterBar({
         </select>
       </div>
 
-      <div className={styles.filterGroup}>
-        <label htmlFor="severity-filter" className={styles.label}>
+      <div className={styles["anomalies-filter-bar__filter-group"]}>
+        <label htmlFor="severity-filter" className={styles["anomalies-filter-bar__label"]}>
           Severidad:
         </label>
         <select
           id="severity-filter"
-          className={styles.select}
+          className={styles["anomalies-filter-bar__select"]}
           value={selectedSeverity || ""}
           onChange={(e) => onSeverityChange(e.target.value || null)}
         >
@@ -89,13 +89,13 @@ export function AnomaliesFilterBar({
         </select>
       </div>
 
-      <div className={styles.filterGroup}>
-        <label htmlFor="triageStatus-filter" className={styles.label}>
+      <div className={styles["anomalies-filter-bar__filter-group"]}>
+        <label htmlFor="triageStatus-filter" className={styles["anomalies-filter-bar__label"]}>
           Estado de Triage:
         </label>
         <select
           id="triageStatus-filter"
-          className={styles.select}
+          className={styles["anomalies-filter-bar__select"]}
           value={selectedTriageStatus || ""}
           onChange={(e) => onTriageStatusChange(e.target.value || null)}
         >

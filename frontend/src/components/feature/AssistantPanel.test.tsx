@@ -33,6 +33,26 @@ describe("AssistantPanel", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("applies the correct BEM modifier class per message role", async () => {
+    const mutateMock = vi.fn((_input, options) => {
+      options.onSuccess({ text: "Hola, ¿en qué te ayudo?", pending_action: null, assistant_message: null });
+    });
+    mockUseAssistant.mockReturnValue({ mutate: mutateMock, isPending: false });
+
+    const user = userEvent.setup();
+    render(<AssistantPanel />);
+    await user.click(screen.getByRole("button", { name: "Abrir asistente" }));
+    await user.type(screen.getByPlaceholderText("Preguntá algo…"), "hola");
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+
+    const userMessage = await screen.findByText("hola");
+    expect(userMessage).toHaveClass(/assistant-panel__message--user/);
+    const assistantMessage = await screen.findByText("Hola, ¿en qué te ayudo?");
+    expect(assistantMessage.closest('[class*="assistant-panel__message"]')).toHaveClass(
+      /assistant-panel__message--assistant/
+    );
+  });
+
   it("sends a message and displays a plain-text response", async () => {
     const mutateMock = vi.fn((_input, options) => {
       options.onSuccess({ text: "Hola, ¿en qué te ayudo?", pending_action: null, assistant_message: null });

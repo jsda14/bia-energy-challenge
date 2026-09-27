@@ -59,37 +59,37 @@ export function AnomaliesTable({ anomalies }: AnomaliesTableProps) {
   };
 
   return (
-    <div className={styles.tableWrapper}>
-      <table className={styles.table}>
+    <div className={styles["anomalies-table__table-wrapper"]}>
+      <table className={styles["anomalies-table"]}>
         <thead>
           <tr>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("meter_id")}>
+            <th className={styles["anomalies-table__th"]}>
+              <button type="button" className={styles["anomalies-table__sort-button"]} onClick={() => handleSort("meter_id")}>
                 Medidor{getSortIcon("meter_id")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("type")}>
+            <th className={styles["anomalies-table__th"]}>
+              <button type="button" className={styles["anomalies-table__sort-button"]} onClick={() => handleSort("type")}>
                 Tipo{getSortIcon("type")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("severity")}>
+            <th className={styles["anomalies-table__th"]}>
+              <button type="button" className={styles["anomalies-table__sort-button"]} onClick={() => handleSort("severity")}>
                 Severidad{getSortIcon("severity")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("confidence")}>
+            <th className={styles["anomalies-table__th"]}>
+              <button type="button" className={styles["anomalies-table__sort-button"]} onClick={() => handleSort("confidence")}>
                 Confianza{getSortIcon("confidence")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("detected_at")}>
+            <th className={styles["anomalies-table__th"]}>
+              <button type="button" className={styles["anomalies-table__sort-button"]} onClick={() => handleSort("detected_at")}>
                 Detectada{getSortIcon("detected_at")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("triage_status")}>
+            <th className={styles["anomalies-table__th"]}>
+              <button type="button" className={styles["anomalies-table__sort-button"]} onClick={() => handleSort("triage_status")}>
                 Triage{getSortIcon("triage_status")}
               </button>
             </th>
@@ -99,21 +99,21 @@ export function AnomaliesTable({ anomalies }: AnomaliesTableProps) {
           {sortedAnomalies.map((anomaly) => (
             <tr
               key={anomaly.id}
-              className={styles.row}
+              className={styles["anomalies-table__row"]}
               onClick={() => handleRowClick(anomaly.id)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => handleKeyDown(e, anomaly.id)}
               data-testid={`anomaly-row-${anomaly.id}`}
             >
-              <td className={styles.td} data-label="Medidor">{anomaly.meter_id}</td>
-              <td className={styles.td} data-label="Tipo">{anomaly.type}</td>
-              <td className={styles.td} data-label="Severidad">
+              <td className={styles["anomalies-table__td"]} data-label="Medidor">{anomaly.meter_id}</td>
+              <td className={styles["anomalies-table__td"]} data-label="Tipo">{anomaly.type}</td>
+              <td className={styles["anomalies-table__td"]} data-label="Severidad">
                 <Badge label={anomaly.severity} tone={severityToColorToken(anomaly.severity)} />
               </td>
-              <td className={styles.td} data-label="Confianza">{(anomaly.confidence * 100).toFixed(0)}%</td>
-              <td className={styles.td} data-label="Detectada">{formatDateTime(anomaly.detected_at)}</td>
-              <td className={styles.td} data-label="Triage">
+              <td className={styles["anomalies-table__td"]} data-label="Confianza">{(anomaly.confidence * 100).toFixed(0)}%</td>
+              <td className={styles["anomalies-table__td"]} data-label="Detectada">{formatDateTime(anomaly.detected_at)}</td>
+              <td className={styles["anomalies-table__td"]} data-label="Triage">
                 <TriageStatusBadge status={anomaly.triage_status} />
               </td>
             </tr>

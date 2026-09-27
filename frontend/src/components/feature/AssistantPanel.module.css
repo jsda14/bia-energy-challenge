@@ -1,4 +1,4 @@
-.fab {
+.assistant-panel__fab {
   position: fixed;
   bottom: var(--space-2);
   right: var(--space-2);
@@ -24,7 +24,7 @@
    Mobile-first real: la base (sin media query) es la forma mobile
    (ancho fluido, márgenes --space-2 a ambos lados). El ancho fijo de
    360px es la excepción hacia arriba (min-width: 481px), no al revés. */
-.panel {
+.assistant-panel__panel {
   position: fixed;
   bottom: calc(var(--space-2) + 64px);
   left: var(--space-2);
@@ -42,12 +42,12 @@
 }
 
 @media (min-width: 481px) {
-  .fab {
+  .assistant-panel__fab {
     bottom: var(--space-4);
     right: var(--space-4);
   }
 
-  .panel {
+  .assistant-panel__panel {
     bottom: calc(var(--space-4) + 64px);
     left: auto;
     right: var(--space-4);
@@ -55,7 +55,7 @@
   }
 }
 
-.header {
+.assistant-panel__header {
   padding: var(--space-3) var(--space-4);
   background: var(--color-primary);
   display: flex;
@@ -63,18 +63,18 @@
   gap: var(--space-2);
 }
 
-.headerIcon {
+.assistant-panel__header-icon {
   font-size: 1.1rem;
   line-height: 1;
 }
 
-.title {
+.assistant-panel__title {
   margin: 0;
   font-size: 1rem;
   color: var(--color-bg-elevated, #ffffff);
 }
 
-.messages {
+.assistant-panel__messages {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-3);
@@ -84,7 +84,7 @@
   min-height: 120px;
 }
 
-.message {
+.assistant-panel__message {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-lg);
   max-width: 85%;
@@ -95,38 +95,38 @@
 /* Burbujas tipo chat real: la esquina del lado del remitente queda
    más recta (patrón iMessage/WhatsApp), en vez de un rectángulo
    redondeado uniforme en las 4 esquinas. */
-.message--user {
+.assistant-panel__message--user {
   align-self: flex-end;
   background: var(--color-primary);
   color: var(--color-bg-elevated, #ffffff);
   border-bottom-right-radius: var(--radius-sm);
 }
 
-.message--assistant {
+.assistant-panel__message--assistant {
   align-self: flex-start;
   background: var(--color-neutral);
   color: var(--color-text);
   border-bottom-left-radius: var(--radius-sm);
 }
 
-.confirmBox {
+.assistant-panel__confirm-box {
   padding: var(--space-3);
   border-top: 1px solid var(--color-border);
   background: rgba(var(--color-pulse-rgb), 0.08);
 }
 
-.confirmText {
+.assistant-panel__confirm-text {
   margin: 0 0 var(--space-2) 0;
   font-size: 0.875rem;
   color: var(--color-text);
 }
 
-.confirmActions {
+.assistant-panel__confirm-actions {
   display: flex;
   gap: var(--space-2);
 }
 
-.confirmButton {
+.assistant-panel__confirm-button {
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
   background: var(--color-primary);
@@ -137,13 +137,13 @@
   cursor: pointer;
 }
 
-.confirmButton:disabled {
+.assistant-panel__confirm-button:disabled {
   background-color: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.cancelButton {
+.assistant-panel__cancel-button {
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
   background: transparent;
@@ -154,19 +154,19 @@
   cursor: pointer;
 }
 
-.cancelButton:disabled {
+.assistant-panel__cancel-button:disabled {
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.inputRow {
+.assistant-panel__input-row {
   display: flex;
   gap: var(--space-2);
   padding: var(--space-3);
   border-top: 1px solid var(--color-border);
 }
 
-.input {
+.assistant-panel__input {
   flex: 1;
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
@@ -176,7 +176,7 @@
   color: var(--color-text);
 }
 
-.sendButton {
+.assistant-panel__send-button {
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
   background: var(--color-primary);
@@ -187,13 +187,13 @@
   cursor: pointer;
 }
 
-.sendButton:disabled {
+.assistant-panel__send-button:disabled {
   background-color: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.typingIndicator {
+.assistant-panel__typing-indicator {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -201,7 +201,7 @@
   padding-bottom: var(--space-3);
 }
 
-.typingDot {
+.assistant-panel__typing-dot {
   width: 6px;
   height: 6px;
   border-radius: var(--radius-full);
@@ -209,11 +209,11 @@
   animation: typing-bounce 1.2s infinite ease-in-out;
 }
 
-.typingDot:nth-child(2) {
+.assistant-panel__typing-dot:nth-child(2) {
   animation-delay: 0.15s;
 }
 
-.typingDot:nth-child(3) {
+.assistant-panel__typing-dot:nth-child(3) {
   animation-delay: 0.3s;
 }
 
@@ -229,7 +229,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .typingDot {
+  .assistant-panel__typing-dot {
     animation: none;
     opacity: 0.8;
   }

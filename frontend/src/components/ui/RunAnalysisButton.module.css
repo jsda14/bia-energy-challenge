@@ -1,4 +1,4 @@
-.button {
+.run-analysis-button__button {
   background-color: var(--color-primary);
   color: var(--color-bg-elevated, #ffffff);
   border: none;
@@ -11,27 +11,27 @@
   transition: transform var(--motion-fast) var(--ease-standard);
 }
 
-.button:hover:not(:disabled),
-.button:focus-visible:not(:disabled) {
+.run-analysis-button__button:hover:not(:disabled),
+.run-analysis-button__button:focus-visible:not(:disabled) {
   animation: pulse-ring 1.4s var(--ease-pulse) infinite;
 }
 
-.button:active:not(:disabled) {
+.run-analysis-button__button:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-.button:disabled {
+.run-analysis-button__button:disabled {
   background-color: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button:hover:not(:disabled),
-  .button:focus-visible:not(:disabled) {
+  .run-analysis-button__button:hover:not(:disabled),
+  .run-analysis-button__button:focus-visible:not(:disabled) {
     animation: none;
   }
-  .button {
+  .run-analysis-button__button {
     transition: none;
   }
 }

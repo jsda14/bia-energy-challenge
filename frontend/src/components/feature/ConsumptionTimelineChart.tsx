@@ -61,12 +61,12 @@ export function ConsumptionTimelineChart({ points }: ConsumptionTimelineChartPro
   }, [points]);
 
   if (points.length === 0) {
-    return <div className={styles.empty}>No hay datos de consumo disponibles.</div>;
+    return <div className={styles["consumption-timeline-chart__empty"]}>No hay datos de consumo disponibles.</div>;
   }
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>Consumo Total (kWh)</h3>
+    <div className={styles["consumption-timeline-chart__container"]}>
+      <h3 className={styles["consumption-timeline-chart__title"]}>Consumo Total (kWh)</h3>
       <ReactECharts option={chartOptions} style={{ height: "350px", width: "100%" }} />
     </div>
   );

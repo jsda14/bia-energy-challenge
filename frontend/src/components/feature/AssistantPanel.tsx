@@ -85,7 +85,7 @@ export function AssistantPanel() {
     <>
       <button
         type="button"
-        className={styles.fab}
+        className={styles["assistant-panel__fab"]}
         aria-expanded={isOpen}
         aria-controls="assistant-panel"
         aria-label={isOpen ? "Cerrar asistente" : "Abrir asistente"}
@@ -95,34 +95,34 @@ export function AssistantPanel() {
       </button>
 
       {isOpen && (
-        <div id="assistant-panel" className={styles.panel} role="dialog" aria-label="Asistente de Bia Energy">
-          <div className={styles.header}>
-            <span className={styles.headerIcon} aria-hidden="true">💬</span>
-            <h2 className={styles.title}>Asistente</h2>
+        <div id="assistant-panel" className={styles["assistant-panel__panel"]} role="dialog" aria-label="Asistente de Bia Energy">
+          <div className={styles["assistant-panel__header"]}>
+            <span className={styles["assistant-panel__header-icon"]} aria-hidden="true">💬</span>
+            <h2 className={styles["assistant-panel__title"]}>Asistente</h2>
           </div>
 
-          <div className={styles.messages} aria-live="polite" aria-busy={isPending}>
+          <div className={styles["assistant-panel__messages"]} aria-live="polite" aria-busy={isPending}>
             {displayMessages.map((msg, i) => (
-              <div key={i} className={`${styles.message} ${styles[`message--${msg.role}`]}`}>
+              <div key={i} className={`${styles["assistant-panel__message"]} ${styles[`assistant-panel__message--${msg.role}`]}`}>
                 {msg.role === "assistant" ? <MarkdownText content={msg.text} /> : msg.text}
               </div>
             ))}
             {isPending && (
-              <div className={`${styles.message} ${styles["message--assistant"]} ${styles.typingIndicator}`}>
-                <span className={styles.typingDot} />
-                <span className={styles.typingDot} />
-                <span className={styles.typingDot} />
+              <div className={`${styles["assistant-panel__message"]} ${styles["assistant-panel__message--assistant"]} ${styles["assistant-panel__typing-indicator"]}`}>
+                <span className={styles["assistant-panel__typing-dot"]} />
+                <span className={styles["assistant-panel__typing-dot"]} />
+                <span className={styles["assistant-panel__typing-dot"]} />
               </div>
             )}
           </div>
 
           {pendingAction && (
-            <div className={styles.confirmBox}>
-              <p className={styles.confirmText}>{pendingAction.description}</p>
-              <div className={styles.confirmActions}>
+            <div className={styles["assistant-panel__confirm-box"]}>
+              <p className={styles["assistant-panel__confirm-text"]}>{pendingAction.description}</p>
+              <div className={styles["assistant-panel__confirm-actions"]}>
                 <button
                   type="button"
-                  className={styles.confirmButton}
+                  className={styles["assistant-panel__confirm-button"]}
                   onClick={() => handleConfirm(true)}
                   disabled={isPending}
                 >
@@ -130,7 +130,7 @@ export function AssistantPanel() {
                 </button>
                 <button
                   type="button"
-                  className={styles.cancelButton}
+                  className={styles["assistant-panel__cancel-button"]}
                   onClick={() => handleConfirm(false)}
                   disabled={isPending}
                 >
@@ -140,10 +140,10 @@ export function AssistantPanel() {
             </div>
           )}
 
-          <div className={styles.inputRow}>
+          <div className={styles["assistant-panel__input-row"]}>
             <input
               type="text"
-              className={styles.input}
+              className={styles["assistant-panel__input"]}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
@@ -154,7 +154,7 @@ export function AssistantPanel() {
             />
             <button
               type="button"
-              className={styles.sendButton}
+              className={styles["assistant-panel__send-button"]}
               onClick={handleSend}
               disabled={isPending || !!pendingAction || !input.trim()}
             >

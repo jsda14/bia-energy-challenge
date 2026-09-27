@@ -42,7 +42,7 @@ export function ThemeToggle(): JSX.Element {
     <button
       type="button"
       onClick={toggleTheme}
-      className={styles.toggle}
+      className={styles["theme-toggle__toggle"]}
       aria-label={`Cambiar a modo ${theme === "light" ? "oscuro" : "claro"}`}
     >
       {theme === "light" ? <MoonIcon /> : <SunIcon />}

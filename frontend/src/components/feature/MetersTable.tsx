@@ -62,36 +62,36 @@ export function MetersTable({ meters }: MetersTableProps) {
   };
 
   if (meters.length === 0) {
-    return <div className={styles.empty}>Sin resultados para el filtro seleccionado.</div>;
+    return <div className={styles["meters-table__empty"]}>Sin resultados para el filtro seleccionado.</div>;
   }
 
   return (
-    <div className={styles.tableWrapper}>
-      <table className={styles.table}>
+    <div className={styles["meters-table__table-wrapper"]}>
+      <table className={styles["meters-table"]}>
         <thead>
           <tr>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("name")}>
+            <th className={styles["meters-table__th"]}>
+              <button type="button" className={styles["meters-table__sort-button"]} onClick={() => handleSort("name")}>
                 Nombre{getSortIcon("name")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("status")}>
+            <th className={styles["meters-table__th"]}>
+              <button type="button" className={styles["meters-table__sort-button"]} onClick={() => handleSort("status")}>
                 Estado{getSortIcon("status")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("consumption_kwh")}>
+            <th className={styles["meters-table__th"]}>
+              <button type="button" className={styles["meters-table__sort-button"]} onClick={() => handleSort("consumption_kwh")}>
                 Consumo{getSortIcon("consumption_kwh")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("variation_pct")}>
+            <th className={styles["meters-table__th"]}>
+              <button type="button" className={styles["meters-table__sort-button"]} onClick={() => handleSort("variation_pct")}>
                 Variación{getSortIcon("variation_pct")}
               </button>
             </th>
-            <th className={styles.th}>
-              <button type="button" className={styles.sortButton} onClick={() => handleSort("anomaly_severity")}>
+            <th className={styles["meters-table__th"]}>
+              <button type="button" className={styles["meters-table__sort-button"]} onClick={() => handleSort("anomaly_severity")}>
                 Severidad{getSortIcon("anomaly_severity")}
               </button>
             </th>
@@ -102,18 +102,18 @@ export function MetersTable({ meters }: MetersTableProps) {
             return (
               <tr 
                 key={meter.meter_id} 
-                className={styles.row}
+                className={styles["meters-table__row"]}
                 onClick={() => handleRowClick(meter.meter_id)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => handleKeyDown(e, meter.meter_id)}
               >
-                <td className={styles.td} data-label="Nombre">{meter.name}</td>
-                <td className={styles.td} data-label="Estado">
+                <td className={styles["meters-table__td"]} data-label="Nombre">{meter.name}</td>
+                <td className={styles["meters-table__td"]} data-label="Estado">
                   <Badge label={meter.status} tone={meterStatusToColorToken(meter.status)} />
                 </td>
-                <td className={styles.td} data-label="Consumo">{formatKwh(meter.consumption_kwh)}</td>
-                <td className={styles.td} data-label="Variación">
+                <td className={styles["meters-table__td"]} data-label="Consumo">{formatKwh(meter.consumption_kwh)}</td>
+                <td className={styles["meters-table__td"]} data-label="Variación">
                   {meter.variation_pct !== null ? (
                     (() => {
                       const absVar = Math.abs(meter.variation_pct);
@@ -124,7 +124,7 @@ export function MetersTable({ meters }: MetersTableProps) {
                       else if (absVar >= 30) tone = "warning";
 
                       if (tone === "neutral") {
-                        return <span className={styles.neutralVariation}>Dentro de norma</span>;
+                        return <span className={styles["meters-table__neutral-variation"]}>Dentro de norma</span>;
                       }
 
                       return (
@@ -138,7 +138,7 @@ export function MetersTable({ meters }: MetersTableProps) {
                     "—"
                   )}
                 </td>
-                <td className={styles.td} data-label="Severidad">
+                <td className={styles["meters-table__td"]} data-label="Severidad">
                   {meter.anomaly_severity !== null ? (
                     <Badge 
                       label={meter.anomaly_severity} 

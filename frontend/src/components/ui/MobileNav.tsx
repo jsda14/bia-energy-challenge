@@ -19,14 +19,14 @@ export function MobileNav({ items, onClose }: MobileNavProps) {
   }, [onClose]);
 
   return (
-    <nav className={styles.panel} aria-label="Navegación móvil">
+    <nav className={styles["mobile-nav__panel"]} aria-label="Navegación móvil">
       {items.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
           onClick={onClose}
           className={({ isActive }) =>
-            `${styles.link} ${isActive ? styles["link--active"] : ""}`
+            `${styles["mobile-nav__link"]} ${isActive ? styles["mobile-nav__link--active"] : ""}`
           }
         >
           {item.label}

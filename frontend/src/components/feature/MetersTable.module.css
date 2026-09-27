@@ -2,31 +2,31 @@
    layout de card (la forma mobile). La tabla tradicional es la
    excepción hacia arriba, bajo @media (min-width: 768px). */
 
-.tableWrapper {
+.meters-table__table-wrapper {
   border: none;
   background: none;
   box-shadow: none;
   overflow: visible;
 }
 
-.table,
-.table tbody,
-.table tr {
+.meters-table,
+.meters-table tbody,
+.meters-table tr {
   display: block;
   width: 100%;
 }
 
-.table thead {
+.meters-table thead {
   display: none;
 }
 
-.th {
+.meters-table__th {
   background-color: var(--color-neutral);
   border-bottom: 2px solid var(--color-border);
   padding: 0;
 }
 
-.sortButton {
+.meters-table__sort-button {
   width: 100%;
   height: 100%;
   padding: var(--space-3);
@@ -41,11 +41,11 @@
   transition: background-color var(--motion-fast) var(--ease-standard);
 }
 
-.sortButton:hover {
+.meters-table__sort-button:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-.sortButton:focus-visible {
+.meters-table__sort-button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
@@ -56,7 +56,7 @@
    patrón elegido explícitamente en vez de la grilla de 2 columnas
    anterior (label arriba del valor), que el usuario calificó de
    desordenada en captura real. */
-.row {
+.meters-table__row {
   display: flex;
   flex-direction: column;
   padding: var(--space-3) var(--space-4);
@@ -71,18 +71,18 @@
   animation: stagger-in var(--motion-base) var(--ease-standard) forwards;
 }
 
-.row:hover,
-.row:focus-visible {
+.meters-table__row:hover,
+.meters-table__row:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.12);
   outline: none;
 }
 
-.row:last-child {
+.meters-table__row:last-child {
   margin-bottom: 0;
 }
 
-.td {
+.meters-table__td {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -92,12 +92,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-.row .td:last-child {
+.meters-table__row .meters-table__td:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-.td:nth-child(1) {
+.meters-table__td:nth-child(1) {
   font-weight: 600;
   font-size: 1.1rem;
   border-bottom: none;
@@ -106,7 +106,7 @@
   justify-content: flex-start;
 }
 
-.td::before {
+.meters-table__td::before {
   content: attr(data-label);
   flex-shrink: 0;
   margin-right: var(--space-3);
@@ -116,11 +116,11 @@
   color: var(--color-text-muted);
 }
 
-.td:nth-child(1)::before {
+.meters-table__td:nth-child(1)::before {
   display: none; /* El nombre es el título de la card, sin label */
 }
 
-.empty {
+.meters-table__empty {
   padding: var(--space-4);
   text-align: center;
   color: var(--color-text-muted);
@@ -129,7 +129,7 @@
   border-radius: var(--radius-md);
 }
 
-.neutralVariation {
+.meters-table__neutral-variation {
   color: var(--color-neutral-text);
   background-color: var(--color-neutral);
   padding: 2px 6px;
@@ -142,16 +142,16 @@
 /* Stagger de entrada — delay incremental fijo por índice de fila,
    tope en las primeras 10 para no generar reglas infinitas; el resto
    entra con la animación base sin delay extra. */
-.row:nth-child(1) { animation-delay: 0ms; }
-.row:nth-child(2) { animation-delay: 40ms; }
-.row:nth-child(3) { animation-delay: 80ms; }
-.row:nth-child(4) { animation-delay: 120ms; }
-.row:nth-child(5) { animation-delay: 160ms; }
-.row:nth-child(6) { animation-delay: 200ms; }
-.row:nth-child(7) { animation-delay: 240ms; }
-.row:nth-child(8) { animation-delay: 280ms; }
-.row:nth-child(9) { animation-delay: 320ms; }
-.row:nth-child(10) { animation-delay: 360ms; }
+.meters-table__row:nth-child(1) { animation-delay: 0ms; }
+.meters-table__row:nth-child(2) { animation-delay: 40ms; }
+.meters-table__row:nth-child(3) { animation-delay: 80ms; }
+.meters-table__row:nth-child(4) { animation-delay: 120ms; }
+.meters-table__row:nth-child(5) { animation-delay: 160ms; }
+.meters-table__row:nth-child(6) { animation-delay: 200ms; }
+.meters-table__row:nth-child(7) { animation-delay: 240ms; }
+.meters-table__row:nth-child(8) { animation-delay: 280ms; }
+.meters-table__row:nth-child(9) { animation-delay: 320ms; }
+.meters-table__row:nth-child(10) { animation-delay: 360ms; }
 
 @keyframes stagger-in {
   from {
@@ -165,14 +165,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row {
+  .meters-table__row {
     animation: none;
     opacity: 1;
   }
 }
 
 @media (min-width: 768px) {
-  .tableWrapper {
+  .meters-table__table-wrapper {
     overflow-x: auto;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -180,24 +180,24 @@
     box-shadow: var(--shadow-sm);
   }
 
-  .table,
-  .table tbody,
-  .table tr {
+  .meters-table,
+  .meters-table tbody,
+  .meters-table tr {
     display: revert;
     width: auto;
   }
 
-  .table {
+  .meters-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
   }
 
-  .table thead {
+  .meters-table thead {
     display: table-header-group;
   }
 
-  .row {
+  .meters-table__row {
     display: revert;
     grid-template-columns: unset;
     grid-template-areas: unset;
@@ -209,18 +209,18 @@
     box-shadow: none;
   }
 
-  .row:hover,
-  .row:focus-visible {
+  .meters-table__row:hover,
+  .meters-table__row:focus-visible {
     background-color: var(--color-neutral);
     border-color: transparent;
     box-shadow: none;
   }
 
-  .row:last-child .td {
+  .meters-table__row:last-child .meters-table__td {
     border-bottom: none;
   }
 
-  .td {
+  .meters-table__td {
     display: table-cell;
     flex-direction: unset;
     align-items: unset;
@@ -229,7 +229,7 @@
     border-bottom: 1px solid var(--color-border);
   }
 
-  .td:nth-child(1) {
+  .meters-table__td:nth-child(1) {
     font-weight: 400;
     font-size: inherit;
     margin-bottom: 0;
@@ -239,17 +239,17 @@
     border-bottom: 1px solid var(--color-border);
   }
 
-  .td::before {
+  .meters-table__td::before {
     content: none;
   }
 }
 
 @media (min-width: 1366px) {
-  .sortButton {
+  .meters-table__sort-button {
     padding: var(--space-4);
     font-size: 1rem;
   }
-  .td {
+  .meters-table__td {
     padding: var(--space-4);
     font-size: 1rem;
   }

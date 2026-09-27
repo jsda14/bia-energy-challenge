@@ -1,4 +1,4 @@
-.chartContainer {
+.meter-history-chart__chart-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -9,26 +9,26 @@
   box-shadow: var(--shadow-sm);
 }
 
-.controls {
+.meter-history-chart__controls {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
   align-items: center;
 }
 
-.controlGroup {
+.meter-history-chart__control-group {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.label {
+.meter-history-chart__label {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-muted);
 }
 
-.select {
+.meter-history-chart__select {
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -38,13 +38,13 @@
   font-size: 0.875rem;
 }
 
-.chipGroup {
+.meter-history-chart__chip-group {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
 
-.chip {
+.meter-history-chart__chip {
   padding: var(--space-1) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
@@ -56,11 +56,11 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.chip:hover {
+.meter-history-chart__chip:hover {
   border-color: var(--color-primary);
 }
 
-.chip--selected {
+.meter-history-chart__chip--selected {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-bg-elevated, var(--color-bg));
@@ -73,12 +73,12 @@
    proyecto para tablas anchas en mobile (overflow-x: auto en
    MetersTable/AnomaliesTable), en vez de comprimir el contenido hasta
    volverlo ilegible. */
-.chartScroll {
+.meter-history-chart__chart-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-.empty {
+.meter-history-chart__empty {
   padding: var(--space-4);
   text-align: center;
   color: var(--color-text-muted);

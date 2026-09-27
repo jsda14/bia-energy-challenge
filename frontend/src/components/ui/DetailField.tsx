@@ -8,9 +8,9 @@ interface DetailFieldProps {
 
 export function DetailField({ label, value, tone = "neutral" }: DetailFieldProps) {
   return (
-    <div className={`${styles.detailField} ${styles[`detailField--${tone}`]}`}>
-      <span className={styles.label}>{label}</span>
-      <span className={styles.value}>{value}</span>
+    <div className={`${styles["detail-field"]} ${styles[`detail-field--${tone}`]}`}>
+      <span className={styles["detail-field__label"]}>{label}</span>
+      <span className={styles["detail-field__value"]}>{value}</span>
     </div>
   );
 }

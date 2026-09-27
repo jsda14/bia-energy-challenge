@@ -10,12 +10,12 @@ import styles from "./MeterDetailPage.module.css";
 
 function MeterDetailSkeleton() {
   return (
-    <div className={styles.container}>
+    <div className={styles["meter-detail-page__container"]}>
       <Skeleton width="200px" height="1rem" />
-      <div className={styles.header}>
+      <div className={styles["meter-detail-page__header"]}>
         <Skeleton width="240px" height="2rem" />
       </div>
-      <div className={styles.detailGrid}>
+      <div className={styles["meter-detail-page__detail-grid"]}>
         <Skeleton height="48px" />
         <Skeleton height="48px" />
         <Skeleton height="48px" />
@@ -43,23 +43,23 @@ export default function MeterDetailPage() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles["meter-detail-page__container"]}>
       <Breadcrumb
         items={[
           { label: "Medidores", to: "/meters" },
           { label: meter.name },
         ]}
       />
-      <div className={styles.header}>
-        <h1 className={styles.header__title}>Detalle de Medidor</h1>
+      <div className={styles["meter-detail-page__header"]}>
+        <h1 className={styles["meter-detail-page__header-title"]}>Detalle de Medidor</h1>
       </div>
       
-      <div className={styles.detailGrid}>
+      <div className={styles["meter-detail-page__detail-grid"]}>
         <DetailField label="ID Medidor" value={meter.meter_id} />
         <DetailField label="Nombre" value={meter.name} />
         <DetailField label="Ubicación" value={meter.location} />
-        <div className={styles.fieldWrapper}>
-          <span className={styles.label}>Estado</span>
+        <div className={styles["meter-detail-page__field-wrapper"]}>
+          <span className={styles["meter-detail-page__label"]}>Estado</span>
           <Badge label={meter.status} tone={meterStatusToColorToken(meter.status)} />
         </div>
         <DetailField label="Consumo actual" value={formatKwh(meter.consumption_kwh)} />
@@ -74,7 +74,7 @@ export default function MeterDetailPage() {
         />
       </div>
 
-      <h2 className={styles.subtitle}>Historial de Lecturas</h2>
+      <h2 className={styles["meter-detail-page__subtitle"]}>Historial de Lecturas</h2>
       <MeterHistoryChart readings={meter.readings} baselineKwh={meter.baseline_kwh} events={meter.events} />
     </div>
   );

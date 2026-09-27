@@ -1,4 +1,4 @@
-.container {
+.ai-explanation-block__container {
   display: flex;
   flex-direction: column;
 }
@@ -6,7 +6,7 @@
 /* Mobile-first: título+badge y botón apilados en columna, botón
    full-width — mismo criterio ya aplicado en AnomalyDetailPage.module.css
    para evitar el layout ambiguo de flex-wrap en viewports angostos. */
-.header {
+.ai-explanation-block__header {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -15,7 +15,7 @@
 }
 
 @media (min-width: 640px) {
-  .header {
+  .ai-explanation-block__header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -24,18 +24,18 @@
   }
 }
 
-.title {
+.ai-explanation-block__title {
   margin: 0;
   font-size: 1.125rem;
 }
 
-.titleWrapper {
+.ai-explanation-block__title-wrapper {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.button {
+.ai-explanation-block__button {
   width: 100%;
   background-color: var(--color-primary);
   color: #ffffff;
@@ -50,35 +50,35 @@
 }
 
 @media (min-width: 640px) {
-  .button {
+  .ai-explanation-block__button {
     width: auto;
   }
 }
 
-.button:hover:not(:disabled) {
+.ai-explanation-block__button:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
 }
 
-.button:disabled {
+.ai-explanation-block__button:disabled {
   background-color: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.errorText {
+.ai-explanation-block__error-text {
   color: var(--color-critical-text);
   margin-top: 0;
   margin-bottom: var(--space-2);
   font-size: 0.875rem;
 }
 
-.content {
+.ai-explanation-block__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.loaderStatus {
+.ai-explanation-block__loader-status {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -88,13 +88,13 @@
 }
 
 @media (min-width: 640px) { /* >= bp-sm */
-  .loaderStatus {
+  .ai-explanation-block__loader-status {
     flex-direction: row;
     align-items: center;
   }
 }
 
-.pulseDot {
+.ai-explanation-block__pulse-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -103,19 +103,19 @@
   flex-shrink: 0;
 }
 
-.section {
+.ai-explanation-block__section {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.sectionTitle {
+.ai-explanation-block__section-title {
   margin: 0;
   font-size: 1rem;
   color: var(--color-text-muted);
 }
 
-.sectionEntry {
+.ai-explanation-block__section-entry {
   animation: entry-in var(--motion-slow) var(--ease-standard);
 }
 
@@ -130,13 +130,13 @@
   }
 }
 
-.skeleton {
+.ai-explanation-block__skeleton {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.skeletonLine {
+.ai-explanation-block__skeleton-line {
   height: 1.2rem;
   background: linear-gradient(90deg, var(--color-bg-elevated) 25%, var(--color-border) 50%, var(--color-bg-elevated) 75%);
   background-size: 200% 100%;
@@ -149,7 +149,7 @@
   100% { background-position: -200% 0; }
 }
 
-.updatedBadge {
+.ai-explanation-block__updated-badge {
   color: var(--color-pulse);
   font-size: 0.875rem;
   font-weight: 600;
@@ -162,36 +162,36 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulseDot {
+  .ai-explanation-block__pulse-dot {
     animation: none;
   }
-  .skeletonLine {
+  .ai-explanation-block__skeleton-line {
     animation: none;
     background: var(--color-border);
   }
-  .button {
+  .ai-explanation-block__button {
     transition: none;
   }
-  .sectionEntry {
+  .ai-explanation-block__section-entry {
     animation: none;
   }
-  .updatedBadge {
+  .ai-explanation-block__updated-badge {
     animation: none;
   }
 }
 
-.variableList {
+.ai-explanation-block__variable-list {
   margin: 0;
   padding-left: var(--space-4);
   color: var(--color-text);
   line-height: 1.5;
 }
 
-.variableList li {
+.ai-explanation-block__variable-list li {
   margin-bottom: var(--space-1);
 }
 
-.eventHighlight {
+.ai-explanation-block__event-highlight {
   background-color: var(--color-warning);
   color: var(--color-warning-text);
   padding: var(--space-2) var(--space-3);

@@ -1,14 +1,14 @@
-.container {
+.anomalies-page__container {
   display: flex;
   flex-direction: column;
 }
 
-.title {
+.anomalies-page__title {
   margin-top: 0;
   margin-bottom: var(--space-4);
 }
 
-.skeletonRows {
+.anomalies-page__skeleton-rows {
   margin-top: var(--space-4);
   display: flex;
   flex-direction: column;

@@ -2,39 +2,39 @@
    layout de card. La tabla tradicional es la excepción hacia arriba,
    bajo @media (min-width: 768px). */
 
-.tableWrapper {
+.anomalies-table__table-wrapper {
   border: none;
   background: none;
   box-shadow: none;
   overflow: visible;
 }
 
-.table,
-.table tbody {
+.anomalies-table,
+.anomalies-table tbody {
   display: block;
   width: 100%;
 }
 
-/* .row (no ".table tr" genérico) para que la regla de grid de abajo
+/* .anomalies-table__row (no ".anomalies-table tr" genérico) para que la regla de grid de abajo
    pueda sobreescribir el display de este selector con normalidad de
    cascada, sin depender de !important — mismo problema real que se
-   encontró aquí: ".table tr { display: block }" tenía más
-   especificidad que ".row { display: grid }" y ganaba siempre. */
-.table tr.row {
+   encontró aquí: ".anomalies-table tr { display: block }" tenía más
+   especificidad que ".anomalies-table__row { display: grid }" y ganaba siempre. */
+.anomalies-table tr.anomalies-table__row {
   width: 100%;
 }
 
-.table thead {
+.anomalies-table thead {
   display: none;
 }
 
-.th {
+.anomalies-table__th {
   background-color: var(--color-neutral);
   border-bottom: 2px solid var(--color-border);
   padding: 0;
 }
 
-.sortButton {
+.anomalies-table__sort-button {
   width: 100%;
   height: 100%;
   padding: var(--space-3);
@@ -49,11 +49,11 @@
   transition: background-color var(--motion-fast) var(--ease-standard);
 }
 
-.sortButton:hover {
+.anomalies-table__sort-button:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-.sortButton:focus-visible {
+.anomalies-table__sort-button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
@@ -63,7 +63,7 @@
    con el label a la izquierda y el valor (o badge) alineado a la
    derecha — mismo patrón que MetersTable, elegido explícitamente en
    vez de la grilla de 2 columnas anterior. */
-.row {
+.anomalies-table__row {
   display: flex;
   flex-direction: column;
   padding: var(--space-3) var(--space-4);
@@ -78,18 +78,18 @@
   animation: stagger-in var(--motion-base) var(--ease-standard) forwards;
 }
 
-.row:hover,
-.row:focus-visible {
+.anomalies-table__row:hover,
+.anomalies-table__row:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.12);
   outline: none;
 }
 
-.row:last-child {
+.anomalies-table__row:last-child {
   margin-bottom: 0;
 }
 
-.td {
+.anomalies-table__td {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -99,12 +99,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-.row .td:last-child {
+.anomalies-table__row .anomalies-table__td:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-.td:nth-child(1) {
+.anomalies-table__td:nth-child(1) {
   font-weight: 600;
   font-size: 1.1rem;
   border-bottom: none;
@@ -113,7 +113,7 @@
   justify-content: flex-start;
 }
 
-.td::before {
+.anomalies-table__td::before {
   content: attr(data-label);
   flex-shrink: 0;
   margin-right: var(--space-3);
@@ -123,21 +123,21 @@
   color: var(--color-text-muted);
 }
 
-.td:nth-child(1)::before {
+.anomalies-table__td:nth-child(1)::before {
   display: none;
 }
 
 /* Stagger de entrada — mismo criterio que MetersTable. */
-.row:nth-child(1) { animation-delay: 0ms; }
-.row:nth-child(2) { animation-delay: 40ms; }
-.row:nth-child(3) { animation-delay: 80ms; }
-.row:nth-child(4) { animation-delay: 120ms; }
-.row:nth-child(5) { animation-delay: 160ms; }
-.row:nth-child(6) { animation-delay: 200ms; }
-.row:nth-child(7) { animation-delay: 240ms; }
-.row:nth-child(8) { animation-delay: 280ms; }
-.row:nth-child(9) { animation-delay: 320ms; }
-.row:nth-child(10) { animation-delay: 360ms; }
+.anomalies-table__row:nth-child(1) { animation-delay: 0ms; }
+.anomalies-table__row:nth-child(2) { animation-delay: 40ms; }
+.anomalies-table__row:nth-child(3) { animation-delay: 80ms; }
+.anomalies-table__row:nth-child(4) { animation-delay: 120ms; }
+.anomalies-table__row:nth-child(5) { animation-delay: 160ms; }
+.anomalies-table__row:nth-child(6) { animation-delay: 200ms; }
+.anomalies-table__row:nth-child(7) { animation-delay: 240ms; }
+.anomalies-table__row:nth-child(8) { animation-delay: 280ms; }
+.anomalies-table__row:nth-child(9) { animation-delay: 320ms; }
+.anomalies-table__row:nth-child(10) { animation-delay: 360ms; }
 
 @keyframes stagger-in {
   from {
@@ -151,14 +151,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row {
+  .anomalies-table__row {
     animation: none;
     opacity: 1;
   }
 }
 
 @media (min-width: 768px) {
-  .tableWrapper {
+  .anomalies-table__table-wrapper {
     overflow-x: auto;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -166,24 +166,24 @@
     box-shadow: var(--shadow-sm);
   }
 
-  .table,
-  .table tbody,
-  .table td {
+  .anomalies-table,
+  .anomalies-table tbody,
+  .anomalies-table td {
     display: revert;
     width: auto;
   }
 
-  .table {
+  .anomalies-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
   }
 
-  .table thead {
+  .anomalies-table thead {
     display: table-header-group;
   }
 
-  .table tr.row {
+  .anomalies-table tr.anomalies-table__row {
     display: table-row;
     margin-bottom: 0;
     border: none;
@@ -192,42 +192,42 @@
     box-shadow: none;
   }
 
-  .row:hover,
-  .row:focus-visible {
+  .anomalies-table__row:hover,
+  .anomalies-table__row:focus-visible {
     background-color: var(--color-neutral);
     border-color: transparent;
     box-shadow: none;
   }
 
-  .td {
+  .anomalies-table__td {
     display: table-cell;
     justify-content: unset;
     padding: var(--space-3);
     border-bottom: 1px solid var(--color-border);
   }
 
-  .td:nth-child(1) {
+  .anomalies-table__td:nth-child(1) {
     font-weight: 400;
     font-size: inherit;
     padding-top: var(--space-3);
     padding-bottom: var(--space-3);
   }
 
-  .row:last-child .td {
+  .anomalies-table__row:last-child .anomalies-table__td {
     border-bottom: none;
   }
 
-  .td::before {
+  .anomalies-table__td::before {
     content: none;
   }
 }
 
 @media (min-width: 1366px) {
-  .sortButton {
+  .anomalies-table__sort-button {
     padding: var(--space-4);
     font-size: 1rem;
   }
-  .td {
+  .anomalies-table__td {
     padding: var(--space-4);
     font-size: 1rem;
   }

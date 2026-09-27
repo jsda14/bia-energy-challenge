@@ -7,14 +7,14 @@ interface TriageStatusBadgeProps {
 
 export function TriageStatusBadge({ status }: TriageStatusBadgeProps) {
   if (status === "ACKNOWLEDGED") {
-    return <span className={`${styles.badge} ${styles["badge--acknowledged"]}`}>{triageStatusToLabel(status)}</span>;
+    return <span className={`${styles["triage-status-badge"]} ${styles["triage-status-badge--acknowledged"]}`}>{triageStatusToLabel(status)}</span>;
   }
 
   if (status === "DISMISSED") {
-    return <span className={`${styles.badge} ${styles["badge--dismissed"]}`}>{triageStatusToLabel(status)}</span>;
+    return <span className={`${styles["triage-status-badge"]} ${styles["triage-status-badge--dismissed"]}`}>{triageStatusToLabel(status)}</span>;
   }
 
   // "NEW" y cualquier valor no reconocido caen acá (fallback silencioso,
   // mismo criterio que severityToColorToken/SourceBadge).
-  return <span className={`${styles.badge} ${styles["badge--new"]}`}>{triageStatusToLabel(status)}</span>;
+  return <span className={`${styles["triage-status-badge"]} ${styles["triage-status-badge--new"]}`}>{triageStatusToLabel(status)}</span>;
 }

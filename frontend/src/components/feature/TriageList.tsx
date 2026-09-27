@@ -22,21 +22,21 @@ export function TriageList({ anomalies }: TriageListProps) {
 
   if (sorted.length === 0) {
     return (
-      <div className={styles.container}>
-        <h3 className={styles.title}>Triage (Top Anomalías)</h3>
-        <p className={styles.empty}>No hay anomalías activas.</p>
+      <div className={styles["triage-list__container"]}>
+        <h3 className={styles["triage-list__title"]}>Triage (Top Anomalías)</h3>
+        <p className={styles["triage-list__empty"]}>No hay anomalías activas.</p>
       </div>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>Triage (Top Anomalías)</h3>
-      <ul className={styles.list}>
+    <div className={styles["triage-list__container"]}>
+      <h3 className={styles["triage-list__title"]}>Triage (Top Anomalías)</h3>
+      <ul className={styles["triage-list__list"]}>
         {sorted.map(anomaly => (
           <li 
             key={anomaly.id} 
-            className={styles.item}
+            className={styles["triage-list__item"]}
             onClick={() => navigate(`/anomalies/${anomaly.id}`)}
             role="button"
             tabIndex={0}
@@ -46,13 +46,13 @@ export function TriageList({ anomalies }: TriageListProps) {
               }
             }}
           >
-            <div className={styles.itemHeader}>
+            <div className={styles["triage-list__item-header"]}>
               <Badge label={anomaly.severity} tone={severityToColorToken(anomaly.severity)} />
-              <span className={styles.date}>{formatDateTime(anomaly.detected_at)}</span>
+              <span className={styles["triage-list__date"]}>{formatDateTime(anomaly.detected_at)}</span>
             </div>
-            <div className={styles.itemBody}>
-              <span className={styles.meterId}>{anomaly.meter_id}</span>
-              <span className={styles.type}>{anomaly.type}</span>
+            <div className={styles["triage-list__item-body"]}>
+              <span className={styles["triage-list__meter-id"]}>{anomaly.meter_id}</span>
+              <span className={styles["triage-list__type"]}>{anomaly.type}</span>
             </div>
           </li>
         ))}

@@ -13,19 +13,19 @@ import styles from "./DashboardPage.module.css";
 
 function DashboardSkeleton() {
   return (
-    <div className={styles.dashboard}>
-      <div className={styles.dashboard__header}>
+    <div className={styles["dashboard-page"]}>
+      <div className={styles["dashboard-page__header"]}>
         <Skeleton width="180px" height="2rem" />
         <Skeleton width="160px" height="44px" />
       </div>
-      <div className={styles["dashboard__stats-grid"]}>
+      <div className={styles["dashboard-page__stats-grid"]}>
         <Skeleton height="88px" />
         <Skeleton height="72px" />
         <Skeleton height="72px" />
         <Skeleton height="72px" />
         <Skeleton height="72px" />
       </div>
-      <div className={styles.chartsGrid}>
+      <div className={styles["dashboard-page__charts-grid"]}>
         <Skeleton height="320px" />
         <Skeleton height="320px" />
       </div>
@@ -56,13 +56,13 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className={styles.dashboard}>
-      <div className={styles.dashboard__header}>
+    <div className={styles["dashboard-page"]}>
+      <div className={styles["dashboard-page__header"]}>
         <h1>Dashboard</h1>
         <RunAnalysisButton meterId={null} />
       </div>
 
-      <div className={styles["dashboard__stats-grid"]}>
+      <div className={styles["dashboard-page__stats-grid"]}>
         <StatCard
           label="Consumo Total"
           value={totalConsumptionDisplay}
@@ -99,16 +99,16 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className={styles.chartsGrid}>
-        <div className={styles.mainChart}>
+      <div className={styles["dashboard-page__charts-grid"]}>
+        <div className={styles["dashboard-page__main-chart"]}>
           <ConsumptionTimelineChart points={timeline.points} />
         </div>
-        <div className={styles.sideColumn}>
+        <div className={styles["dashboard-page__side-column"]}>
           <MeterStatusDistribution meters={meters} />
         </div>
       </div>
       
-      <div className={styles.fullWidthSection}>
+      <div className={styles["dashboard-page__full-width-section"]}>
         <TriageList anomalies={anomalies} />
       </div>
     </div>

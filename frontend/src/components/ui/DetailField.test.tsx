@@ -13,6 +13,6 @@ describe("DetailField", () => {
   it("applies tone class when provided", () => {
     const { container } = render(<DetailField label="T" value="V" tone="critical" />);
     // Check if the appropriate CSS module class modifier is applied
-    expect(container.firstChild).toHaveClass(/detailField--critical/);
+    expect(container.firstChild).toHaveClass(/detail-field--critical/);
   });
 });

@@ -172,7 +172,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
   }, [readings, variables, baselineKwh, highlightStart, highlightEnd, events]);
 
   if (readings.length === 0) {
-    return <div className={styles.empty}>Sin datos históricos para este medidor.</div>;
+    return <div className={styles["meter-history-chart__empty"]}>Sin datos históricos para este medidor.</div>;
   }
 
   const otherVariables = (Object.entries(VARIABLE_LABELS) as [ChartVariable, string][]).filter(
@@ -180,9 +180,9 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
   );
 
   return (
-    <div className={styles.chartContainer}>
-      <div className={styles.controls}>
-        <div className={styles.controlGroup}>
+    <div className={styles["meter-history-chart__chart-container"]}>
+      <div className={styles["meter-history-chart__controls"]}>
+        <div className={styles["meter-history-chart__control-group"]}>
           <input
             type="checkbox"
             id="compare-mode"
@@ -190,20 +190,20 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
             onChange={(e) => setCompareMode(e.target.checked)}
             data-testid="toggle-compare"
           />
-          <label htmlFor="compare-mode" className={styles.label}>Comparar variables</label>
+          <label htmlFor="compare-mode" className={styles["meter-history-chart__label"]}>Comparar variables</label>
         </div>
 
         {compareMode && (
-          <div className={styles.controlGroup}>
-            <span className={styles.label}>Variables:</span>
-            <div className={styles.chipGroup} role="group" aria-label="Variables a comparar">
+          <div className={styles["meter-history-chart__control-group"]}>
+            <span className={styles["meter-history-chart__label"]}>Variables:</span>
+            <div className={styles["meter-history-chart__chip-group"]} role="group" aria-label="Variables a comparar">
               {otherVariables.map(([key, label]) => {
                 const isSelected = selectedOtherVariables.includes(key);
                 return (
                   <button
                     key={key}
                     type="button"
-                    className={`${styles.chip} ${isSelected ? styles["chip--selected"] : ""}`}
+                    className={`${styles["meter-history-chart__chip"]} ${isSelected ? styles["meter-history-chart__chip--selected"] : ""}`}
                     aria-pressed={isSelected}
                     onClick={() => toggleOtherVariable(key)}
                     data-testid={`chip-${key}`}
@@ -217,7 +217,7 @@ export function MeterHistoryChart({ readings, baselineKwh, highlightStart, highl
         )}
       </div>
 
-      <div className={styles.chartScroll}>
+      <div className={styles["meter-history-chart__chart-scroll"]}>
         <ReactECharts
           option={chartOptions}
           notMerge={true}

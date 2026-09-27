@@ -16,12 +16,12 @@ import styles from "./AnomalyDetailPage.module.css";
 
 function AnomalyDetailSkeleton() {
   return (
-    <div className={styles.container}>
+    <div className={styles["anomaly-detail-page__container"]}>
       <Skeleton width="200px" height="1rem" />
-      <div className={styles.header}>
+      <div className={styles["anomaly-detail-page__header"]}>
         <Skeleton width="240px" height="2rem" />
       </div>
-      <div className={styles.detailGrid}>
+      <div className={styles["anomaly-detail-page__detail-grid"]}>
         <Skeleton height="48px" />
         <Skeleton height="48px" />
         <Skeleton height="48px" />
@@ -55,19 +55,19 @@ export default function AnomalyDetailPage() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles["anomaly-detail-page__container"]}>
       <Breadcrumb
         items={[
           { label: "Anomalías", to: "/anomalies" },
           { label: anomaly.type },
         ]}
       />
-      <div className={styles.header}>
-        <h1 className={styles.header__title}>Detalle de Anomalía</h1>
-        <div className={styles.header__actions}>
+      <div className={styles["anomaly-detail-page__header"]}>
+        <h1 className={styles["anomaly-detail-page__header-title"]}>Detalle de Anomalía</h1>
+        <div className={styles["anomaly-detail-page__header-actions"]}>
           <button
             type="button"
-            className={styles.triageButton}
+            className={styles["anomaly-detail-page__triage-button"]}
             onClick={() => updateTriageStatus({ anomalyId, status: "ACKNOWLEDGED" })}
             disabled={isUpdatingTriageStatus}
           >
@@ -75,7 +75,7 @@ export default function AnomalyDetailPage() {
           </button>
           <button
             type="button"
-            className={styles.triageButton}
+            className={styles["anomaly-detail-page__triage-button"]}
             onClick={() => updateTriageStatus({ anomalyId, status: "DISMISSED" })}
             disabled={isUpdatingTriageStatus}
           >
@@ -85,15 +85,15 @@ export default function AnomalyDetailPage() {
         </div>
       </div>
 
-      <div className={styles.detailGrid}>
+      <div className={styles["anomaly-detail-page__detail-grid"]}>
         <DetailField label="Medidor" value={anomaly.meter_id} />
         <DetailField label="Tipo" value={anomaly.type} />
-        <div className={styles.fieldWrapper}>
-          <span className={styles.label}>Severidad</span>
+        <div className={styles["anomaly-detail-page__field-wrapper"]}>
+          <span className={styles["anomaly-detail-page__label"]}>Severidad</span>
           <Badge label={anomaly.severity} tone={severityToColorToken(anomaly.severity)} />
         </div>
-        <div className={styles.fieldWrapper}>
-          <span className={styles.label}>Estado de Triage</span>
+        <div className={styles["anomaly-detail-page__field-wrapper"]}>
+          <span className={styles["anomaly-detail-page__label"]}>Estado de Triage</span>
           <TriageStatusBadge status={anomaly.triage_status} />
         </div>
         <DetailField label="Confianza" value={`${(anomaly.confidence * 100).toFixed(0)}%`} />
@@ -112,8 +112,8 @@ export default function AnomalyDetailPage() {
         />
       </div>
 
-      <div className={styles.textSection}>
-        <h2 className={styles.subtitle}>Evidencia Visual</h2>
+      <div className={styles["anomaly-detail-page__text-section"]}>
+        <h2 className={styles["anomaly-detail-page__subtitle"]}>Evidencia Visual</h2>
         {isMeterLoading ? (
           <div>Cargando evidencia visual…</div>
         ) : isMeterError || !meter ? (
@@ -129,7 +129,7 @@ export default function AnomalyDetailPage() {
         )}
       </div>
 
-      <div className={styles.textSection}>
+      <div className={styles["anomaly-detail-page__text-section"]}>
         <AiExplanationBlock
           reason={anomaly.reason}
           recommendedAction={anomaly.recommended_action}

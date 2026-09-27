@@ -1,4 +1,4 @@
-.container {
+.triage-list__container {
   width: 100%;
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -9,13 +9,13 @@
   flex-direction: column;
 }
 
-.title {
+.triage-list__title {
   margin: 0 0 var(--space-4) 0;
   font-size: 1rem;
   color: var(--color-text-muted);
 }
 
-.list {
+.triage-list__list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -24,7 +24,7 @@
   gap: var(--space-3);
 }
 
-.item {
+.triage-list__item {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -36,41 +36,41 @@
   transition: box-shadow var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
 }
 
-.item:hover,
-.item:focus-visible {
+.triage-list__item:hover,
+.triage-list__item:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.12);
   outline: none;
 }
 
-.itemHeader {
+.triage-list__item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.date {
+.triage-list__date {
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
 
-.itemBody {
+.triage-list__item-body {
   display: flex;
   gap: var(--space-2);
   align-items: center;
 }
 
-.meterId {
+.triage-list__meter-id {
   font-weight: 600;
   font-size: 0.875rem;
 }
 
-.type {
+.triage-list__type {
   font-size: 0.875rem;
   color: var(--color-text-muted);
 }
 
-.empty {
+.triage-list__empty {
   color: var(--color-text-muted);
   font-size: 0.875rem;
   text-align: center;

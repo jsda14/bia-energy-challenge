@@ -1,11 +1,7 @@
-.container {
+.anomaly-detail-page__container {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-}
-
-.title {
-  margin: 0;
 }
 
 /* Mobile-first: título y acciones apilados en columna, cada botón
@@ -13,18 +9,18 @@
    flex-wrap (que, según el ancho exacto del viewport, dejaba los 3
    botones en distintas combinaciones de 1/2/3 por fila, viéndose
    roto/inconsistente). Desktop vuelve al layout horizontal. */
-.header {
+.anomaly-detail-page__header {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: var(--space-3);
 }
 
-.header__title {
+.anomaly-detail-page__header-title {
   margin: 0;
 }
 
-.header__actions {
+.anomaly-detail-page__header-actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -33,31 +29,31 @@
 /* RunAnalysisButton se usa en varias páginas (incl. Dashboard, donde
    no debe ser full-width) — se fuerza el ancho solo desde este
    contenedor, sin tocar el componente compartido. */
-.header__actions > * {
+.anomaly-detail-page__header-actions > * {
   width: 100%;
 }
 
 @media (min-width: 640px) {
-  .header {
+  .anomaly-detail-page__header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
   }
 
-  .header__actions {
+  .anomaly-detail-page__header-actions {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     width: auto;
   }
 
-  .header__actions > * {
+  .anomaly-detail-page__header-actions > * {
     width: auto;
   }
 }
 
-.triageButton {
+.anomaly-detail-page__triage-button {
   width: 100%;
   background-color: var(--color-bg-elevated);
   color: var(--color-text);
@@ -71,26 +67,26 @@
 }
 
 @media (min-width: 640px) {
-  .triageButton {
+  .anomaly-detail-page__triage-button {
     width: auto;
   }
 }
 
-.triageButton:hover:not(:disabled) {
+.anomaly-detail-page__triage-button:hover:not(:disabled) {
   background-color: var(--color-neutral);
 }
 
-.triageButton:disabled {
+.anomaly-detail-page__triage-button:disabled {
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.subtitle {
+.anomaly-detail-page__subtitle {
   margin: 0 0 var(--space-2) 0;
   font-size: 1.125rem;
 }
 
-.detailGrid {
+.anomaly-detail-page__detail-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-4);
@@ -102,31 +98,31 @@
 }
 
 @media (min-width: 768px) {
-  .detailGrid {
+  .anomaly-detail-page__detail-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .detailGrid {
+  .anomaly-detail-page__detail-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.fieldWrapper {
+.anomaly-detail-page__field-wrapper {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   align-items: flex-start;
 }
 
-.label {
+.anomaly-detail-page__label {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-muted);
 }
 
-.textSection {
+.anomaly-detail-page__text-section {
   background-color: var(--color-bg);
   padding: var(--space-4);
   border: 1px solid var(--color-border);
@@ -134,48 +130,3 @@
   box-shadow: var(--shadow-sm);
 }
 
-.text {
-  margin: 0;
-  color: var(--color-text);
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.aiHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-4);
-}
-
-.aiTitle {
-  margin: 0;
-  font-size: 1.125rem;
-}
-
-.button {
-  background-color: var(--color-primary);
-  color: var(--color-bg-elevated, #ffffff);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-4);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.button:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.button:disabled {
-  background-color: var(--color-border);
-  color: var(--color-text-muted);
-  cursor: not-allowed;
-}
-
-.errorText {
-  color: var(--color-critical-text);
-  margin-top: var(--space-2);
-  font-size: 0.875rem;
-}

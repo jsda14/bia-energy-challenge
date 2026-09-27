@@ -1,14 +1,14 @@
-.meter-list {
+.meter-list-page__meter-list {
   display: flex;
   flex-direction: column;
 }
 
-.meter-list__title {
+.meter-list-page__title {
   margin-top: 0;
   margin-bottom: var(--space-4);
 }
 
-.meter-list__skeletonRows {
+.meter-list-page__skeleton-rows {
   margin-top: var(--space-4);
   display: flex;
   flex-direction: column;

@@ -7,10 +7,10 @@ import styles from "./MeterListPage.module.css";
 
 function MeterListSkeleton() {
   return (
-    <div className={styles["meter-list"]}>
-      <Skeleton width="160px" height="2rem" className={styles["meter-list__title"]} />
+    <div className={styles["meter-list-page__meter-list"]}>
+      <Skeleton width="160px" height="2rem" className={styles["meter-list-page__title"]} />
       <Skeleton height="44px" />
-      <div className={styles["meter-list__skeletonRows"]}>
+      <div className={styles["meter-list-page__skeleton-rows"]}>
         <Skeleton height="88px" />
         <Skeleton height="88px" />
         <Skeleton height="88px" />
@@ -67,8 +67,8 @@ export default function MeterListPage() {
   }
 
   return (
-    <div className={styles["meter-list"]}>
-      <h1 className={styles["meter-list__title"]}>Medidores</h1>
+    <div className={styles["meter-list-page__meter-list"]}>
+      <h1 className={styles["meter-list-page__title"]}>Medidores</h1>
       
       <MetersFilterBar
         statusOptions={statusOptions}

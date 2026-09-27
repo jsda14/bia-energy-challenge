@@ -17,7 +17,7 @@ export function RunAnalysisButton({ meterId }: RunAnalysisButtonProps) {
 
   return (
     <button
-      className={styles.button}
+      className={styles["run-analysis-button__button"]}
       onClick={handleClick}
       disabled={isRunning}
       type="button"

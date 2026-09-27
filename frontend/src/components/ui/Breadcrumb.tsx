@@ -11,17 +11,17 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
         return (
-          <span key={index} className={styles.itemWrapper}>
+          <span key={index} className={styles["breadcrumb__item-wrapper"]}>
             {item.to ? (
-              <Link to={item.to} className={styles.link}>
+              <Link to={item.to} className={styles["breadcrumb__link"]}>
                 {item.label}
               </Link>
             ) : (
-              <span className={styles.current} aria-current={isLast ? "page" : undefined}>
+              <span className={styles["breadcrumb__current"]} aria-current={isLast ? "page" : undefined}>
                 {item.label}
               </span>
             )}
-            {!isLast && <span className={styles.separator}>/</span>}
+            {!isLast && <span className={styles["breadcrumb__separator"]}>/</span>}
           </span>
         );
       })}
